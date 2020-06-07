@@ -1,0 +1,16 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# SBT
+project/target
+project/project
+target
+
+# Local files
+deployLocal.sh
+
+# Docker
+docker/spigot/serverfiles/eula.txt
+
+.env
