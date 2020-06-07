@@ -1,0 +1,2 @@
+# kgx
+KGxのbotです。
