@@ -1,6 +1,8 @@
 # coding=utf-8
 from discord.ext import commands
 import discord
+import os
+import traceback
 
 
 class KGX(commands.Bot):
@@ -59,6 +61,14 @@ class KGX(commands.Bot):
                       "そのユーザーの現在のオークションの開催個数を指定します。\n\n" \
                       "-------\n"
         self.embed = discord.Embed(description=description, color=0x66cdaa)
+
+        self.remove_command('help')  # デフォルトのヘルプコマンドを除外
+        for cog in os.listdir(f"./cogs"):  # cogの読み込み
+            if cog.endswith(".py"):
+                try:
+                    self.load_extension(f"cogs.{cog[:-3]}")
+                except Exception:
+                    traceback.print_exc()
 
     async def on_ready(self):
         await self.get_channel(678083611697872910).purge(limit=1)
