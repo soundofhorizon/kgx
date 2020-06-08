@@ -256,6 +256,14 @@ class Message(commands.Cog):
                 await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
                 return
 
+            # 既にオークションが行われていたらreturn
+            if "☆" in ctx.channel.name:
+                description = "このチャンネルでは既にオークションが行われています。\n☆がついているチャンネルでオークションを始めてください。"
+                await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
+                await asyncio.sleep(3)
+                await ctx.channel.purge(1)
+                return
+
             tmprole = discord.utils.get(ctx.guild.roles, name="現在商品登録中")
             await ctx.author.add_roles(tmprole)
             auction_registration_user_id = ctx.author.id
