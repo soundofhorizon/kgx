@@ -374,8 +374,8 @@ class Message(commands.Cog):
 
                     # SQLにデータ登録
                     self.bot.cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s, %s)",
-                                         (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
-                                          user_input_3.content, user_input_4.content, unit))
+                                         (ctx.channel.id, ctx.author.id, user_input_1.content, str(user_input_2),
+                                          str(user_input_3), user_input_4.content, unit))
 
                     # ここで、その人が行っているオークションの個数を増やす
                     user = ctx.author.id
@@ -490,14 +490,17 @@ class Message(commands.Cog):
                         "<:shiina_balance:558175954686705664>取引を開始します<:shiina_balance:558175954686705664>")
                     await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
                     await ctx.author.remove_roles(tmprole)
-                    # ここで、その人が行っているオークションの個数を増やす
-                    user = ctx.author.id
-                    r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
-                    r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
+
+                    # todo 希望価格の部分を数字に変えてstrでキャストしてuser_input2の部分に突っ込みましょう
 
                     self.bot.cur.execute("INSERT INTO deal value (%s, %s, %s, %s, %s, %s)",
                                          (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
                                           user_input_3.content, unit))
+
+                    # ここで、その人が行っているオークションの個数を増やす
+                    user = ctx.author.id
+                    r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
+                    r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
                 else:
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
