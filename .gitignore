@@ -2,6 +2,7 @@
 .idea/
 *.iml
 venv
+.gradle
 
 # SBT
 project/target
