@@ -310,7 +310,7 @@ class KGX(commands.Bot):
 
     async def on_ready(self):
         await self.get_channel(678083611697872910).purge(limit=1)
-        await self.get_channel(678083611697872910).send(embed=help())
+        await self.get_channel(678083611697872910).send(embed=self.embed)
 
     async def on_command_error(self, ctx, error):  # すべてのコマンドで発生したエラーを拾う
         if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
