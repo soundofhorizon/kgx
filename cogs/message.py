@@ -79,8 +79,7 @@ class Message(commands.Cog):
                             await message.author.remove_roles(role1)
                             await message.author.add_roles(role2)
                             await message.add_reaction(random.choice(emoji))
-                            CHANNEL_ID = 591244559019802650
-                            channel = self.bot.get_channel(CHANNEL_ID)
+                            channel = self.bot.get_channel(591244559019802650)
                             color = [0x3efd73, 0xfb407c, 0xf3f915, 0xc60000, 0xed8f10, 0xeacf13, 0x9d9d9d, 0xebb652,
                                      0x4259fb,
                                      0x1e90ff]
@@ -171,7 +170,8 @@ class Message(commands.Cog):
             key = f"score-{self.bot.get_guild(558125111081697300).members[member].id}"
             score = int(r.get(key) or "0")
             await ctx.channel.send(self.bot.get_guild(558125111081697300).members[member])
-            before, after, embed = self.bot.checkRole(score, self.bot.get_guild(558125111081697300).members[member], ctx)
+            before, after, embed = self.bot.check_role(score, self.bot.get_guild(558125111081697300).members[member],
+                                                      ctx)
             await self.bot.get_guild(558125111081697300).members[member].remove_roles(before)
             await self.bot.get_guild(558125111081697300).members[member].add_roles(after)
         await ctx.channel.send("照会終了")
@@ -181,21 +181,20 @@ class Message(commands.Cog):
         if not ctx.channel.id == 558265536430211083:
             return
 
-        CHANNEL_ID = 602197766218973185
-        channel = self.bot.get_channel(CHANNEL_ID)
+        channel = self.bot.get_channel(602197766218973185)
         p = re.compile(r'^[0-9]+$')
         if p.fullmatch(pt):
             kazu = int(pt)
             r = redis.from_url(os.environ['REDIS_URL'])  # os.environで格納された環境変数を引っ張ってくる
             key = f"score-{ctx.author.id}"
             oldscore = int(r.get(key) or "0")
-            newscore = oldscore + kazu
-            r.set(key, str(newscore))
-            embed = discord.Embed(description=f'**{ctx.author.display_name}**の現在の落札ポイントは**{newscore}**です。',
+            new_score = oldscore + kazu
+            r.set(key, str(new_score))
+            embed = discord.Embed(description=f'**{ctx.author.display_name}**の現在の落札ポイントは**{new_score}**です。',
                                   color=0x9d9d9d)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, )  # ユーザー名+ID,アバターをセット
             await channel.send(embed=embed)
-            before, after, embed = self.bot.checkRole(newscore, ctx.author, ctx)
+            before, after, embed = self.bot.check_role(new_score, ctx.author, ctx)
             await ctx.author.remove_roles(before)
             await ctx.author.add_roles(after)
             if embed is not None:
@@ -205,11 +204,10 @@ class Message(commands.Cog):
             await ctx.channel.send(embed=embed)
             await asyncio.sleep(0.5)
             # ランキングを出力する
-            CHANNEL_ID = 677905288665235475
-            channel = self.bot.get_channel(CHANNEL_ID)
+            channel = self.bot.get_channel(677905288665235475)
             # とりあえず、ランキングチャンネルの中身を消す
             await channel.purge(limit=1)
-            await channel.send(embed=self.bot.createRankingEmbed())
+            await channel.send(embed=self.bot.create_ranking_embed())
 
     # todo 未完成。
     @commands.command()
@@ -263,58 +261,58 @@ class Message(commands.Cog):
                     elif m.author.id == auction_registration_user_id:
                         return m.channel == ctx.channel
 
-                def check2(forthUserInput):
-                    return forthUserInput.channel == ctx.channel and re.match(
+                def check2(fourth_user_input):
+                    return fourth_user_input.channel == ctx.channel and re.match(
                         r'[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}',
-                        forthUserInput.content)
+                        fourth_user_input.content)
 
                 embed = discord.Embed(
                     description="出品するものを入力してください。",
                     color=0xffaf60)
                 await ctx.channel.send(embed=embed)
-                userInput1 = await self.bot.wait_for('message', check=check)
+                user_input_1 = await self.bot.wait_for('message', check=check)
                 embed = discord.Embed(description="開始価格を入力してください。(椎名か、ガチャ券かなどを明記して書くこと)", color=0xffaf60)
                 await ctx.channel.send(embed=embed)
-                userInput2 = await self.bot.wait_for('message', check=check)
+                user_input_2 = await self.bot.wait_for('message', check=check)
                 embed = discord.Embed(description="即決価格を入力してください。", color=0xffaf60)
                 await ctx.channel.send(embed=embed)
-                userInput3 = await self.bot.wait_for('message', check=check)
+                user_input_3 = await self.bot.wait_for('message', check=check)
                 embed = discord.Embed(
                     description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
                                 "例　5月14日の午後8時に終了したい場合：\n**05/14-20:00**と入力してください。\n"
                                 "この形でない場合認識されません！\n**間違えて打ってしまった場合その部分は必ず削除してください。**",
                     color=0xffaf60)
                 await ctx.channel.send(embed=embed)
-                userInput4 = await self.bot.wait_for('message', check=check2)
+                user_input_4 = await self.bot.wait_for('message', check=check2)
                 embed = discord.Embed(
                     description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
                                 "何も無ければ「なし」で構いません。",
                     color=0xffaf60)
                 await ctx.channel.send(embed=embed)
-                userInput5 = await self.bot.wait_for('message', check=check)
+                user_input_5 = await self.bot.wait_for('message', check=check)
                 kazu = 11
                 await ctx.channel.purge(limit=kazu)
                 embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                       color=0xffaf60)
                 embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
-                embed.add_field(name="出品物", value=f'\n\n{userInput1.content}', inline=True)
-                embed.add_field(name="開始価格", value=f'\n\n{userInput2.content}', inline=False)
-                embed.add_field(name="即決価格", value=f'\n\n{userInput3.content}', inline=False)
-                embed.add_field(name="終了日時", value=f'\n\n{userInput4.content}', inline=True)
-                embed.add_field(name="特記事項", value=f'\n\n{userInput5.content}', inline=True)
+                embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
+                embed.add_field(name="開始価格", value=f'\n\n{user_input_2.content}', inline=False)
+                embed.add_field(name="即決価格", value=f'\n\n{user_input_3.content}', inline=False)
+                embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
+                embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
                 await ctx.channel.send(embed=embed)
-                userInput6 = await self.bot.wait_for('message', check=check)
-                if userInput6.content == "YES" or userInput6.content == "yes" or userInput6.content == "いぇｓ" or userInput6.content == "いぇs":
+                user_input_6 = await self.bot.wait_for('message', check=check)
+                if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
                     await asyncio.sleep(0.3)
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
-                    embed.add_field(name="出品物", value=f'\n\n{userInput1.content}', inline=True)
-                    embed.add_field(name="開始価格", value=f'\n\n{userInput2.content}', inline=False)
-                    embed.add_field(name="即決価格", value=f'\n\n{userInput3.content}', inline=False)
-                    embed.add_field(name="終了日時", value=f'\n\n{userInput4.content}', inline=True)
-                    embed.add_field(name="特記事項", value=f'\n\n{userInput5.content}', inline=True)
+                    embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
+                    embed.add_field(name="開始価格", value=f'\n\n{user_input_2.content}', inline=False)
+                    embed.add_field(name="即決価格", value=f'\n\n{user_input_3.content}', inline=False)
+                    embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
+                    embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
                     await ctx.channel.send(embed=embed)
                     await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
                     Channel = ctx.channel
@@ -326,8 +324,8 @@ class Message(commands.Cog):
                     r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
 
                     self.bot.cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s)",
-                                         (ctx.channel.id, ctx.author.id, userInput1.content, userInput2.content,
-                                          userInput3.content, userInput4.content))
+                                         (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
+                                          user_input_3.content, user_input_4.content))
                 else:
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
@@ -356,21 +354,21 @@ class Message(commands.Cog):
                     else:
                         return m.channel == ctx.channel
 
-                def check2(forthUserInput):
-                    return forthUserInput.channel == ctx.channel and re.match(
+                def check2(fourth_user_input):
+                    return fourth_user_input.channel == ctx.channel and re.match(
                         r'[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}',
-                        forthUserInput.content)
+                        fourth_user_input.content)
 
                 embed = discord.Embed(
                     description="出品するものを入力してください。",
                     color=0xffaf60)
                 await ctx.channel.send(embed=embed)
 
-                userInput1 = await self.bot.wait_for('message', check=check)
+                user_input_1 = await self.bot.wait_for('message', check=check)
                 embed = discord.Embed(description="希望価格を入力してください。(椎名か、ガチャ券かなどを明記して書くこと)", color=0xffaf60)
                 await ctx.channel.send(embed=embed)
 
-                userInput2 = await self.bot.wait_for('message', check=check)
+                user_input_2 = await self.bot.wait_for('message', check=check)
                 embed = discord.Embed(
                     description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
                                 "例　5月14日の午後8時に終了したい場合：\n**05/14-20:00**と入力してください。\nこの形でない場合認識されません！\n"
@@ -378,37 +376,37 @@ class Message(commands.Cog):
                     color=0xffaf60)
                 await ctx.channel.send(embed=embed)
 
-                userInput3 = await self.bot.wait_for('message', check=check2)
+                user_input_3 = await self.bot.wait_for('message', check=check2)
                 embed = discord.Embed(
                     description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
                                 "何も無ければ「なし」で構いません。",
                     color=0xffaf60)
                 await ctx.channel.send(embed=embed)
 
-                userInput4 = await self.bot.wait_for('message', check=check)
+                user_input_4 = await self.bot.wait_for('message', check=check)
                 kazu = 11
                 await ctx.channel.purge(limit=kazu)
 
                 embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                       color=0xffaf60)
                 embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
-                embed.add_field(name="出品物", value=f'\n\n{userInput1.content}', inline=False)
-                embed.add_field(name="希望価格", value=f'\n\n{userInput2.content}', inline=True)
-                embed.add_field(name="終了日時", value=f'\n\n{userInput3.content}', inline=True)
-                embed.add_field(name="特記事項", value=f'\n\n{userInput4.content}', inline=False)
+                embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=False)
+                embed.add_field(name="希望価格", value=f'\n\n{user_input_2.content}', inline=True)
+                embed.add_field(name="終了日時", value=f'\n\n{user_input_3.content}', inline=True)
+                embed.add_field(name="特記事項", value=f'\n\n{user_input_4.content}', inline=False)
                 await ctx.channel.send(embed=embed)
-                userInput6 = await self.bot.wait_for('message', check=check)
+                user_input_6 = await self.bot.wait_for('message', check=check)
                 # 出来ればYESとyesはlowerにするべきでは
-                if userInput6.content == "YES" or userInput6.content == "yes" or userInput6.content == "いぇｓ" or userInput6.content == "いぇs":
+                if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
                     await asyncio.sleep(0.3)
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
-                    embed.add_field(name="出品物", value=f'\n\n{userInput1.content}', inline=False)
-                    embed.add_field(name="希望価格", value=f'\n\n{userInput2.content}', inline=True)
-                    embed.add_field(name="終了日時", value=f'\n\n{userInput3.content}', inline=True)
-                    embed.add_field(name="特記事項", value=f'\n\n{userInput4.content}', inline=False)
+                    embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=False)
+                    embed.add_field(name="希望価格", value=f'\n\n{user_input_2.content}', inline=True)
+                    embed.add_field(name="終了日時", value=f'\n\n{user_input_3.content}', inline=True)
+                    embed.add_field(name="特記事項", value=f'\n\n{user_input_4.content}', inline=False)
                     await ctx.channel.send(embed=embed)
                     await ctx.channel.send(
                         "<:shiina_balance:558175954686705664>取引を開始します<:shiina_balance:558175954686705664>")
@@ -421,7 +419,8 @@ class Message(commands.Cog):
                     r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
 
                     self.bot.cur.execute("INSERT INTO deal value (%s, %s, %s, %s, %s)",
-                                         (ctx.channel.id, ctx.author.id, userInput1.content, userInput2.content, userInput3.content))
+                                         (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
+                                          user_input_3.content))
                 else:
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
@@ -461,10 +460,10 @@ class Message(commands.Cog):
                                     "出品した品物名を書いてください。",
                         color=0xffaf60)
                     await ctx.channel.send(embed=embed)
-                    userInput1 = await self.bot.wait_for('message', check=check)
+                    user_input_1 = await self.bot.wait_for('message', check=check)
                     embed = discord.Embed(description="落札者のユーザーネームを書いてください。", color=0xffaf60)
                     await ctx.channel.send(embed=embed)
-                    userInput2 = await self.bot.wait_for('message', check=check)
+                    user_input_2 = await self.bot.wait_for('message', check=check)
                     description = "落札価格を入力してください。\n"
                     if is_siina_category(ctx):
                         description += "以下のような形式以外は認識されません。(個はなくてもOK): **椎名○○st+△(個)(椎名○○(個)も可)\n" \
@@ -472,19 +471,19 @@ class Message(commands.Cog):
                     embed = discord.Embed(description=description, color=0xffaf60)
                     await ctx.channel.send(embed=embed)
                     siina_amount = -1
-                    userInput3 = ""
+                    user_input_3 = ""
                     if is_siina_category(ctx):
                         frag = True
                         while frag:
-                            userInput3 = await self.bot.wait_for('message', check=check_siina_style)
-                            siina_amount = self.bot.siina_check(userInput3.content)
+                            user_input_3 = await self.bot.wait_for('message', check=check_siina_style)
+                            siina_amount = self.bot.siina_check(user_input_3.content)
                             if siina_amount == 0:
                                 await ctx.channel.send("値が不正です。椎名○○st+△(個)の○と△には整数以外は入りません。再度入力してください。")
                                 kazu += 2
                             else:
                                 frag = False
                     else:
-                        userInput3 = await self.bot.wait_for('message', check=check)
+                        user_input_3 = await self.bot.wait_for('message', check=check)
                     await ctx.channel.purge(limit=kazu)
                     embed = discord.Embed(description="オークション終了報告を受け付けました。", color=0xffaf60)
                     await ctx.channel.send(embed=embed)
@@ -502,25 +501,24 @@ class Message(commands.Cog):
                                 key = i
                                 break
                         # 管理IDに紐づけて記録するデータの内容は[落札者,落札したもの,落札額,userid]がString型で入る.splitでlistにすること
-                        redis_set_str = f"{userInput2.content},{userInput1.content},{siina_amount},{ctx.author.id}"
+                        redis_set_str = f"{user_input_2.content},{user_input_1.content},{siina_amount},{ctx.author.id}"
                         r.set(int(key), str(redis_set_str))
                         await self.bot.get_channel(705040893593387039).purge(limit=10)
                         await asyncio.sleep(0.1)
-                        embed = self.bot.createHighBidRanking()
+                        embed = self.bot.create_high_bid_ranking()
                         for i in range(len(embed)):
                             await self.bot.get_channel(705040893593387039).send(embed=embed[i])
 
                     # 記録送信
-                    CHANNEL_ID = 558132754953273355
-                    channel = self.bot.get_channel(CHANNEL_ID)
+                    channel = self.bot.get_channel(558132754953273355)
                     d = datetime.now()  # 現在時刻の取得
                     time = d.strftime("%Y/%m/%d")
                     embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
                     embed.add_field(name="落札日", value=f'\n\n{time}', inline=False)
                     embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=False)
-                    embed.add_field(name="品物", value=f'\n\n{userInput1.content}', inline=False)
-                    embed.add_field(name="落札者", value=f'\n\n{userInput2.content}', inline=False)
-                    embed.add_field(name="落札価格", value=f'\n\n{userInput3.content}', inline=False)
+                    embed.add_field(name="品物", value=f'\n\n{user_input_1.content}', inline=False)
+                    embed.add_field(name="落札者", value=f'\n\n{user_input_2.content}', inline=False)
+                    embed.add_field(name="落札価格", value=f'\n\n{user_input_3.content}', inline=False)
                     embed.add_field(name="チャンネル名", value=f'\n\n{ctx.channel}', inline=False)
                     await channel.send(embed=embed)
                     await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
@@ -545,8 +543,7 @@ class Message(commands.Cog):
     @commands.check(is_normal_category)
     async def end(self, ctx):
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
-        Channel = ctx.channel
-        await Channel.edit(name=Channel.name + '☆')
+        await ctx.channel.edit(name=ctx.channel.name + '☆')
         # ここで、その人が行っているオークションの個数を減らす
         user = ctx.author.id
         r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])

@@ -3,6 +3,7 @@ import os
 import traceback
 from datetime import datetime
 
+import binary as binary
 import discord
 import psycopg2
 import redis
@@ -83,7 +84,7 @@ class KGX(commands.Bot):
                     traceback.print_exc()
 
     @staticmethod
-    def checkRole(newscore, user, ctx):
+    def check_role(new_score, user, ctx):
         role1 = discord.utils.get(ctx.guild.roles, name="新星")
         role2 = discord.utils.get(ctx.guild.roles, name="常連")
         role3 = discord.utils.get(ctx.guild.roles, name="金持ち")
@@ -91,7 +92,7 @@ class KGX(commands.Bot):
         role5 = discord.utils.get(ctx.guild.roles, name="登頂者")
         role6 = discord.utils.get(ctx.guild.roles, name="落札王")
         role7 = discord.utils.get(ctx.guild.roles, name="落札神")
-        if newscore >= 100:
+        if new_score >= 100:
             before = role6
             after = role7
             embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``落札王⇒落札神``',
@@ -100,7 +101,7 @@ class KGX(commands.Bot):
             if role7 in user.roles:
                 embed = None
             return before, after, embed
-        elif newscore >= 60:
+        elif new_score >= 60:
             before = role5
             after = role6
             embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``登頂者⇒落札王``',
@@ -109,7 +110,7 @@ class KGX(commands.Bot):
             if role6 in user.roles:
                 embed = None
             return before, after, embed
-        elif newscore >= 30:
+        elif new_score >= 30:
             before = role4
             after = role5
             embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``覚醒者⇒登頂者``',
@@ -118,7 +119,7 @@ class KGX(commands.Bot):
             if role5 in user.roles:
                 embed = None
             return before, after, embed
-        elif newscore >= 10:
+        elif new_score >= 10:
             before = role3
             after = role4
             embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``金持ち⇒覚醒者``',
@@ -127,7 +128,7 @@ class KGX(commands.Bot):
             if role4 in user.roles:
                 embed = None
             return before, after, embed
-        elif newscore >= 5:
+        elif new_score >= 5:
             if role3 in user.roles:
                 pass
             before = role2
@@ -138,7 +139,7 @@ class KGX(commands.Bot):
             if role3 in user.roles:
                 embed = None
             return before, after, embed
-        elif newscore >= 3:
+        elif new_score >= 3:
             before = role1
             after = role2
             embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``新星⇒常連``',
@@ -147,7 +148,7 @@ class KGX(commands.Bot):
             if role2 in user.roles:
                 embed = None
             return before, after, embed
-        elif newscore >= 1:
+        elif new_score >= 1:
             before = role1
             after = role1
             embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``落札初心者⇒新星``',
@@ -157,38 +158,38 @@ class KGX(commands.Bot):
                 embed = None
             return before, after, embed
 
-    def createRankingEmbed(self):
+    def create_ranking_embed(self):
         # scoreを抜き出したメンバーのIDのリストで一個一個keyとして突っ込んだ後、それに対応する落札ポイントを引っ張って突っ込む
 
         # 落札ポイントを入れるリスト
-        scoreList = []
+        score_list = []
 
         # メンバーを入れるリスト
-        memberList = []
+        member_list = []
 
         # 上記2つをまとめて辞書型にする
-        bidscoreDict = {}
+        bidscore_dict = {}
 
-        botCount = 0
+        bot_count = 0
         r = redis.from_url(os.environ['REDIS_URL'])  # os.environで格納された環境変数を引っ張ってくる
         for member in range(self.get_guild(558125111081697300).member_count):
             if self.get_guild(558125111081697300).members[member].bot:
-                botCount += 1
+                bot_count += 1
 
-            memberList.append(self.get_guild(558125111081697300).members[member].display_name)
+            member_list.append(self.get_guild(558125111081697300).members[member].display_name)
 
             key = f"score-{self.get_guild(558125111081697300).members[member].id}"
-            scoreList.append(int(r.get(key) or "0"))
+            score_list.append(int(r.get(key) or "0"))
 
             # メンバー : その人のスコア　で　辞書型結合を行う
-            bidscoreDict[memberList[member]] = scoreList[member]
+            bidscore_dict[member_list[member]] = score_list[member]
 
             # 全員分確認終わったら今度は出力
             if member == (self.get_guild(558125111081697300).member_count - 1):
                 description = ""
                 rank = 1
                 # ランキングを出力する。まずは辞書型の落札ポイントを基準として降順ソートする。メンバーをmem,スコアをscoreとする
-                for mem, score in sorted(bidscoreDict.items(), key=lambda x: -x[1]):
+                for mem, score in sorted(bidscore_dict.items(), key=lambda x: -x[1]):
                     # 落札ポイント0ptは表示しない
                     if score == 0:
                         continue
@@ -227,7 +228,7 @@ class KGX(commands.Bot):
             return 0
 
     # 落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す
-    def createHighBidRanking(self):
+    def create_high_bid_ranking(self):
         i = 0
         r = redis.from_url(os.environ['HEROKU_REDIS_ORANGE_URL'])  # os.environで格納された環境変数を引っ張ってくる
         radis_get_data_list = []

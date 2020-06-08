@@ -42,30 +42,28 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def check_all_user_ID(self, ctx):
-        CHANNEL_ID = 642052474672250880
-        channel = self.bot.get_channel(CHANNEL_ID)
-        botCount = 0
+        channel = self.bot.get_channel(642052474672250880)
+        bot_count = 0
         for member in range(self.bot.get_guild(558125111081697300).member_count):
             if self.bot.get_guild(558125111081697300).members[member].bot:
-                botCount += 1
+                bot_count += 1
                 continue
             await channel.send(
                 f"{self.bot.get_guild(558125111081697300).members[member].id} : "
                 f"{self.bot.get_guild(558125111081697300).members[member].display_name}")
             if member == (self.bot.get_guild(558125111081697300).member_count - 1):
                 embed = discord.Embed(
-                    description=f"このサーバーの全メンバーのユーザーIDの照会が終わりました。 現在人数:{member - botCount + 1}",
+                    description=f"このサーバーの全メンバーのユーザーIDの照会が終わりました。 現在人数:{member - bot_count + 1}",
                     color=0x1e90ff)
                 await channel.send(embed=embed)
                 await channel.send("--------ｷﾘﾄﾘ線--------")
 
     @commands.command()
     async def bidscore_ranking(self, ctx):
-        CHANNEL_ID = 677905288665235475
-        channel = self.bot.get_channel(CHANNEL_ID)
+        channel = self.bot.get_channel(677905288665235475)
         # とりあえず、ランキングチャンネルの中身を消す
         await channel.purge(limit=1)
-        await channel.send(embed=self.bot.createRankingEmbed())
+        await channel.send(embed=self.bot.create_ranking_embed())
         await asyncio.sleep(0.3)
         embed = discord.Embed(
             description=f"このサーバーの全メンバーの落札ポイントの照会が終わりました。"
@@ -78,7 +76,7 @@ class AdminOnly(commands.Cog):
     async def show_bid_ranking(self, ctx):
         await self.bot.get_channel(705040893593387039).purge(limit=10)
         await asyncio.sleep(0.1)
-        embed = self.bot.createHighBidRanking()
+        embed = self.bot.create_high_bid_ranking()
         for i in range(len(embed)):
             await self.bot.get_channel(705040893593387039).send(embed=embed[i])
 
@@ -89,8 +87,8 @@ class AdminOnly(commands.Cog):
     @bidscoreGS.command()
     async def get(self, ctx, user_id):
         r = redis.from_url(os.environ['REDIS_URL'])  # os.environで格納された環境変数を引っ張ってくる
-        getScore = int(r.get(f"score-{user_id}" or "0"))
-        embed = discord.Embed(description=f"ユーザーID：{user_id}の落札ポイントは{getScore}です。",
+        get_score = int(r.get(f"score-{user_id}" or "0"))
+        embed = discord.Embed(description=f"ユーザーID：{user_id}の落札ポイントは{get_score}です。",
                               color=0x1e90ff)
         await ctx.send(embed=embed)
 
@@ -105,13 +103,11 @@ class AdminOnly(commands.Cog):
             color=0x1e90ff)
         await ctx.channel.send(embed=embed)
 
-        CHANNEL_ID = 677905288665235475
-        channel = self.bot.get_channel(CHANNEL_ID)
+        channel = self.bot.get_channel(677905288665235475)
         # とりあえず、ランキングチャンネルの中身を消す
         await channel.purge(limit=1)
-        await channel.send(embed=self.bot.createRankingEmbed())
-        CHANNEL_ID = 602197766218973185
-        channel = self.bot.get_channel(CHANNEL_ID)
+        await channel.send(embed=self.bot.create_ranking_embed())
+        channel = self.bot.get_channel(602197766218973185)
         embed = discord.Embed(
             description=f"{ctx.author.display_name}により、{user.display_name}"
                         f"の落札ポイントが{pt}にセットされました。",
@@ -127,8 +123,7 @@ class AdminOnly(commands.Cog):
         )
         await ctx.channel.send(embed=embed)
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
-        Channel = ctx.channel
-        await Channel.edit(name=Channel.name + '☆')
+        await ctx.channel.edit(name=ctx.channel.name + '☆')
 
     @commands.command()
     async def insert_ranking_data(self, ctx):
