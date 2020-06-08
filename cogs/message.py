@@ -277,7 +277,7 @@ class Message(commands.Cog):
                         # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
                         return fourth_user_input.channel == ctx.channel and re.match(
                             r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}",
-                            fourth_user_input.content) and datetime.strftime(fourth_user_input, "%Y/%m/%d-%H:%M")
+                            fourth_user_input.content) and datetime.strftime(fourth_user_input.content, "%Y/%m/%d-%H:%M")
 
                 # 価格フォーマットチェック
                 def check3(m):
@@ -406,7 +406,7 @@ class Message(commands.Cog):
                     # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
                     return fourth_user_input.channel == ctx.channel and re.match(
                         r'[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}',
-                        fourth_user_input.content) and datetime.strftime(fourth_user_input, "%Y/%m/%d-%H:%M")
+                        fourth_user_input.content) and datetime.strftime(fourth_user_input.content, "%Y/%m/%d-%H:%M")
 
                 # 価格フォーマットチェック
                 def check3(m):
