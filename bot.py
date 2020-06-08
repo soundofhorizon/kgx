@@ -38,7 +38,7 @@ class KGX(commands.Bot):
                       "<:shiina_balance:558175954686705664>!del 消去するメッセージの数(int)\n\n" \
                       "メッセージを指定した数、コマンドを打ったチャンネルの最新のメッセージから消します。\n\n" \
                       "-------\n" \
-                      "<:siina:558251559394213888>!checkAllUserID\n\n" \
+                      "<:siina:558251559394213888>!check_all_user_ID\n\n" \
                       "<#642052474672250880> に、現在このサーバーにいるメンバーのニックネームとユーザーIDをセットで照会します。\n\n" \
                       "-------\n" \
                       "<:shiina_balance:558175954686705664>!bidscoreGS モード ユーザーID 落札ポイント(setモードのみ)\n\n" \
@@ -48,7 +48,7 @@ class KGX(commands.Bot):
                       "<mode:SET>　setモードでは、特定の人の落札ポイントを変更できます。\nコマンドは以下のように使用します。\n\n" \
                       "(例)!bidscoreGS set 251365193127297024 10\n{これで、EternalHorizonの落札ポイントが10ポイントに変更される。}\n\n" \
                       "-------\n" \
-                      "<:siina:558251559394213888>!bidscoreRanking\n\n" \
+                      "<:siina:558251559394213888>!bidscore_ranking\n\n" \
                       "<#677905288665235475>を更新します\n\n" \
                       "-------\n" \
                       "<:shiina_balance:558175954686705664>!stop_deal\n\n" \

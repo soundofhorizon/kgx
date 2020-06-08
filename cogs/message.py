@@ -86,7 +86,8 @@ class Message(commands.Cog):
                                      0x1e90ff]
                             embed = discord.Embed(description=f'{message.author.display_name}のMCIDの報告を確認したよ！',
                                                   color=random.choice(color))
-                            embed.set_author(name=message.author, icon_url=message.author.avatar_url, )  # ユーザー名+ID,アバターをセット
+                            embed.set_author(name=message.author,
+                                             icon_url=message.author.avatar_url, )  # ユーザー名+ID,アバターをセット
                             await channel.send(embed=embed)
                         else:
                             embed = discord.Embed(
@@ -100,7 +101,7 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="MCIDに使用できない文字が含まれています'\n続けて間違った入力を行うと規定によりBANの対象になることがあります。",
                                           color=0xff0000)
                     await message.channel.send(embed=embed)
-    
+
             # 引用機能
             if "https://discordapp.com/channels/558125111081697300/" in message.content:
                 for url in message.content.split('https://discordapp.com/channels/558125111081697300/')[1:]:
@@ -109,7 +110,7 @@ class Message(commands.Cog):
                         message_id = int(url[19:37])
                         ch = message.guild.get_channel(int(channel_id))
                         msg = await ch.fetch_message(int(message_id))
-    
+
                         def quote_reaction(msg, embed):
                             if msg.reactions:
                                 reaction_send = ''
@@ -119,7 +120,7 @@ class Message(commands.Cog):
                                     reaction_send = f'{reaction_send}{emoji}{count} '
                                 embed.add_field(name='reaction', value=reaction_send, inline=False)
                             return embed
-    
+
                         if msg.embeds or msg.content or msg.attachments:
                             embed = Embed(description=msg.content, timestamp=msg.created_at)
                             embed.set_author(name=msg.author, icon_url=msg.author.avatar_url)
@@ -211,6 +212,7 @@ class Message(commands.Cog):
             await channel.purge(limit=1)
             await channel.send(embed=self.bot.createRankingEmbed())
 
+    # todo 未完成。
     @commands.command()
     async def tend(self, ctx):
         # todo ここでは a st + bの形式で来ることを想定している
@@ -232,7 +234,6 @@ class Message(commands.Cog):
     async def set_user_auction_count(self, ctx, user_id: int, n: int):
         # その人が取り扱ってるオークションの個数を指定
         r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
-        msg = f'{ctx.content}'.replace('!set_user_auction_count ', '').split(" ")
         key = user_id
         auction_now = n
         r.set(key, auction_now)
@@ -465,6 +466,7 @@ class Message(commands.Cog):
                     embed = discord.Embed(description=description, color=0xffaf60)
                     await ctx.channel.send(embed=embed)
                     siina_amount = -1
+                    userInput3 = ""
                     if ctx.channel.category_id in self.bot.siina_category_ids:
                         frag = True
                         while frag:

@@ -41,7 +41,7 @@ class AdminOnly(commands.Cog):
             await ctx.channel.purge(limit=kazu + 1)
 
     @commands.command()
-    async def checkAllUserID(self, ctx):
+    async def check_all_user_ID(self, ctx):
         CHANNEL_ID = 642052474672250880
         channel = self.bot.get_channel(CHANNEL_ID)
         botCount = 0
@@ -60,7 +60,7 @@ class AdminOnly(commands.Cog):
                 await channel.send("--------ｷﾘﾄﾘ線--------")
 
     @commands.command()
-    async def bidscoreRanking(self, ctx):
+    async def bidscore_ranking(self, ctx):
         CHANNEL_ID = 677905288665235475
         channel = self.bot.get_channel(CHANNEL_ID)
         # とりあえず、ランキングチャンネルの中身を消す
