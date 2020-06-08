@@ -34,19 +34,19 @@ rc2 = redis.StrictRedis(connection_pool=pool2)
 def is_auction_category(ctx):
     """チャンネルがオークションカテゴリに入っているかの真偽値を返す関数"""
     auction_category_ids = {c.id for c in ctx.guild.categories if c.name.startswith('>')}
-    return ctx.channel.category_id.id in auction_category_ids
+    return ctx.channel.category_id in auction_category_ids
 
 
 def is_normal_category(ctx):
     """チャンネルがノーマルカテゴリに入っているかの真偽値を返す関数"""
     normal_category_ids = {this.id for this in ctx.guild.categories if this.name.startswith('*')}
-    return ctx.channel.category_id.id in normal_category_ids
+    return ctx.channel.category_id in normal_category_ids
 
 
 def is_siina_category(ctx):
     """チャンネルが椎名カテゴリに入っているかの真偽値を返す関数"""
     siina_category_ids = {siina.id for siina in ctx.guild.categories if "椎名" in siina.name}
-    return ctx.channel.category_id.id in siina_category_ids
+    return ctx.channel.category_id in siina_category_ids
 
 
 class Message(commands.Cog):
