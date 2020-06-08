@@ -360,8 +360,8 @@ class Message(commands.Cog):
                     await ctx.author.remove_roles(tmprole)
 
                     # 椎名の部分を数字に変換(開始と即決)
-                    user_input_2 = self.bot.siina_check(user_input_2)
-                    user_input_3 = self.bot.siina_check(user_input_3)
+                    user_input_2 = self.bot.siina_check(user_input_2.content)
+                    user_input_3 = self.bot.siina_check(user_input_3.content)
 
                     # SQLにデータ登録
                     self.bot.cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s, %s)",
