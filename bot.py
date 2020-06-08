@@ -1,11 +1,18 @@
 # coding=utf-8
-import redis
-from discord.ext import commands
-import discord
 import os
 import traceback
 from datetime import datetime
+
+import discord
+import psycopg2
+import redis
 from discord import Embed
+from discord.ext import commands
+
+
+SQLpath = os.environ["DATABASE_URL"]
+db = psycopg2.connect(SQLpath)  # sqlに接続
+cur = db.cursor()  # なんか操作する時に使うやつ
 
 
 class KGX(commands.Bot):
@@ -64,6 +71,8 @@ class KGX(commands.Bot):
                       "そのユーザーの現在のオークションの開催個数を指定します。\n\n" \
                       "-------\n"
         self.embed = discord.Embed(description=description, color=0x66cdaa)
+
+        self.cur = cur
 
         self.remove_command('help')  # デフォルトのヘルプコマンドを除外
         for cog in os.listdir(f"./cogs"):  # cogの読み込み

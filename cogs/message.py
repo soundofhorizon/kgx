@@ -324,6 +324,10 @@ class Message(commands.Cog):
                     user = ctx.author.id
                     r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
                     r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
+
+                    self.bot.cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s)",
+                                         (ctx.channel.id, ctx.author.id, userInput1.content, userInput2.content,
+                                          userInput3.content, userInput4.content))
                 else:
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
@@ -415,6 +419,9 @@ class Message(commands.Cog):
                     user = ctx.author.id
                     r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
                     r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
+
+                    self.bot.cur.execute("INSERT INTO deal value (%s, %s, %s, %s, %s)",
+                                         (ctx.channel.id, ctx.author.id, userInput1.content, userInput2.content, userInput3.content))
                 else:
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
