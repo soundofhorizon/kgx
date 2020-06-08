@@ -261,7 +261,7 @@ class Message(commands.Cog):
                 description = "このチャンネルでは既にオークションが行われています。\n☆がついているチャンネルでオークションを始めてください。"
                 await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
                 await asyncio.sleep(3)
-                await ctx.channel.purge(1)
+                await ctx.channel.purge(limit=1)
                 return
 
             tmprole = discord.utils.get(ctx.guild.roles, name="現在商品登録中")
