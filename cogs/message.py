@@ -171,7 +171,7 @@ class Message(commands.Cog):
             key = f"score-{self.bot.get_guild(558125111081697300).members[member].id}"
             score = int(r.get(key) or "0")
             await ctx.channel.send(self.bot.get_guild(558125111081697300).members[member])
-            before, after, embed = self.bot.checkRole(score, self.bot.get_guild(558125111081697300).members[member])
+            before, after, embed = self.bot.checkRole(score, self.bot.get_guild(558125111081697300).members[member], ctx)
             await self.bot.get_guild(558125111081697300).members[member].remove_roles(before)
             await self.bot.get_guild(558125111081697300).members[member].add_roles(after)
         await ctx.channel.send("照会終了")
@@ -195,7 +195,7 @@ class Message(commands.Cog):
                                   color=0x9d9d9d)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, )  # ユーザー名+ID,アバターをセット
             await channel.send(embed=embed)
-            before, after, embed = self.bot.checkRole(newscore, ctx.author)
+            before, after, embed = self.bot.checkRole(newscore, ctx.author, ctx)
             await ctx.author.remove_roles(before)
             await ctx.author.add_roles(after)
             if embed is not None:
