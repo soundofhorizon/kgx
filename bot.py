@@ -314,7 +314,9 @@ class KGX(commands.Bot):
 
     async def on_command_error(self, ctx, error):  # すべてのコマンドで発生したエラーを拾う
         if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
-            error_message = f'```{traceback.format_exc()}```'
+            orig_error = getattr(error, "original", error)
+            error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+            error_message = f'```{error_msg}```'
             ch = ctx.guild.get_channel(628807266753183754)
             d = datetime.now()  # 現在時刻の取得
             time = d.strftime("%Y/%m/%d %H:%M:%S")
