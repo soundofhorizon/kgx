@@ -8,7 +8,7 @@ class MemberJoin(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if member.author.bot:
+        if member.bot:
             role = discord.utils.get(member.guild.roles, name="bot")
             await member.add_roles(role)
             return
