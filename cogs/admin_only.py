@@ -122,8 +122,8 @@ class AdminOnly(commands.Cog):
             color=0xf04747
         )
         await ctx.channel.send(embed=embed)
-        await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
         await ctx.channel.edit(name=ctx.channel.name + '☆')
+        await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
 
     @commands.command()
     async def insert_ranking_data(self, ctx):
