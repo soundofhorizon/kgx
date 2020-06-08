@@ -342,7 +342,8 @@ class Message(commands.Cog):
                 embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
                 await ctx.channel.send(embed=embed)
                 user_input_6 = await self.bot.wait_for('message', check=check)
-                if user_input_6.content.lower == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
+
+                if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
                     await asyncio.sleep(0.3)
@@ -465,7 +466,7 @@ class Message(commands.Cog):
                 embed.add_field(name="特記事項", value=f'\n\n{user_input_4.content}', inline=False)
                 await ctx.channel.send(embed=embed)
                 user_input_6 = await self.bot.wait_for('message', check=check)
-                if user_input_6.content.lower == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
+                if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
                     await asyncio.sleep(0.3)
