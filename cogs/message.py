@@ -63,7 +63,7 @@ class Message(commands.Cog):
             if message.channel.id == 558278443440275461:
                 mcid = f'{message.content}'.replace('\\', '')
                 p = re.compile(r'^[a-zA-Z0-9_]+$')
-                if p.fullmatch(message.content):
+                if p.fullmatch(mcid):
                     mcid = str.lower(mcid)
                     url = f"https://w4.minecraftserver.jp/player/{mcid}"
                     try:
