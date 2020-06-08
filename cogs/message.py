@@ -466,7 +466,7 @@ class Message(commands.Cog):
                     await ctx.channel.send(embed=embed)
                     siina_amount = -1
                     userInput3 = ""
-                    if ctx.channel.category_id in self.bot.siina_category_ids:
+                    if is_siina_category(ctx):
                         frag = True
                         while frag:
                             userInput3 = await self.bot.wait_for('message', check=check_siina_style)
