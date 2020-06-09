@@ -354,7 +354,12 @@ class Message(commands.Cog):
                 embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
                 embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
                 embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2.content}', inline=False)
-                embed.add_field(name="即決価格", value=f'\n\n{unit}{user_input_3.content}', inline=False)
+                # 卒決価格なしなら単位は付与しない
+                if user_input_3.content == "なし":
+                    value = user_input_3.content
+                else:
+                    value = f"{unit}{user_input_3.content}"
+                embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                 embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
                 embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
                 await ctx.channel.send(embed=embed)
@@ -368,7 +373,7 @@ class Message(commands.Cog):
                     embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
                     embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2.content}', inline=False)
-                    embed.add_field(name="即決価格", value=f'\n\n{unit}{user_input_3.content}', inline=False)
+                    embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                     embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
                     embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
                     await ctx.channel.send(embed=embed)
