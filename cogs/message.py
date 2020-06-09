@@ -448,9 +448,9 @@ class Message(commands.Cog):
 
                 # 単位の設定
                 unit = ""
-                if ctx.channel.id in is_siina_category(ctx):
+                if is_siina_category(ctx):
                     unit = "椎名"
-                elif ctx.channel.id in is_gacha_category(ctx):
+                elif is_gacha_category(ctx):
                     unit = "ガチャ券"
                 else:
                     embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
