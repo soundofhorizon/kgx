@@ -314,7 +314,8 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
                                           color=0xffaf60)
                     await ctx.channel.send(embed=embed)
-                    unit = await self.bot.wait_for("message", check=check)
+                    user_input_0 = await self.bot.wait_for("message", check=check)
+                    unit = user_input_0.content
 
                 embed = discord.Embed(
                     description="出品するものを入力してください。",
