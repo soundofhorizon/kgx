@@ -514,7 +514,7 @@ class Message(commands.Cog):
 
                     # todo 希望価格の部分を数字に変えてstrでキャストしてuser_input2の部分に突っ込みましょう
 
-                    cur.execute("INSERT INTO deal value (%s, %s, %s, %s, %s, %s)",
+                    cur.execute("INSERT INTO deal values (%s, %s, %s, %s, %s, %s)",
                                 (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
                                  user_input_3.content, unit))
 
