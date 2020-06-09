@@ -163,7 +163,7 @@ class AdminOnly(commands.Cog):
     async def execute_sql(self, ctx, content):
         content_list = content.split()
         cur.execute(f"{content};")
-        data_list = cur.fethcall()
+        data_list = cur.fetchall()
         msg = ''.join([f"{i + 1}: {data_list[i]}\n\n" for i, data in enumerate(data_list)])
         embed = discord.Embed(title="SQL文の実行結果", description=f"{content_list[1]}\n\n {msg}")
         await ctx.send(embed=embed)
