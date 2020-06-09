@@ -428,20 +428,21 @@ class Message(commands.Cog):
                 def check(m):
                     if m.author.bot:
                         return
-                    else:
+                    elif m.author.id == ctx.author.id:
                         return m.channel == ctx.channel
 
                 def check2(fourth_user_input):
                     # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
-                    return fourth_user_input.channel == ctx.channel and re.match(
-                        r'[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}',
-                        fourth_user_input.content) and datetime.strptime(fourth_user_input.content, "%Y/%m/%d-%H:%M")
+                    if fourth_user_input.author.id == ctx.author.id:
+                        return fourth_user_input.channel == ctx.channel and re.match(
+                            r'[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}',
+                            fourth_user_input.content) and datetime.strptime(fourth_user_input.content, "%Y/%m/%d-%H:%M")
 
                 # 価格フォーマットチェック
                 def check3(m):
                     if m.author.bot:
                         return
-                    else:
+                    elif m.author.id == ctx.author.id:
                         # 〇st+△(記号はint)もしくは△であるのを確かめる
                         return re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}", m.content)
 
