@@ -2,6 +2,7 @@ import random
 import re
 
 import bs4
+import psycopg2
 import requests
 from discord.ext import commands
 import discord
@@ -11,6 +12,10 @@ import asyncio
 from discord import Embed
 import os
 import redis
+
+SQLpath = os.environ["DATABASE_URL"]
+db = psycopg2.connect(SQLpath)  # sqlに接続
+cur = db.cursor()  # なんか操作する時に使うやつ
 
 # Redisに接続
 pool = redis.ConnectionPool.from_url(
@@ -387,9 +392,9 @@ class Message(commands.Cog):
                     user_input_3 = self.bot.siina_check(user_input_3.content)
 
                     # SQLにデータ登録
-                    self.bot.cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s, %s)",
-                                         (ctx.channel.id, ctx.author.id, user_input_1.content, str(user_input_2),
-                                          str(user_input_3), user_input_4.content, unit))
+                    cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s, %s)",
+                                (ctx.channel.id, ctx.author.id, user_input_1.content, str(user_input_2),
+                                 str(user_input_3), user_input_4.content, unit))
 
                     # ここで、その人が行っているオークションの個数を増やす
                     user = ctx.author.id
@@ -508,9 +513,9 @@ class Message(commands.Cog):
 
                     # todo 希望価格の部分を数字に変えてstrでキャストしてuser_input2の部分に突っ込みましょう
 
-                    self.bot.cur.execute("INSERT INTO deal value (%s, %s, %s, %s, %s, %s)",
-                                         (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
-                                          user_input_3.content, unit))
+                    cur.execute("INSERT INTO deal value (%s, %s, %s, %s, %s, %s)",
+                                (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
+                                 user_input_3.content, unit))
 
                     # ここで、その人が行っているオークションの個数を増やす
                     user = ctx.author.id
