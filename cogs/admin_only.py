@@ -1,9 +1,15 @@
 import asyncio
+
+import psycopg2
 from discord.ext import commands
 import discord
 import os
 import redis
 import re
+
+SQLpath = os.environ["DATABASE_URL"]
+db = psycopg2.connect(SQLpath)  # sqlに接続
+cur = db.cursor()  # なんか操作する時に使うやつ
 
 # Redisに接続
 pool = redis.ConnectionPool.from_url(
@@ -152,6 +158,15 @@ class AdminOnly(commands.Cog):
         )
         await ctx.channel.send(embed=embed)
         await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
+
+    @commands.command()
+    async def execute_sql(self, ctx, content):
+        content_list = content.split()
+        cur.execute(f"{content};")
+        data_list = cur.fethcall()
+        msg = ''.join([f"{i + 1}: {data_list[i]}\n\n" for i, data in enumerate(data_list)])
+        embed = discord.Embed(title="SQL文の実行結果", description=f"{content_list[1]}\n\n {msg}")
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
