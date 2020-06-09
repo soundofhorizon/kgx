@@ -440,12 +440,6 @@ class Message(commands.Cog):
                         # 〇st+△(記号はint)もしくは△であるのを確かめる
                         return re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}", m.content)
 
-                embed = discord.Embed(
-                    description="出品するものを入力してください。",
-                    color=0xffaf60)
-                await ctx.channel.send(embed=embed)
-                user_input_1 = await self.bot.wait_for('message', check=check)
-
                 # 単位の設定
                 unit = ""
                 if is_siina_category(ctx):
@@ -456,7 +450,14 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
                                           color=0xffaf60)
                     await ctx.channel.send(embed=embed)
-                    unit = await self.bot.wait_for("message", check=check)
+                    user_input_0 = await self.bot.wait_for("message", check=check)
+                    unit = user_input_0.content
+
+                embed = discord.Embed(
+                    description="出品するものを入力してください。",
+                    color=0xffaf60)
+                await ctx.channel.send(embed=embed)
+                user_input_1 = await self.bot.wait_for('message', check=check)
 
                 embed = discord.Embed(description="希望価格を入力してください。(椎名か、ガチャ券かなどを明記して書くこと)", color=0xffaf60)
                 await ctx.channel.send(embed=embed)
