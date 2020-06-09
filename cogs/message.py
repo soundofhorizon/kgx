@@ -395,6 +395,7 @@ class Message(commands.Cog):
                     cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s, %s)",
                                 (ctx.channel.id, ctx.author.id, user_input_1.content, str(user_input_2),
                                  str(user_input_3), user_input_4.content, unit))
+                    db.commit()
 
                     # ここで、その人が行っているオークションの個数を増やす
                     user = ctx.author.id
@@ -517,6 +518,7 @@ class Message(commands.Cog):
                     cur.execute("INSERT INTO deal values (%s, %s, %s, %s, %s, %s)",
                                 (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
                                  user_input_3.content, unit))
+                    db.commit()
 
                     # ここで、その人が行っているオークションの個数を増やす
                     user = ctx.author.id
