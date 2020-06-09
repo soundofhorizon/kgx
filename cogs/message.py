@@ -281,7 +281,7 @@ class Message(commands.Cog):
                 def check2(fourth_user_input):
                     if fourth_user_input.author.bot:
                         return
-                    else:
+                    elif fourth_user_input.author.id == auction_registration_user_id:
                         # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
                         return fourth_user_input.channel == ctx.channel and re.match(
                             r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}",
@@ -292,15 +292,17 @@ class Message(commands.Cog):
                 def check3(m):
                     if m.author.bot:
                         return
-                    else:
+                    elif m.author.id == auction_registration_user_id:
                         # 〇st+△(記号はint)もしくは△であるのを確かめる
                         return re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}", m.content)
 
-                embed = discord.Embed(
-                    description="出品するものを入力してください。",
-                    color=0xffaf60)
-                await ctx.channel.send(embed=embed)
-                user_input_1 = await self.bot.wait_for('message', check=check)
+                # 価格フォーマットチェック(なしを含む)
+                def check4(m):
+                    if m.author.bot:
+                        return
+                    elif m.author.id == auction_registration_user_id:
+                        # 〇st+△(記号はint)もしくは△であるのを確かめる
+                        return re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}", m.content) or m.content == "なし"
 
                 # 単位の設定
                 unit = ""
@@ -314,15 +316,22 @@ class Message(commands.Cog):
                     await ctx.channel.send(embed=embed)
                     unit = await self.bot.wait_for("message", check=check)
 
+                embed = discord.Embed(
+                    description="出品するものを入力してください。",
+                    color=0xffaf60)
+                await ctx.channel.send(embed=embed)
+                user_input_1 = await self.bot.wait_for('message', check=check)
+
                 embed = discord.Embed(description="開始価格を入力してください。\n**※次のように入力してください。【〇ST+△】 or 【△】 ex.1st+1 or 32**",
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check3)
 
-                embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。【〇ST+△】 or 【△】 ex.1st+1 or 32**",
+                embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。【〇ST+△】 or 【△】 ex.1st+1 or 32**\n"
+                                                  " ない場合は「``なし``」とお書きください。",
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
-                user_input_3 = await self.bot.wait_for('message', check=check3)
+                user_input_3 = await self.bot.wait_for('message', check=check4)
 
                 embed = discord.Embed(
                     description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
@@ -339,8 +348,7 @@ class Message(commands.Cog):
                 await ctx.channel.send(embed=embed)
                 user_input_5 = await self.bot.wait_for('message', check=check)
 
-                kazu = 11
-                await ctx.channel.purge(limit=kazu)
+                await ctx.channel.purge(limit=13)
                 embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                       color=0xffaf60)
                 embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
