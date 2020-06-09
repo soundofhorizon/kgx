@@ -50,14 +50,14 @@ def is_normal_category(ctx):
 
 def is_siina_category(ctx):
     """チャンネルが椎名カテゴリに入っているかの真偽値を返す関数"""
-    siina_category_ids = {siina.id for siina in ctx.guild.categories if "椎名" in siina.name}
-    return ctx.channel.category_id in siina_category_ids
+    siina_channel_ids = {siina.id for siina in ctx.guild.text_channels if "椎名" in siina.name}
+    return ctx.channel.id in siina_channel_ids
 
 
 def is_gacha_category(ctx):
     """チャンネルがガチャ券カテゴリに入っているかの真偽値を返す関数"""
-    gacha_category_ids = {gacha.id for gacha in ctx.guild.categories if "ガチャ券" in gacha.name}
-    return ctx.channel.category_id in gacha_category_ids
+    gacha_channel_ids = {gacha.id for gacha in ctx.guild.text_channels if "ガチャ券" in gacha.name}
+    return ctx.channel.id in gacha_channel_ids
 
 
 class Message(commands.Cog):
