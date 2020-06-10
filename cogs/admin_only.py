@@ -168,6 +168,30 @@ class AdminOnly(commands.Cog):
         embed = discord.Embed(title="SQL文の実行結果", description=''.join(f"{d}、" for d in data))
         await ctx.send(embed=embed)
 
+    @commands.group(invoke_without_command=True)
+    async def user_caution(self, ctx):
+        await ctx.send(f'{ctx.prefix}user_caution [set, get]')
+
+    @user_caution.command(name="get")
+    async def _get(self, ctx, user: discord.Member):
+        cur.execute("SELECT level FROM caution WHERE user_id = %?", user.id)
+        data = cur.fetchone()
+        if len(data) == 0:
+            caution_level = 0
+        else:
+            caution_level = data[0]
+        await ctx.send(f"{user}の警告レベルは{caution_level}です")
+
+    @user_caution.command()
+    async def set(self, ctx, user: discord.Member, n: int):
+        cur.execute("DELETE FROM caution WHERE user_id = %?", user.id)
+        if n == 0:
+            db.commit()
+            return await ctx.send(f'{user}の警告レベルをリセットしました')
+        cur.execute("INSERT INTO caution values (%?, %?)", (user.id, n))
+        db.commit()
+        await ctx.send(f'{user}に警告レベル{n}を付与しました')
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
