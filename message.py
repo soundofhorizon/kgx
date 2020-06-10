@@ -355,7 +355,7 @@ class Message(commands.Cog):
                 user_input_5 = await self.bot.wait_for('message', check=check)
 
                 delete_msg_list = [
-                    ctx.message,
+                    ctx,
                     bot_msg_0,
                     user_input_0,
                     bot_msg_1,
