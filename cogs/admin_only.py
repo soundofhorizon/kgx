@@ -160,7 +160,7 @@ class AdminOnly(commands.Cog):
         await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
 
     @commands.command()
-    async def execute_sql(self, ctx, content):
+    async def execute_sql(self, ctx, *, content):
         cur.execute(content)
         data = cur.fetchone()
         if len(data) == 0:
