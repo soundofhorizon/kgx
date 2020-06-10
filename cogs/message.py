@@ -318,25 +318,25 @@ class Message(commands.Cog):
                 else:
                     embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
                                           color=0xffaf60)
-                    await ctx.channel.send(embed=embed)
+                    bot_msg_0 = await ctx.channel.send(embed=embed)
                     user_input_0 = await self.bot.wait_for("message", check=check)
                     unit = user_input_0.content
 
                 embed = discord.Embed(
                     description="出品するものを入力してください。",
                     color=0xffaf60)
-                await ctx.channel.send(embed=embed)
+                bot_msg_1 = await ctx.channel.send(embed=embed)
                 user_input_1 = await self.bot.wait_for('message', check=check)
 
                 embed = discord.Embed(description="開始価格を入力してください。\n**※次のように入力してください。【〇ST+△】 or 【△】 ex.1st+1 or 32**",
                                       color=0xffaf60)
-                await ctx.channel.send(embed=embed)
+                bot_msg_2 = await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check3)
 
                 embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。【〇ST+△】 or 【△】 ex.1st+1 or 32**\n"
                                                   " ない場合は「``なし``」とお書きください。",
                                       color=0xffaf60)
-                await ctx.channel.send(embed=embed)
+                bot_msg_3 = await ctx.channel.send(embed=embed)
                 user_input_3 = await self.bot.wait_for('message', check=check4)
 
                 embed = discord.Embed(
@@ -344,23 +344,42 @@ class Message(commands.Cog):
                                 "例 2020年5月14日の午後8時に終了したい場合：\n**2020/05/14-20:00**と入力してください。\n"
                                 "この形でない場合認識されません！\n**間違えて打ってしまった場合その部分は必ず削除してください。**",
                     color=0xffaf60)
-                await ctx.channel.send(embed=embed)
+                bot_msg_4 = await ctx.channel.send(embed=embed)
                 user_input_4 = await self.bot.wait_for('message', check=check2)
 
                 embed = discord.Embed(
                     description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
                                 "何も無ければ「なし」で構いません。",
                     color=0xffaf60)
-                await ctx.channel.send(embed=embed)
+                bot_msg_5 = await ctx.channel.send(embed=embed)
                 user_input_5 = await self.bot.wait_for('message', check=check)
 
-                await ctx.channel.purge(limit=13)
+                delete_msg_list = [
+                    ctx.message,
+                    bot_msg_0,
+                    user_input_0,
+                    bot_msg_1,
+                    user_input_1,
+                    bot_msg_2,
+                    user_input_2,
+                    bot_msg_3,
+                    user_input_3,
+                    bot_msg_4,
+                    user_input_4,
+                    bot_msg_5,
+                    user_input_5
+                ]
+                for delete_msg in delete_msg_list:
+                    await delete_msg.delete()
+
+                #await ctx.channel.purge(limit=13)
                 embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                       color=0xffaf60)
                 embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
                 embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
                 embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2.content}', inline=False)
                 # 卒決価格なしなら単位は付与しない
+                # 即決価格なしなら単位は付与しない
                 if user_input_3.content == "なし":
                     value = user_input_3.content
                 else:
@@ -368,12 +387,14 @@ class Message(commands.Cog):
                 embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                 embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
                 embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
-                await ctx.channel.send(embed=embed)
+                bot_msg_6 = await ctx.channel.send(embed=embed)
                 user_input_6 = await self.bot.wait_for('message', check=check)
 
+                await bot_msg_6.delete()
+                await user_input_6.delete()
                 if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
-                    kazu = 2
-                    await ctx.channel.purge(limit=kazu)
+                    #kazu = 2
+                    #await ctx.channel.purge(limit=kazu)
                     await asyncio.sleep(0.3)
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
@@ -403,8 +424,8 @@ class Message(commands.Cog):
                     r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
 
                 else:
-                    kazu = 2
-                    await ctx.channel.purge(limit=kazu)
+                    #kazu = 2
+                    #await ctx.channel.purge(limit=kazu)
                     await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
                     await ctx.author.remove_roles(tmprole)
             else:
