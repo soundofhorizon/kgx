@@ -353,21 +353,36 @@ class Message(commands.Cog):
                 bot_msg_5 = await ctx.channel.send(embed=embed)
                 user_input_5 = await self.bot.wait_for('message', check=check)
 
-                delete_msg_list = [
-                    ctx.message,
-                    bot_msg_0,
-                    user_input_0,
-                    bot_msg_1,
-                    user_input_1,
-                    bot_msg_2,
-                    user_input_2,
-                    bot_msg_3,
-                    user_input_3,
-                    bot_msg_4,
-                    user_input_4,
-                    bot_msg_5,
-                    user_input_5
-                ]
+                try:
+                    delete_msg_list = [
+                        ctx.message,
+                        bot_msg_0,
+                        user_input_0,
+                        bot_msg_1,
+                        user_input_1,
+                        bot_msg_2,
+                        user_input_2,
+                        bot_msg_3,
+                        user_input_3,
+                        bot_msg_4,
+                        user_input_4,
+                        bot_msg_5,
+                        user_input_5
+                    ]
+                except UnboundLocalError:
+                    delete_msg_list = [
+                        ctx.message,
+                        bot_msg_1,
+                        user_input_1,
+                        bot_msg_2,
+                        user_input_2,
+                        bot_msg_3,
+                        user_input_3,
+                        bot_msg_4,
+                        user_input_4,
+                        bot_msg_5,
+                        user_input_5
+                    ]
                 for delete_msg in delete_msg_list:
                     await delete_msg.delete()
 
@@ -508,20 +523,34 @@ class Message(commands.Cog):
                 bot_msg_4 = await ctx.channel.send(embed=embed)
                 user_input_4 = await self.bot.wait_for('message', check=check)
 
-                delete_msg_list = [
-                    ctx.message,
-                    bot_msg_0,
-                    user_input_0,
-                    bot_msg_1,
-                    user_input_1,
-                    bot_msg_2,
-                    user_input_2,
-                    bot_msg_3,
-                    user_input_3,
-                    bot_msg_4,
-                    user_input_4
-                ]
+                try:
+                    delete_msg_list = [
+                        ctx.message,
+                        bot_msg_0,
+                        user_input_0,
+                        bot_msg_1,
+                        user_input_1,
+                        bot_msg_2,
+                        user_input_2,
+                        bot_msg_3,
+                        user_input_3,
+                        bot_msg_4,
+                        user_input_4
+                    ]
+                except UnboundLocalError:
+                    delete_msg_list = [
+                        ctx.message,
+                        bot_msg_1,
+                        user_input_1,
+                        bot_msg_2,
+                        user_input_2,
+                        bot_msg_3,
+                        user_input_3,
+                        bot_msg_4,
+                        user_input_4
+                    ]
                 for delete_msg in delete_msg_list:
+                    try
                     await delete_msg.delete()
 
                 embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
