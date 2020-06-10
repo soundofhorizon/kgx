@@ -341,7 +341,7 @@ class Message(commands.Cog):
                 embed = discord.Embed(
                     description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
                                 "例 2020年5月14日の午後8時に終了したい場合：\n**2020/05/14-20:00**と入力してください。\n"
-                                "この形でない場合認識されません！\n**間違えて打ってしまった場合その部分は必ず削除してください。**",
+                                "この形でない場合認識されません！",
                     color=0xffaf60)
                 bot_msg_4 = await ctx.channel.send(embed=embed)
                 user_input_4 = await self.bot.wait_for('message', check=check2)
@@ -436,6 +436,14 @@ class Message(commands.Cog):
                 await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
                 return
 
+            # 既にオークションが行われていたらreturn
+            if "☆" not in ctx.channel.name:
+                description = "このチャンネルでは既にオークションが行われています。\n☆がついているチャンネルでオークションを始めてください。"
+                await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
+                await asyncio.sleep(3)
+                await ctx.channel.purge(limit=2)
+                return
+
             tmprole = discord.utils.get(ctx.guild.roles, name="現在商品登録中")
             await ctx.author.add_roles(tmprole)
             await asyncio.sleep(0.3)
@@ -481,7 +489,7 @@ class Message(commands.Cog):
                 bot_msg_1 = await ctx.channel.send(embed=embed)
                 user_input_1 = await self.bot.wait_for('message', check=check)
 
-                embed = discord.Embed(description="希望価格を入力してください。(椎名か、ガチャ券かなどを明記して書くこと)", color=0xffaf60)
+                embed = discord.Embed(description="希望価格を入力してください。", color=0xffaf60)
                 bot_msg_2 = await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check3)
 
