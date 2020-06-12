@@ -225,7 +225,7 @@ class Message(commands.Cog):
     async def tend(self, ctx):
         # todo ここでは a st + bの形式で来ることを想定している
         msg = f'{ctx.content}'.replace('!tend ', '')
-        tend_price = self.bot.siina_check(msg)
+        tend_price = self.bot.stack_check(msg)
         if not tend_price == 0:
             r = redis.from_url(os.environ['HEROKU_REDIS_YELLOW_URL'])
             # todo チャンネルIDと入札額を紐づけする。また、bid操作で個々の値に0をセットする。
@@ -388,8 +388,8 @@ class Message(commands.Cog):
                     await ctx.author.remove_roles(tmprole)
 
                     # 椎名の部分を数字に変換(開始と即決)
-                    user_input_2 = self.bot.siina_check(user_input_2.content)
-                    user_input_3 = self.bot.siina_check(user_input_3.content)
+                    user_input_2 = self.bot.stack_check(user_input_2.content)
+                    user_input_3 = self.bot.stack_check(user_input_3.content)
 
                     # SQLにデータ登録
                     cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s, %s)",
@@ -587,7 +587,7 @@ class Message(commands.Cog):
                         frag = True
                         while frag:
                             user_input_3 = await self.bot.wait_for('message', check=check_siina_style)
-                            siina_amount = self.bot.siina_check(user_input_3.content)
+                            siina_amount = self.bot.stack_check(user_input_3.content)
                             if siina_amount == 0:
                                 await ctx.channel.send("値が不正です。椎名○○st+△(個)の○と△には整数以外は入りません。再度入力してください。")
                                 kazu += 2

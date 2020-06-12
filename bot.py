@@ -208,22 +208,19 @@ class KGX(commands.Bot):
 
     # intがvalueで来ることを想定する
     @staticmethod
-    def siina_check_reverse(value):
+    def stack_check_reverse(value):
         try:
             value2 = int(value)
             if value2 <= 63:
+                if value2 <= 0:
+                    return 0
                 return value2
             else:
-                print(value2)
-                i = 0
-                while value2 >= 64:
-                    value2 -= 64
-                    i += 1
-                j = -64 * i + int(value)
+                i, j = divmod(value2, 64)
                 if j == 0:
-                    return f"椎名{i}st"
+                    return f"{i}st"
                 else:
-                    return f"椎名{i}st+{j}個"
+                    return f"{i}st+{j}個"
         except ValueError:
             return 0
 
@@ -259,7 +256,7 @@ class KGX(commands.Bot):
             # listの中身は[落札者,落札物,落札額,出品者ID]
             description += f"{i + 1}位: 出品者->{self.get_user(int(radis_get_data_list[i][3])).display_name}\n" \
                            f"  　　出品物->{radis_get_data_list[i][1]}\n" \
-                           f"  　　落札額->{self.siina_check_reverse(int(radis_get_data_list[i][2]))}\n" \
+                           f"  　　落札額->{self.stack_check_reverse(int(radis_get_data_list[i][2]))}\n" \
                            f"  　　落札者->{radis_get_data_list[i][0]}\n\n"
 
             # descriptionの長さが2000を超えるとエラーになる。吐き出してリセット案件
@@ -282,23 +279,23 @@ class KGX(commands.Bot):
 
     # 椎名[a st + b]がvalueで来ることを想定する
     @staticmethod
-    def siina_check(value):
+    def stack_check(value):
+        value = str(value)
         try:
             if "st" in value or "ST" in value:
                 if "+" in value:
-                    value_new = str(value).replace("椎名", "").replace("st", "").replace("ST", "").replace("個",
-                                                                                                         "").split(
-                        "+")
+                    value_new = value.replace("st", "").replace("ST", "").replace("個", "").split("+")
                 else:
-                    value_new = [str(value).replace("椎名", "").replace("st", "").replace("ST", "").replace("個", ""), 0]
+                    value_new = [value.replace("st", "").replace("ST", "").replace("個", ""), 0]
                 a = int(value_new[0])
                 b = int(value_new[1])
-                if a * 64 + b <= 0:
+                c = a * 64 + b
+                if c <= 0:
                     return 0
                 else:
-                    return a * 64 + b
+                    return c
             else:
-                value_new = str(value).replace("椎名", "").replace("st", "").replace("ST", "").replace("個", "")
+                value_new = value.replace("個", "")
                 if int(value_new) <= 0:
                     return 0
                 else:
