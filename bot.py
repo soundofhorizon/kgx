@@ -282,6 +282,7 @@ class KGX(commands.Bot):
     def stack_check(value):
         value = str(value)
         try:
+            value = value.replace("椎名", "")
             if "st" in value or "ST" in value:
                 if "+" in value:
                     value_new = value.replace("st", "").replace("ST", "").replace("個", "").split("+")
