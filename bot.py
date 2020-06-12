@@ -322,6 +322,13 @@ class KGX(commands.Bot):
         await self.get_channel(678083611697872910).purge(limit=1)
         await self.get_channel(678083611697872910).send(embed=self.embed)
 
+    async def on_guild_channel_create(self, channel):
+        if ">" not in channel.category.name or "*" not in channel.category.name:
+            return
+        if "☆" in channel.name:
+            return
+        await channel.edit(name=f"{channel.name}☆")
+
     async def on_command_error(self, ctx, error):  # すべてのコマンドで発生したエラーを拾う
         if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
             orig_error = getattr(error, "original", error)
