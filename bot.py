@@ -323,7 +323,7 @@ class KGX(commands.Bot):
         await self.get_channel(678083611697872910).send(embed=self.embed)
 
     async def on_guild_channel_create(self, channel):
-        if ">" not in channel.category.name or "*" not in channel.category.name:
+        if ">" not in channel.category.name and "*" not in channel.category.name:
             return
         if "☆" in channel.name:
             return
