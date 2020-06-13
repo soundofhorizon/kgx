@@ -298,6 +298,8 @@ class Message(commands.Cog):
                     if m.author.bot:
                         return
                     elif m.author.id == auction_registration_user_id:
+                        if m.channel != ctx.channel:
+                            return False
                         # 〇st+△(記号はint)もしくは△であるのを確かめる
                         return re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}", m.content)
 
@@ -306,6 +308,8 @@ class Message(commands.Cog):
                     if m.author.bot:
                         return
                     elif m.author.id == auction_registration_user_id:
+                        if m.channel != ctx.channel:
+                            return False
                         # 〇st+△(記号はint)もしくは△であるのを確かめる
                         return re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}", m.content) or m.content == "なし"
 
