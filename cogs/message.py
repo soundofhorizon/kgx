@@ -332,12 +332,14 @@ class Message(commands.Cog):
                 await ctx.channel.send(embed=embed)
                 user_input_1 = await self.bot.wait_for('message', check=check)
 
-                embed = discord.Embed(description="開始価格を入力してください。\n**※次のように入力してください。【〇ST+△】 or 【△】 ex.1st+1 or 32**",
+                embed = discord.Embed(description="開始価格を入力してください。\n**※次のように入力してください。"
+                                                  "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**",
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check3)
 
-                embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。【〇ST+△】 or 【△】 ex.1st+1 or 32**\n"
+                embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。"
+                                                  "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
                                                   " ない場合は「``なし``」とお書きください。",
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
@@ -478,7 +480,9 @@ class Message(commands.Cog):
                 await ctx.channel.send(embed=embed)
                 user_input_1 = await self.bot.wait_for('message', check=check)
 
-                embed = discord.Embed(description="希望価格を入力してください。", color=0xffaf60)
+                embed = discord.Embed(description="希望価格を入力してください。\n**※次のように入力してください。"
+                                                  "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1LC+1ST+1 or 1ST+1 or 32**",
+                                      color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check3)
 
