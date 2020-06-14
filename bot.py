@@ -206,24 +206,6 @@ class KGX(commands.Bot):
                 embed.set_footer(text=f'UpdateTime：{time}')  # チャンネル名,時刻,鯖のアイコンをセット
                 return embed
 
-    # intがvalueで来ることを想定する
-    @staticmethod
-    def stack_check_reverse(value):
-        try:
-            value2 = int(value)
-            if value2 <= 63:
-                if value2 <= 0:
-                    return 0
-                return value2
-            else:
-                i, j = divmod(value2, 64)
-                if j == 0:
-                    return f"{i}st"
-                else:
-                    return f"{i}st+{j}個"
-        except ValueError:
-            return 0
-
     # 落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す
     def create_high_bid_ranking(self):
         i = 0
@@ -277,30 +259,57 @@ class KGX(commands.Bot):
         embed_list.append(embed)
         return embed_list
 
-    # 椎名[a st + b]がvalueで来ることを想定する
+    # [a lc + b st + c]がvalueで来ることを想定する(関数使用前に文の構造確認を取る)
     @staticmethod
     def stack_check(value):
-        value = str(value)
+        value = str(value).lower()
+        stack_frag = False
+        lc_frag = False
+        calc_result = [0, 0, 0]
+        if "lc" in value:
+            lc_frag = True
+        if "st" in value:
+            stack_frag = True
         try:
-            value = value.replace("椎名", "")
-            if "st" in value or "ST" in value:
-                if "+" in value:
-                    value_new = value.replace("st", "").replace("ST", "").replace("個", "").split("+")
-                else:
-                    value_new = [value.replace("st", "").replace("ST", "").replace("個", ""), 0]
-                a = int(value_new[0])
-                b = int(value_new[1])
-                c = a * 64 + b
-                if c <= 0:
-                    return 0
-                else:
-                    return c
+            data = value.replace("lc", "").replace("st", "").replace("個", "").split("+")
+            if lc_frag:
+                calc_result[0] = data[0]
+                data.pop(0)
+            if stack_frag:
+                calc_result[1] = data[0]
+                data.pop(0)
+            calc_result[2] = data[0]
+            a = int(calc_result[0])
+            b = int(calc_result[1])
+            c = int(calc_result[2])
+            d = a * 3456 + b * 64 + c
+            if d <= 0:
+                return 0
             else:
-                value_new = value.replace("個", "")
-                if int(value_new) <= 0:
+                return d
+        except ValueError:
+            return 0
+
+    # intがvalueで来ることを想定する
+    @staticmethod
+    def stack_check_reverse(value):
+        try:
+            value2 = int(value)
+            if value2 <= 63:
+                if value2 <= 0:
                     return 0
-                else:
-                    return int(value_new)
+                return value2
+            else:
+                i, j = divmod(value2, 64)
+                k, m = divmod(i, 54)
+                calc_result = []
+                if k != 0:
+                    calc_result.append(f"{k}LC")
+                if m != 0:
+                    calc_result.append(f"{m}st")
+                if j != 0:
+                    calc_result.append(f"{j}個")
+                return f"{'+'.join(calc_result)}"
         except ValueError:
             return 0
 
