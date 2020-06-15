@@ -150,6 +150,12 @@ class AdminOnly(commands.Cog):
         await ctx.send(str)
 
     @commands.command()
+    async def test(self, ctx):
+        cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
+        data = cur.fetchall()
+        await ctx.send(data)
+
+    @commands.command()
     async def insert_ranking_data(self, ctx):
         def check(m):
             return m.channel == ctx.channel
