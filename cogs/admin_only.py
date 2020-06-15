@@ -153,7 +153,13 @@ class AdminOnly(commands.Cog):
     async def test(self, ctx):
         cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
         data = cur.fetchall()
-        await ctx.send(data)
+        str = ""
+        for i in range(len(data)):
+            if len(str) >= 1600:
+                await ctx.send(str)
+                str = ""
+            str += data[i]
+        await ctx.send(str)
 
     @commands.command()
     async def insert_ranking_data(self, ctx):
