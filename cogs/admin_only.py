@@ -143,7 +143,8 @@ class AdminOnly(commands.Cog):
                     await ctx.send(str)
                     str = ""
                 else:
-                    str += f"{r.get(i).decode()}\n"
+                    data = r.get(i).decode().split(",")
+                    str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', '{data[2]}', {data[3]} )\n"
                     i += 1
             else:
                 break
