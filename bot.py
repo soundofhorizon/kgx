@@ -3,13 +3,11 @@ import os
 import traceback
 from datetime import datetime
 
-import binary as binary
 import discord
 import psycopg2
 import redis
 from discord import Embed
 from discord.ext import commands
-
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
@@ -331,6 +329,7 @@ class KGX(commands.Bot):
     async def on_ready(self):
         await self.get_channel(678083611697872910).purge(limit=1)
         await self.get_channel(678083611697872910).send(embed=self.embed)
+        await self.get_channel(722092542249795679).send(embed=discord.Embed(description="起動しました。", color=0x82fc74))
 
     async def on_guild_channel_create(self, channel):
         if ">" not in channel.category.name and "*" not in channel.category.name:
