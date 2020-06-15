@@ -158,7 +158,7 @@ class AdminOnly(commands.Cog):
             if len(str) >= 1600:
                 await ctx.send(str)
                 str = ""
-            str += data[i]
+            str += list(data[i])
         await ctx.send(str)
 
     @commands.command()
