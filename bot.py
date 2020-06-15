@@ -272,7 +272,6 @@ class KGX(commands.Bot):
             stack_frag = True
         try:
             data = value.replace("lc", "").replace("st", "").replace("個", "").split("+")
-            ch = 
             if lc_frag:
                 calc_result[0] = data[0]
                 data.pop(0)
