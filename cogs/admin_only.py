@@ -1,4 +1,5 @@
 import asyncio
+import random
 
 import psycopg2
 from discord.ext import commands
@@ -138,8 +139,12 @@ class AdminOnly(commands.Cog):
         str = ""
         while True:
             if r.get(i):
-                str += f"{r.get(i).decode()}\n"
-                i += 1
+                if len(str) >= 1600:
+                    await ctx.send(str)
+                    str = ""
+                else:
+                    str += f"{r.get(i).decode()}\n"
+                    i += 1
             else:
                 break
         await ctx.send(str)
