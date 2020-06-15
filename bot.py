@@ -84,7 +84,7 @@ class KGX(commands.Bot):
 
     @staticmethod
     async def generate_random_color():
-        return '0x{:X}{:X}{:X}'.format(*[random.randint(0, 255) for _ in range(3)])
+        return bytes('0x{:X}{:X}{:X}'.format(*[random.randint(0, 255) for _ in range(3)]))
 
     @staticmethod
     def check_role(new_score, user, ctx):
@@ -334,7 +334,7 @@ class KGX(commands.Bot):
     async def on_ready(self):
         await self.get_channel(678083611697872910).purge(limit=1)
         await self.get_channel(678083611697872910).send(embed=self.embed)
-        await self.get_channel(722092542249795679).send(embed=discord.Embed(description="起動しました。", color=self.generate_random_color()))
+        await self.get_channel(722092542249795679).send(embed=discord.Embed(description="起動しました。", color=format(self.generate_random_color())))
 
     async def on_guild_channel_create(self, channel):
         if ">" not in channel.category.name and "*" not in channel.category.name:
