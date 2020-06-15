@@ -132,22 +132,17 @@ class AdminOnly(commands.Cog):
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
 
     @commands.command()
-    async def get_high_ranking_data(self, ctx, user_id):
+    async def get_high_ranking_data(self, ctx):
         r = redis.from_url(os.environ['HEROKU_REDIS_ORANGE_URL'])  # os.environで格納された環境変数を引っ張ってくる
-        radis_get_data_list = []
         i = 0
         str = ""
         while True:
             if r.get(i):
-                if self.bot.get_user(int(r.get(i).decode().split(",")[3])):
-                    str += f"{r.get(i).decode()}\n"
-                else:
-                    pass
+                str += f"{r.get(i).decode()}\n"
                 i += 1
             else:
                 break
-        await ctx.channel.send(str)
-
+        await ctx.send(str)
 
     @commands.command()
     async def insert_ranking_data(self, ctx):
