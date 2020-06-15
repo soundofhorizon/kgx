@@ -140,7 +140,7 @@ class AdminOnly(commands.Cog):
         while True:
             if r.get(i):
                 if self.bot.get_user(int(r.get(i).decode().split(",")[3])):
-                    str += f"{radis_get_data_list.append(r.get(i).decode())}\n"
+                    str += f"{r.get(i).decode()}\n"
                 else:
                     pass
                 i += 1
