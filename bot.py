@@ -278,7 +278,10 @@ class KGX(commands.Bot):
             if stack_frag:
                 calc_result[1] = data[0]
                 data.pop(0)
-            calc_result[2] = data[0]
+            try:
+                calc_result[2] = data[0]
+            except IndexError:
+                pass
             a = int(calc_result[0])
             b = int(calc_result[1])
             c = int(calc_result[2])
