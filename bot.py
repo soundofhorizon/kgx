@@ -262,7 +262,7 @@ class KGX(commands.Bot):
     # [a lc + b st + c]がvalueで来ることを想定する(関数使用前に文の構造確認を取る)
     @staticmethod
     def stack_check(value):
-        value = str(value).lower()
+        value = str(value).replace("椎名", "").lower()
         stack_frag = False
         lc_frag = False
         calc_result = [0, 0, 0]
@@ -272,6 +272,7 @@ class KGX(commands.Bot):
             stack_frag = True
         try:
             data = value.replace("lc", "").replace("st", "").replace("個", "").split("+")
+            ch = 
             if lc_frag:
                 calc_result[0] = data[0]
                 data.pop(0)
