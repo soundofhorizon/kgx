@@ -1,5 +1,4 @@
 import asyncio
-import random
 
 import psycopg2
 from discord.ext import commands
@@ -144,7 +143,7 @@ class AdminOnly(commands.Cog):
                     str = ""
                 else:
                     data = r.get(i).decode().split(",")
-                    str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', '{data[2]}', {data[3]} )\n"
+                    str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', '{data[2]}', {data[3]} );\n"
                     i += 1
             else:
                 break
