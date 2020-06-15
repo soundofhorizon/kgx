@@ -113,13 +113,18 @@ class Message(commands.Cog):
                     await message.channel.send(embed=embed)
 
             # 引用機能
-            if "https://discordapp.com/channels/558125111081697300/" in message.content:
-                for url in message.content.split('https://discordapp.com/channels/558125111081697300/')[1:]:
+            url_filter = [msg.split("/")[1:] for msg in re.split(
+                "https://(ptb.|canary.|)discord(app|).com/channels/558125111081697300((/[0-9]+){2})", message.content) if
+                          re.match("(/[0-9]+){2}", msg)]
+            if len(url_filter) >= 1:
+                for url in url_filter:
                     try:
-                        channel_id = int(url[0:18])
-                        message_id = int(url[19:37])
-                        ch = message.guild.get_channel(int(channel_id))
-                        msg = await ch.fetch_message(int(message_id))
+                        channel_id = int(url[0])
+                        message_id = int(url[1])
+                        ch = message.guild.get_channel(channel_id)
+                        if ch is None:
+                            continue
+                        msg = await ch.fetch_message(message_id)
 
                         def quote_reaction(msg, embed):
                             if msg.reactions:
