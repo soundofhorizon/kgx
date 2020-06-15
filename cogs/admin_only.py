@@ -157,7 +157,7 @@ class AdminOnly(commands.Cog):
         for i in range(len(data)):
             if len(list) >= 10:
                 await ctx.send(list)
-                list = ""
+                list = []
             list += list.append(data[i])
         await ctx.send(list)
 
