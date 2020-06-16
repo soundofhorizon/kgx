@@ -72,16 +72,16 @@ class AdminOnly(commands.Cog):
     async def bidscoreGS(self, ctx):
         await ctx.send(f'{ctx.prefix}bidscoreGS [get, set]')
 
-    @bidscoreGS.command()
-    async def get(self, ctx, user_id):
+    @bidscoreGS.command(name="get")
+    async def _get(self, ctx, user_id):
         cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (ctx.author.id,))
         get_score = list(cur.fetchone())
         embed = discord.Embed(description=f"ユーザーID：{user_id}の落札ポイントは{get_score[0]}です。",
                               color=0x1e90ff)
         await ctx.send(embed=embed)
 
-    @bidscoreGS.command(name="set")
-    async def _set(self, ctx, user_id, pt):
+    @bidscoreGS.command()
+    async def set(self, ctx, user_id, pt):
         await ctx.send(0)
         cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, user_id))
         db.commit()
