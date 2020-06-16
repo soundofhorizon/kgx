@@ -117,7 +117,7 @@ class AdminOnly(commands.Cog):
         r = redis.from_url(os.environ['REDIS_URL'])
         des = ""
         for member in range(self.bot.get_guild(558125111081697300).member_count):
-            if self.get_guild(558125111081697300).members[member].bot:
+            if self.bot.get_guild(558125111081697300).members[member].bot:
                 pass
             else:
                 if len(des) >= 1800:
