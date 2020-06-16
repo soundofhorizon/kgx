@@ -26,15 +26,6 @@ pool = redis.ConnectionPool.from_url(
 
 rc = redis.StrictRedis(connection_pool=pool)
 
-# Redisに接続
-pool2 = redis.ConnectionPool.from_url(
-    url=os.environ['HEROKU_REDIS_ORANGE_URL'],
-    db=0,
-    decode_responses=True
-)
-
-rc2 = redis.StrictRedis(connection_pool=pool2)
-
 
 def is_auction_category(ctx):
     """チャンネルがオークションカテゴリに入っているかの真偽値を返す関数"""
@@ -114,7 +105,8 @@ class Message(commands.Cog):
 
             # 引用機能
             url_filter = [msg.split("/")[1:] for msg in re.split(
-                "https://(ptb.|canary.|)discord(app|).com/channels/558125111081697300((/[0-9]+){2})", message.content) if
+                "https://(ptb.|canary.|)discord(app|).com/channels/558125111081697300((/[0-9]+){2})", message.content)
+                          if
                           re.match("(/[0-9]+){2}", msg)]
             if len(url_filter) >= 1:
                 for url in url_filter:
@@ -316,7 +308,8 @@ class Message(commands.Cog):
                         if m.channel != ctx.channel:
                             return False
                         # 〇st+△(記号はint)もしくは△であるのを確かめる
-                        return re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}", m.content) or m.content == "なし"
+                        return re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}",
+                                                                                            m.content) or m.content == "なし"
 
                 # 単位の設定
                 unit = ""
@@ -456,7 +449,8 @@ class Message(commands.Cog):
                     if fourth_user_input.author.id == ctx.author.id:
                         return fourth_user_input.channel == ctx.channel and re.match(
                             r'[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}',
-                            fourth_user_input.content) and datetime.strptime(fourth_user_input.content, "%Y/%m/%d-%H:%M")
+                            fourth_user_input.content) and datetime.strptime(fourth_user_input.content,
+                                                                             "%Y/%m/%d-%H:%M")
 
                 # 価格フォーマットチェック
                 def check3(m):
@@ -614,19 +608,11 @@ class Message(commands.Cog):
 
                     # ランキング送信
                     if is_siina_category(ctx):
-                        r = redis.from_url(os.environ['HEROKU_REDIS_ORANGE_URL'])  # os.environで格納された環境変数を引っ張ってくる
-                        # 設計図: unique_idの初めは1,無ければそこに値を代入
-                        i = 0
-                        while True:
-                            # keyに値がない部分まで管理IDを+
-                            if r.get(i):
-                                i += 1
-                            else:
-                                key = i
-                                break
-                        # 管理IDに紐づけて記録するデータの内容は[落札者,落札したもの,落札額,userid]がString型で入る.splitでlistにすること
-                        redis_set_str = f"{user_input_2.content},{user_input_1.content},{siina_amount},{ctx.author.id}"
-                        r.set(int(key), str(redis_set_str))
+                        # INSERTを実行。%sで後ろのタプルがそのまま代入される
+                        cur.execute(f"INSERT INTO bid_ranking VALUES ('%s', '%s', %s, '%s')"
+                                    % (f"{user_input_2.content}", f"{user_input_1.content}",
+                                       siina_amount, f"{ctx.author.display_name}")
+                                    )
                         await self.bot.get_channel(705040893593387039).purge(limit=10)
                         await asyncio.sleep(0.1)
                         embed = self.bot.create_high_bid_ranking()

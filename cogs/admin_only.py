@@ -20,15 +20,6 @@ pool = redis.ConnectionPool.from_url(
 
 rc = redis.StrictRedis(connection_pool=pool)
 
-# Redisに接続
-pool2 = redis.ConnectionPool.from_url(
-    url=os.environ['HEROKU_REDIS_ORANGE_URL'],
-    db=0,
-    decode_responses=True
-)
-
-rc2 = redis.StrictRedis(connection_pool=pool2)
-
 
 class AdminOnly(commands.Cog):
     def __init__(self, bot):
@@ -130,63 +121,6 @@ class AdminOnly(commands.Cog):
         await ctx.channel.send(embed=embed)
         await ctx.channel.edit(name=ctx.channel.name + '☆')
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
-
-    @commands.command()
-    async def get_high_ranking_data(self, ctx):
-        r = redis.from_url(os.environ['HEROKU_REDIS_ORANGE_URL'])  # os.environで格納された環境変数を引っ張ってくる
-        i = 0
-        str = ""
-        while True:
-            if r.get(i):
-                if len(str) >= 1600:
-                    await ctx.send(str)
-                    str = ""
-                else:
-                    data = r.get(i).decode().split(",")
-                    if self.bot.get_user(int(data[3])):
-                        if int(data[3]) == 357848654356283394:
-                            str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, 'Rem_AbsoluteZero');\n"
-                        elif int(data[3]) == 624936061327638538:
-                            str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, 'ASSULT_256');\n"
-                        else:
-                            str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, '{self.bot.get_user(int(data[3])).display_name}');\n"
-                    else:
-                        str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, {data[3]} );\n"
-                    i += 1
-            else:
-                break
-        await ctx.send(str)
-
-    @commands.command()
-    async def test(self, ctx):
-        cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
-        data = cur.fetchall()
-        list = []
-        for i in range(len(data)):
-            if len(list) >= 10:
-                await ctx.send(list)
-                list = []
-            list.append(data[i])
-        await ctx.send(list)
-
-    @commands.command()
-    async def insert_ranking_data(self, ctx):
-        def check(m):
-            return m.channel == ctx.channel
-
-        await ctx.channel.send("データを入力してください")
-        data = await self.bot.wait_for("message", check=check)
-        i = 0
-        r = redis.from_url(os.environ['HEROKU_REDIS_ORANGE_URL'])
-        while True:
-            # keyに値がない部分まで管理IDを+
-            if r.get(i):
-                i += 1
-            else:
-                key = i
-                break
-        r.set(int(key), str(data.content))
-        await ctx.channel.send(f"データ: {data.content}を入力しました。")
 
     @commands.command()
     async def star_delete(self, ctx):
