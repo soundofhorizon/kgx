@@ -614,6 +614,7 @@ class Message(commands.Cog):
                                 f"{ctx.author.display_name}"
                             )
                         )
+                        db.commit()
                         await self.bot.get_channel(705040893593387039).purge(limit=10)
                         await asyncio.sleep(0.1)
                         embed = self.bot.create_high_bid_ranking()
