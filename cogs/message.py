@@ -165,21 +165,6 @@ class Message(commands.Cog):
             await ctx.send('招待用URL:https://discord.gg/Syp85R4')
 
     @commands.command()
-    async def check_role(self, ctx):  # 更新
-        for member in range(self.bot.get_guild(558125111081697300).member_count):
-            if self.bot.get_guild(558125111081697300).members[member].bot:
-                pass
-            r = redis.from_url(os.environ['REDIS_URL'])  # os.environで格納された環境変数を引っ張ってくる
-            key = f"score-{self.bot.get_guild(558125111081697300).members[member].id}"
-            score = int(r.get(key) or "0")
-            await ctx.channel.send(self.bot.get_guild(558125111081697300).members[member])
-            before, after, embed = self.bot.check_role(score, self.bot.get_guild(558125111081697300).members[member],
-                                                       ctx)
-            await self.bot.get_guild(558125111081697300).members[member].remove_roles(before)
-            await self.bot.get_guild(558125111081697300).members[member].add_roles(after)
-        await ctx.channel.send("照会終了")
-
-    @commands.command()
     async def bidscore(self, ctx, pt):  # カウントしてその数字に対応する役職を付与する
         if not ctx.channel.id == 558265536430211083:
             return
@@ -188,11 +173,12 @@ class Message(commands.Cog):
         p = re.compile(r'^[0-9]+$')
         if p.fullmatch(pt):
             kazu = int(pt)
-            r = redis.from_url(os.environ['REDIS_URL'])  # os.environで格納された環境変数を引っ張ってくる
-            key = f"score-{ctx.author.id}"
-            oldscore = int(r.get(key) or "0")
-            new_score = oldscore + kazu
-            r.set(key, str(new_score))
+            cur.execute("SELECT bid_score FROM user_data where user_id = %s", ctx.author.id)
+            oldscore = list(cur.fetchall())
+            new_score = oldscore[0] + kazu
+            cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (new_score, ctx.author.id))
+            db.commit()
+
             embed = discord.Embed(description=f'**{ctx.author.display_name}**の現在の落札ポイントは**{new_score}**です。',
                                   color=0x9d9d9d)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, )  # ユーザー名+ID,アバターをセット
