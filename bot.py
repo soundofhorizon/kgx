@@ -210,39 +210,25 @@ class KGX(commands.Bot):
                 return embed
 
     # 落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す
+    @staticmethod
     def create_high_bid_ranking(self):
-        i = 0
-        r = redis.from_url(os.environ['HEROKU_REDIS_ORANGE_URL'])  # os.environで格納された環境変数を引っ張ってくる
-        radis_get_data_list = []
-
-        # データをリストに突っ込む。NoneTypeはifにするとFalseとして解釈されるのを利用する
-        # ついでに、ユーザーが存在するかを確かめて、存在しなかったらpass
-        while True:
-            if r.get(i):
-                if self.get_user(int(r.get(i).decode().split(",")[3])):
-                    radis_get_data_list.append(r.get(i).decode().split(","))
-                else:
-                    pass
-                i += 1
-            else:
-                break
-
-        # 降順でソートする
-        radis_get_data_list.sort(key=lambda x: int(x[2]), reverse=True)
+        # bid_rankingテーブルには「落札者の名前 text, 落札物 text, 落札額 bigint, 出品者の名前 text」で格納されているのでこれを全部、落札額降順になるように出す
+        cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
+        data = cur.fetchall()
 
         # embed保管リスト
         embed_list = []
         # データ毎に取り出す
         description = ""
-        for i in range(len(radis_get_data_list)):
+        for i in range(len(data)):
             # 気持ち程度のレイアウト合わせ。1桁と2桁の違い
             if i <= 9:
                 description += " "
             # listの中身は[落札者,落札物,落札額,出品者ID]
-            description += f"{i + 1}位: 出品者->{self.get_user(int(radis_get_data_list[i][3])).display_name}\n" \
-                           f"  　　出品物->{radis_get_data_list[i][1]}\n" \
-                           f"  　　落札額->{self.stack_check_reverse(int(radis_get_data_list[i][2]))}\n" \
-                           f"  　　落札者->{radis_get_data_list[i][0]}\n\n"
+            description += f"{i + 1}位: 出品者->{data[i][3]}\n" \
+                           f"  　　出品物->{data[i][1]}\n" \
+                           f"  　　落札額->{int(data[i][2])}\n" \
+                           f"  　　落札者->{data[i][0]}\n\n"
 
             # descriptionの長さが2000を超えるとエラーになる。吐き出してリセット案件
             if len(description) > 1800:
