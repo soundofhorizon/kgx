@@ -73,28 +73,23 @@ class AdminOnly(commands.Cog):
         await ctx.send(f'{ctx.prefix}bidscoreGS [get, set]')
 
     @bidscoreGS.command(name="get")
-    async def _get(self, ctx, user_id):
+    async def _get(self, ctx, user: discord.Member):
         cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (ctx.author.id,))
         get_score = list(cur.fetchone())
-        embed = discord.Embed(description=f"ユーザーID：{user_id}の落札ポイントは{get_score[0]}です。",
+        embed = discord.Embed(description=f"ユーザーID：{user.id}の落札ポイントは{get_score[0]}です。",
                               color=0x1e90ff)
         await ctx.send(embed=embed)
 
     @bidscoreGS.command()
-    async def set(self, ctx, user_id, pt):
-        await ctx.send(0)
-        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, user_id))
+    async def set(self, ctx, user: discord.Member, pt: int):
+        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, user.id))
         db.commit()
-        await ctx.send(1)
-        user = self.bot.get_user(int(user_id))
-        await ctx.send(2)
+        user = self.bot.get_user(int(user.id))
         embed = discord.Embed(
             description=f"{ctx.author.display_name}により、ユーザー名：{user.display_name}"
                         f"の落札ポイントを{pt}にセットしました。",
             color=0x1e90ff)
-        await ctx.send(3)
         await ctx.send(embed=embed)
-        await ctx.send(4)
 
         channel = self.bot.get_channel(677905288665235475)
         # とりあえず、ランキングチャンネルの中身を消す
