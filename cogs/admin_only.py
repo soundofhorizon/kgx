@@ -148,7 +148,7 @@ class AdminOnly(commands.Cog):
     async def _get(self, ctx, user: discord.Member):
         cur.execute("SELECT level FROM caution WHERE user_id = %s", (user.id,))
         data = cur.fetchone()
-        if len(data) == 0:
+        if data is None:
             caution_level = 0
         else:
             caution_level = data[0]
