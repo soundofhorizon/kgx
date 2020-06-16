@@ -82,14 +82,19 @@ class AdminOnly(commands.Cog):
 
     @bidscoreGS.command()
     async def set(self, ctx, user_id, pt):
+        await ctx.send(0)
         cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, user_id))
         db.commit()
+        await ctx.send(1)
         user = self.bot.get_user(int(user_id))
+        await ctx.send(2)
         embed = discord.Embed(
             description=f"{ctx.author.display_name}により、ユーザー名：{user.display_name}"
                         f"の落札ポイントを{pt}にセットしました。",
             color=0x1e90ff)
+        await ctx.send(3)
         await ctx.send(embed=embed)
+        await ctx.send(4)
 
         channel = self.bot.get_channel(677905288665235475)
         # とりあえず、ランキングチャンネルの中身を消す
