@@ -143,7 +143,7 @@ class AdminOnly(commands.Cog):
                     str = ""
                 else:
                     data = r.get(i).decode().split(",")
-                    str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, {data[3]} );\n"
+                    str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, {discord.Client.get_user(data[3]).display_name} );\n"
                     i += 1
             else:
                 break
