@@ -89,7 +89,7 @@ class AdminOnly(commands.Cog):
             description=f"{ctx.author.display_name}により、ユーザー名：{user.display_name}"
                         f"の落札ポイントを{pt}にセットしました。",
             color=0x1e90ff)
-        await ctx.channel.send(embed=embed)
+        await ctx.send(embed=embed)
 
         channel = self.bot.get_channel(677905288665235475)
         # とりあえず、ランキングチャンネルの中身を消す
