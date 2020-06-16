@@ -17,15 +17,6 @@ SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
 cur = db.cursor()  # なんか操作する時に使うやつ
 
-# Redisに接続
-pool = redis.ConnectionPool.from_url(
-    url=os.environ['REDIS_URL'],
-    db=0,
-    decode_responses=True
-)
-
-rc = redis.StrictRedis(connection_pool=pool)
-
 
 def is_auction_category(ctx):
     """チャンネルがオークションカテゴリに入っているかの真偽値を返す関数"""
@@ -90,6 +81,10 @@ class Message(commands.Cog):
                             embed.set_author(name=message.author,
                                              icon_url=message.author.avatar_url, )  # ユーザー名+ID,アバターをセット
                             await channel.send(embed=embed)
+
+                            # SQLのuser_dataに新規登録
+                            cur.execute("INSERT INTO user_data values (%s, %s, %s);", (message.author.id, 0, 0))
+                            db.commit()
                         else:
                             embed = discord.Embed(
                                 description=f'{message.author} さん。\n入力されたMCIDは実在しないか、又はまだ一度も整地鯖にログインしていません。\n'
