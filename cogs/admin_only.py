@@ -82,7 +82,7 @@ class AdminOnly(commands.Cog):
 
     @bidscoreGS.command()
     async def set(self, ctx, user_id, pt):
-        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, ctx.author.id))
+        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, user_id))
         db.commit()
         user = self.bot.get_user(int(user_id))
         embed = discord.Embed(
