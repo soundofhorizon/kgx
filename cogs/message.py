@@ -609,7 +609,7 @@ class Message(commands.Cog):
                     # ランキング送信
                     if is_siina_category(ctx):
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
-                        cur.execute("INSERT INTO bid_ranking VALUES ('{0}', '{1}', {2}, '{3}');".format(
+                        cur.execute("INSERT INTO bid_ranking VALUES ('{0}', '{1}', {2}, '{3}')".format(
                                 f"{user_input_2.content}", f"{user_input_1.content}", siina_amount,
                                 f"{ctx.author.display_name}"
                             )
