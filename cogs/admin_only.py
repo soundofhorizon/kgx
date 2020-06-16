@@ -80,8 +80,8 @@ class AdminOnly(commands.Cog):
                               color=0x1e90ff)
         await ctx.send(embed=embed)
 
-    @bidscoreGS.command()
-    async def set(self, ctx, user_id, pt):
+    @bidscoreGS.command(name="set")
+    async def _set(self, ctx, user_id, pt):
         await ctx.send(0)
         cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, user_id))
         db.commit()
