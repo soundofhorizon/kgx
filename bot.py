@@ -171,20 +171,20 @@ class KGX(commands.Bot):
         description = ""
         for i in range(len(data)):
             # 落札ポイント0ptは表示しない
-            if data[1] == 0:
+            if data[i][1] == 0:
                 continue
-            description += f"{rank}位: {str(self.get_user(data[0]).display_name)} - 落札ポイント -> {str(data[1])}\n"
+            description += f"{rank}位: {str(self.get_user(data[0]).display_name)} - 落札ポイント -> {str(data[i][1])}\n"
             rank += 1
 
-            # 表示する
-            d = datetime.now()  # 現在時刻の取得
-            time = d.strftime("%Y/%m/%d %H:%M:%S")
-            embed = Embed(
-                title='**落札ポイントランキング**',
-                description=description,
-                color=0x48d1cc)  # 発言内容をdescriptionにセット
-            embed.set_footer(text=f'UpdateTime：{time}')  # チャンネル名,時刻,鯖のアイコンをセット
-            return embed
+        # 表示する
+        d = datetime.now()  # 現在時刻の取得
+        time = d.strftime("%Y/%m/%d %H:%M:%S")
+        embed = Embed(
+            title='**落札ポイントランキング**',
+            description=description,
+            color=0x48d1cc)  # 発言内容をdescriptionにセット
+        embed.set_footer(text=f'UpdateTime：{time}')  # チャンネル名,時刻,鯖のアイコンをセット
+        return embed
 
     # 落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す
     @staticmethod
