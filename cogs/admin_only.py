@@ -70,13 +70,14 @@ class AdminOnly(commands.Cog):
 
     @commands.group(invoke_without_command=True)
     async def bidscore_gs(self, ctx):
-        await ctx.send(f'{ctx.prefix}user_caution [set, get]')
+        await ctx.send(f'{ctx.prefix}bidscore_gs [set, get]')
 
     @bidscore_gs.command(name="get")
     async def _get(self, ctx, user: discord.Member):
-        cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
-        data = cur.fetchone()
-        await ctx.send(f"{user}の落札ポイントは{data[0]}です")
+        # cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
+        # data = cur.fetchone()
+        # await ctx.send(f"{user}の落札ポイントは{data[0]}です")
+        await ctx.send(f"{user}の落札ポイントは{0}です")
 
     @bidscore_gs.command()
     async def set(self, ctx, user: discord.Member, n: int):
