@@ -227,7 +227,7 @@ class KGX(commands.Bot):
             # listの中身は[落札者,落札物,落札額,出品者ID]
             description += f"{i + 1}位: 出品者->{data[i][3]}\n" \
                            f"  　　出品物->{data[i][1]}\n" \
-                           f"  　　落札額->{bot.stack_check_reverse(int(data[i][2]))}\n" \
+                           f"  　　落札額->椎名{bot.stack_check_reverse(int(data[i][2]))}\n" \
                            f"  　　落札者->{data[i][0]}\n\n"
 
             # descriptionの長さが2000を超えるとエラーになる。吐き出してリセット案件
