@@ -68,29 +68,21 @@ class AdminOnly(commands.Cog):
         for i in range(len(embed)):
             await self.bot.get_channel(705040893593387039).send(embed=embed[i])
 
-    @commands.group(invoke_without_command=True)  # サブコマンドがない場合のみ実行
-    async def bidscoreGS(self, ctx):
-        await ctx.send(f'{ctx.prefix}bidscoreGS [get, set]')
+    @commands.group(invoke_without_command=True)
+    async def bidscore_gs(self, ctx):
+        await ctx.send(f'{ctx.prefix}user_caution [set, get]')
 
-    @bidscoreGS.command(name="get")
+    @bidscore_gs.command(name="get")
     async def _get(self, ctx, user: discord.Member):
-        await ctx.send(1)
-        cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (ctx.author.id,))
-        get_score = cur.fetchone()
-        embed = discord.Embed(description=f"ユーザーID：{user}の落札ポイントは{get_score[0]}です。",
-                              color=0x1e90ff)
-        await ctx.send(embed=embed)
+        cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
+        data = cur.fetchone()
+        await ctx.send(f"{user}の落札ポイントは{data[0]}です")
 
-    @bidscoreGS.command()
-    async def set(self, ctx, user: discord.Member, pt: int):
-        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, user.id))
+    @bidscore_gs.command()
+    async def set(self, ctx, user: discord.Member, n: int):
+        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (n, user.id))
         db.commit()
-        user = self.bot.get_user(int(user.id))
-        embed = discord.Embed(
-            description=f"{ctx.author.display_name}により、ユーザー名：{user.display_name}"
-                        f"の落札ポイントを{pt}にセットしました。",
-            color=0x1e90ff)
-        await ctx.send(embed=embed)
+        await ctx.send(f'{user}に警告レベル{n}を付与しました')
 
         channel = self.bot.get_channel(677905288665235475)
         # とりあえず、ランキングチャンネルの中身を消す
@@ -99,7 +91,7 @@ class AdminOnly(commands.Cog):
         channel = self.bot.get_channel(602197766218973185)
         embed = discord.Embed(
             description=f"{ctx.author.display_name}により、{user.display_name}"
-                        f"の落札ポイントが{pt}にセットされました。",
+                        f"の落札ポイントが{n}にセットされました。",
             color=0xf04747
         )
         await channel.send(embed=embed)
