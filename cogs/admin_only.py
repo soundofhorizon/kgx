@@ -82,7 +82,7 @@ class AdminOnly(commands.Cog):
     async def set(self, ctx, user: discord.Member, n: int):
         cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (n, user.id))
         db.commit()
-        await ctx.send(f'{user}に警告レベル{n}を付与しました')
+        await ctx.send(f'{user.display_name}の落札ポイントを{n}にセットしました')
 
         channel = self.bot.get_channel(677905288665235475)
         # とりあえず、ランキングチャンネルの中身を消す
