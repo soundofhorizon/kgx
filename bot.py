@@ -162,41 +162,21 @@ class KGX(commands.Bot):
             return before, after, embed
 
     def create_ranking_embed(self):
-        # scoreを抜き出したメンバーのIDのリストで一個一個keyとして突っ込んだ後、それに対応する落札ポイントを引っ張って突っ込む
+        # user_dataテーブルには「0:ユーザーID bigint, 1:落札ポイント smallint, 2:警告レベル smallint」で格納されているのでこれを全部、落札ポイント降順になるように出す
+        cur.execute("SELECT * FROM user_data ORDER BY bid_score desc;")
+        data = cur.fetchall()
 
-        # 落札ポイントを入れるリスト
-        score_list = []
-
-        # メンバーを入れるリスト
-        member_list = []
-
-        # 上記2つをまとめて辞書型にする
-        bidscore_dict = {}
-
-        bot_count = 0
-        r = redis.from_url(os.environ['REDIS_URL'])  # os.environで格納された環境変数を引っ張ってくる
+        # embedを出力する
         for member in range(self.get_guild(558125111081697300).member_count):
-            if self.get_guild(558125111081697300).members[member].bot:
-                bot_count += 1
-
-            member_list.append(self.get_guild(558125111081697300).members[member].display_name)
-
-            key = f"score-{self.get_guild(558125111081697300).members[member].id}"
-            score_list.append(int(r.get(key) or "0"))
-
-            # メンバー : その人のスコア　で　辞書型結合を行う
-            bidscore_dict[member_list[member]] = score_list[member]
-
-            # 全員分確認終わったら今度は出力
             if member == (self.get_guild(558125111081697300).member_count - 1):
                 description = ""
                 rank = 1
                 # ランキングを出力する。まずは辞書型の落札ポイントを基準として降順ソートする。メンバーをmem,スコアをscoreとする
-                for mem, score in sorted(bidscore_dict.items(), key=lambda x: -x[1]):
+                for i in range(len(data)):
                     # 落札ポイント0ptは表示しない
-                    if score == 0:
+                    if data[1] == 0:
                         continue
-                    description += f"{rank}位: {str(mem)} - 落札ポイント -> {str(score)}\n"
+                    description += f"{rank}位: {str(self.get_user(data[0]).display_name)} - 落札ポイント -> {str(data[1])}\n"
                     rank += 1
 
                 # 表示する
@@ -212,7 +192,7 @@ class KGX(commands.Bot):
     # 落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す
     @staticmethod
     def create_high_bid_ranking():
-        # bid_rankingテーブルには「落札者の名前 text, 落札物 text, 落札額 bigint, 出品者の名前 text」で格納されているのでこれを全部、落札額降順になるように出す
+        # bid_rankingテーブルには「0:落札者の名前 text, 1:落札物 text, 2:落札額 bigint, 3:出品者の名前 text」で格納されているのでこれを全部、落札額降順になるように出す
         cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
         data = cur.fetchall()
 
@@ -220,6 +200,7 @@ class KGX(commands.Bot):
         embed_list = []
         # データ毎に取り出す
         description = ""
+
         for i in range(len(data)):
             # 気持ち程度のレイアウト合わせ。1桁と2桁の違い
             if i <= 9:
@@ -240,7 +221,8 @@ class KGX(commands.Bot):
             # 何位まで出力するか.
             if i >= 39:
                 break
-        # embed儀式
+
+        # 表示する
         embed = discord.Embed(description=description, color=0xddc7ff)
         d = datetime.now()  # 現在時刻の取得
         time = d.strftime("%Y/%m/%d %H:%M:%S")
