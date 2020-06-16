@@ -174,7 +174,7 @@ class Message(commands.Cog):
         if p.fullmatch(pt):
             kazu = int(pt)
             cur.execute("SELECT bid_score FROM user_data where user_id = %s", ctx.author.id)
-            oldscore = list(cur.fetchall())
+            oldscore = list(cur.fetchone())
             new_score = oldscore[0] + kazu
             cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (new_score, ctx.author.id))
             db.commit()

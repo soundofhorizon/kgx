@@ -11,15 +11,6 @@ SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
 cur = db.cursor()  # なんか操作する時に使うやつ
 
-# Redisに接続
-pool = redis.ConnectionPool.from_url(
-    url=os.environ['REDIS_URL'],
-    db=0,
-    decode_responses=True
-)
-
-rc = redis.StrictRedis(connection_pool=pool)
-
 
 class AdminOnly(commands.Cog):
     def __init__(self, bot):
@@ -83,17 +74,17 @@ class AdminOnly(commands.Cog):
 
     @bidscoreGS.command()
     async def get(self, ctx, user_id):
-        r = redis.from_url(os.environ['REDIS_URL'])  # os.environで格納された環境変数を引っ張ってくる
-        get_score = int(r.get(f"score-{user_id}" or "0"))
-        embed = discord.Embed(description=f"ユーザーID：{user_id}の落札ポイントは{get_score}です。",
+        cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", ctx.author.id)
+        get_score = list(cur.fetchone())
+        embed = discord.Embed(description=f"ユーザーID：{user_id}の落札ポイントは{get_score[0]}です。",
                               color=0x1e90ff)
         await ctx.send(embed=embed)
 
     @bidscoreGS.command()
     async def set(self, ctx, user_id, pt):
-        r = redis.from_url(os.environ['REDIS_URL'])  # os.environで格納された環境変数を引っ張ってくる
+        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (pt, user_id))
+        db.commit()
         user = self.bot.get_user(int(user_id))
-        r.set(f"score-{user_id}", pt)
         embed = discord.Embed(
             description=f"{ctx.author.display_name}により、ユーザー名：{user.display_name}"
                         f"の落札ポイントを{pt}にセットしました。",
@@ -111,23 +102,6 @@ class AdminOnly(commands.Cog):
             color=0xf04747
         )
         await channel.send(embed=embed)
-
-    @commands.command()
-    async def get_data(self, ctx):
-        r = redis.from_url(os.environ['REDIS_URL'])
-        des = ""
-        for member in range(self.bot.get_guild(558125111081697300).member_count):
-            if self.bot.get_guild(558125111081697300).members[member].bot:
-                pass
-            else:
-                if len(des) >= 1800:
-                    await ctx.send(des)
-                    des = ""
-                key = f"score-{self.bot.get_guild(558125111081697300).members[member].id}"
-                score = int(r.get(key) or "0")
-                des += f"INSERT INTO user_data VALUES ({self.bot.get_guild(558125111081697300).members[member].id}, {score}, 0);\n"
-        await ctx.send(des)
-        des = ""
 
     @commands.command()
     async def stop_deal(self, ctx):
