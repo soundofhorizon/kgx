@@ -125,7 +125,7 @@ class AdminOnly(commands.Cog):
                     des = ""
                 key = f"score-{self.bot.get_guild(558125111081697300).members[member].id}"
                 score = int(r.get(key) or "0")
-                des += f"INSERT INTO user_data VALUES ({self.bot.get_guild(558125111081697300).members[member].id}, {score}, 0);"
+                des += f"INSERT INTO user_data VALUES ({self.bot.get_guild(558125111081697300).members[member].id}, {score}, 0);\n"
         await ctx.send(des)
         des = ""
 
