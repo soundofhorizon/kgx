@@ -144,7 +144,7 @@ class AdminOnly(commands.Cog):
                 else:
                     data = r.get(i).decode().split(",")
                     if self.bot.get_user(int(data[3])):
-                        str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, {self.bot.get_user(int(data[3])).display_name} );\n"
+                        str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, '{self.bot.get_user(int(data[3])).display_name}');\n"
                     else:
                         str += f"INSERT INTO bid_ranking VALUES ('{data[0]}', '{data[1]}', {data[2]}, {data[3]} );\n"
                     i += 1
