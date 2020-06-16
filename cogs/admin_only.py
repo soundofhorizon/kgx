@@ -74,10 +74,10 @@ class AdminOnly(commands.Cog):
 
     @bidscoreGS.command(name="get")
     async def _get(self, ctx, user: discord.Member):
-
+        await ctx.send(1)
         cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (ctx.author.id,))
         get_score = cur.fetchone()
-        embed = discord.Embed(description=f"ユーザーID：{user.id}の落札ポイントは{get_score[0]}です。",
+        embed = discord.Embed(description=f"ユーザーID：{user}の落札ポイントは{get_score[0]}です。",
                               color=0x1e90ff)
         await ctx.send(embed=embed)
 
@@ -144,7 +144,7 @@ class AdminOnly(commands.Cog):
             caution_level = 0
         else:
             caution_level = data[0]
-        await ctx.send(f"{ctx.author.id} {user}の警告レベルは{caution_level}です")
+        await ctx.send(f"{user}の警告レベルは{caution_level}です")
 
     @user_caution.command()
     async def set(self, ctx, user: discord.Member, n: int):
