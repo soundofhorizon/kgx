@@ -166,28 +166,25 @@ class KGX(commands.Bot):
         cur.execute("SELECT * FROM user_data ORDER BY bid_score desc;")
         data = cur.fetchall()
 
-        # embedを出力する
-        for member in range(self.get_guild(558125111081697300).member_count):
-            if member == (self.get_guild(558125111081697300).member_count - 1):
-                description = ""
-                rank = 1
-                # ランキングを出力する。まずは辞書型の落札ポイントを基準として降順ソートする。メンバーをmem,スコアをscoreとする
-                for i in range(len(data)):
-                    # 落札ポイント0ptは表示しない
-                    if data[1] == 0:
-                        continue
-                    description += f"{rank}位: {str(self.get_user(data[0]).display_name)} - 落札ポイント -> {str(data[1])}\n"
-                    rank += 1
+        # ランキングを出力する。まずは辞書型の落札ポイントを基準として降順ソートする。メンバーをmem,スコアをscoreとする
+        rank = 1
+        description = ""
+        for i in range(len(data)):
+            # 落札ポイント0ptは表示しない
+            if data[1] == 0:
+                continue
+            description += f"{rank}位: {str(self.get_user(data[0]).display_name)} - 落札ポイント -> {str(data[1])}\n"
+            rank += 1
 
-                # 表示する
-                d = datetime.now()  # 現在時刻の取得
-                time = d.strftime("%Y/%m/%d %H:%M:%S")
-                embed = Embed(
-                    title='**落札ポイントランキング**',
-                    description=description,
-                    color=0x48d1cc)  # 発言内容をdescriptionにセット
-                embed.set_footer(text=f'UpdateTime：{time}')  # チャンネル名,時刻,鯖のアイコンをセット
-                return embed
+            # 表示する
+            d = datetime.now()  # 現在時刻の取得
+            time = d.strftime("%Y/%m/%d %H:%M:%S")
+            embed = Embed(
+                title='**落札ポイントランキング**',
+                description=description,
+                color=0x48d1cc)  # 発言内容をdescriptionにセット
+            embed.set_footer(text=f'UpdateTime：{time}')  # チャンネル名,時刻,鯖のアイコンをセット
+            return embed
 
     # 落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す
     @staticmethod
