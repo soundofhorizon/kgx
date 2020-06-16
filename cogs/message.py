@@ -609,10 +609,11 @@ class Message(commands.Cog):
                     # ランキング送信
                     if is_siina_category(ctx):
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
-                        cur.execute(f"INSERT INTO bid_ranking VALUES ('%s', '%s', %s, '%s')"
-                                    % (f"{user_input_2.content}", f"{user_input_1.content}",
-                                       siina_amount, f"{ctx.author.display_name}")
-                                    )
+                        cur.execute("INSERT INTO bid_ranking VALUES ('{0}', '{1}', {2}, '{3}')".format(
+                                f"{user_input_2.content}", f"{user_input_1.content}", siina_amount,
+                                f"{ctx.author.display_name}"
+                            )
+                        )
                         await self.bot.get_channel(705040893593387039).purge(limit=10)
                         await asyncio.sleep(0.1)
                         embed = self.bot.create_high_bid_ranking()
