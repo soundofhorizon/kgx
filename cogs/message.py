@@ -569,7 +569,7 @@ class Message(commands.Cog):
                     def check_siina_style(m):
                         if m.author.bot:
                             return
-                        elif "椎名" in m.content and "sT" not in m.content and "St" not in m.content:
+                        elif "椎名" in m.content and "st" not in m.content.lower():
                             return m.channel == ctx.channel
 
                     kazu = 6

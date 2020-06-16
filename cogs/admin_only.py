@@ -113,6 +113,23 @@ class AdminOnly(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command()
+    async def get_data(self, ctx):
+        r = redis.from_url(os.environ['REDIS_URL'])
+        des = ""
+        for member in range(self.bot.get_guild(558125111081697300).member_count):
+            if self.get_guild(558125111081697300).members[member].bot:
+                pass
+            else:
+                if len(des) >= 1800:
+                    await ctx.send(des)
+                    des = ""
+                key = f"score-{self.bot.get_guild(558125111081697300).members[member].id}"
+                score = int(r.get(key) or "0")
+                des += f"INSERT INTO user_data VALUES ({self.bot.get_guild(558125111081697300).members[member].id}, {score}, 0);"
+        await ctx.send(des)
+        des = ""
+
+    @commands.command()
     async def stop_deal(self, ctx):
         embed = discord.Embed(
             description=f"{ctx.author.display_name}によりこの取引は停止させられました。",
