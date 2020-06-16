@@ -211,7 +211,7 @@ class KGX(commands.Bot):
 
     # 落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す
     @staticmethod
-    def create_high_bid_ranking(self):
+    def create_high_bid_ranking():
         # bid_rankingテーブルには「落札者の名前 text, 落札物 text, 落札額 bigint, 出品者の名前 text」で格納されているのでこれを全部、落札額降順になるように出す
         cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
         data = cur.fetchall()
