@@ -148,18 +148,6 @@ class AdminOnly(commands.Cog):
         db.commit()
         await ctx.send(f'{user}に警告レベル{n}を付与しました')
 
-    @commands.group(invoke_without_command=True)
-    async def debug(self, ctx):
-        await ctx.send(f'{ctx.prefix}debug [set, get]')
-
-    @debug.command(name="get")
-    async def _get(self, ctx, user: discord.Member):
-        await ctx.send(0)
-
-    @debug.command()
-    async def set(self, ctx, user: discord.Member, n: int):
-        await ctx.send(1)
-
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
