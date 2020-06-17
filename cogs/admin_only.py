@@ -96,6 +96,18 @@ class AdminOnly(commands.Cog):
         embed = discord.Embed(title="SQL文の実行結果", description=''.join(f"{d}、" for d in data))
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def delete_to(self, ctx):
+        if not ctx.channel.id == 722768808321876068:
+            return
+        delete_ch = ctx.channel
+        async for m in delete_ch.history(limit=None):
+            msg = await delete_ch.fetch_message(m.id)
+            if msg.id == 722768855021256706:
+                break
+            else:
+                await msg.delete()
+
     @commands.group(invoke_without_command=True)
     async def user_caution(self, ctx):
         await ctx.send(f'{ctx.prefix}user_caution [set, get]')
