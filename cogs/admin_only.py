@@ -101,12 +101,8 @@ class AdminOnly(commands.Cog):
         if not ctx.channel.id == 722768808321876068:
             return
         delete_ch = ctx.channel
-        async for m in delete_ch.history(limit=None):
-            msg = await delete_ch.fetch_message(m.id)
-            if msg.id == 722768855021256706:
-                break
-            else:
-                await msg.delete()
+        msg = await delete_ch.fetch_message(722768855021256706)
+        await delete_ch.purge(limit=None, after=msg)
 
     @commands.group(invoke_without_command=True)
     async def user_caution(self, ctx):
