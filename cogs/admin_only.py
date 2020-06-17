@@ -141,7 +141,7 @@ class AdminOnly(commands.Cog):
     @user_caution.command()
     async def set(self, ctx, user: discord.Member, n: int):
         cur.execute("DELETE FROM caution WHERE user_id = %s", (user.id,))
-        if n == 0:
+        if n == 0:GS
             db.commit()
             return await ctx.send(f'{user}の警告レベルをリセットしました')
         cur.execute("INSERT INTO caution values (%s, %s)", (user.id, n))
@@ -149,20 +149,32 @@ class AdminOnly(commands.Cog):
         await ctx.send(f'{user}に警告レベル{n}を付与しました')
 
     @commands.group(invoke_without_command=True)
-    async def debug(self, ctx):
+    async def bidscore(self, ctx):
         await ctx.send(f'{ctx.prefix}score [set, get]')
 
-    @debug.command(name="get")
+    @bidscoreGS.command(name="get")
     async def _get(self, ctx, user: discord.Member):
         cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
         data = cur.fetchone()
         await ctx.send(f"{user}の落札ポイントは{data[0]}です")
 
-    @debug.command()
+    @bidscoreGS.command()
     async def set(self, ctx, user: discord.Member, n: int):
         cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (n, user.id))
         db.commit()
         await ctx.send(f'{user.display_name}の落札ポイントを{n}にセットしました')
+
+        channel = self.bot.get_channel(677905288665235475)
+        # とりあえず、ランキングチャンネルの中身を消す
+        await channel.purge(limit=1)
+        await channel.send(embed=self.bot.create_ranking_embed())
+        channel = self.bot.get_channel(602197766218973185)
+        embed = discord.Embed(
+            description=f"{ctx.author.display_name}により、{user.display_name}"
+                        f"の落札ポイントが{n}にセットされました。",
+            color=0xf04747
+        )
+        await channel.send(embed=embed)
 
 
 def setup(bot):
