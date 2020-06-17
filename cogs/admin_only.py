@@ -141,7 +141,7 @@ class AdminOnly(commands.Cog):
     @user_caution.command()
     async def set(self, ctx, user: discord.Member, n: int):
         cur.execute("DELETE FROM caution WHERE user_id = %s", (user.id,))
-        if n == 0:GS
+        if n == 0:
             db.commit()
             return await ctx.send(f'{user}の警告レベルをリセットしました')
         cur.execute("INSERT INTO caution values (%s, %s)", (user.id, n))
@@ -149,16 +149,16 @@ class AdminOnly(commands.Cog):
         await ctx.send(f'{user}に警告レベル{n}を付与しました')
 
     @commands.group(invoke_without_command=True)
-    async def bidscore(self, ctx):
+    async def debug(self, ctx):
         await ctx.send(f'{ctx.prefix}score [set, get]')
 
-    @bidscoreGS.command(name="get")
+    @debug.command(name="get")
     async def _get(self, ctx, user: discord.Member):
         cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
         data = cur.fetchone()
         await ctx.send(f"{user}の落札ポイントは{data[0]}です")
 
-    @bidscoreGS.command()
+    @debug.command()
     async def set(self, ctx, user: discord.Member, n: int):
         cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (n, user.id))
         db.commit()
