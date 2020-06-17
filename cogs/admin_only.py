@@ -148,6 +148,22 @@ class AdminOnly(commands.Cog):
         db.commit()
         await ctx.send(f'{user}に警告レベル{n}を付与しました')
 
+    @commands.group(invoke_without_command=True)
+    async def debug(self, ctx):
+        await ctx.send(f'{ctx.prefix}score [set, get]')
+
+    @debug.command(name="get")
+    async def _get(self, ctx, user: discord.Member):
+        cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
+        data = cur.fetchone()
+        await ctx.send(f"{user}の落札ポイントは{data[0]}です")
+
+    @debug.command()
+    async def set(self, ctx, user: discord.Member, n: int):
+        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (n, user.id))
+        db.commit()
+        await ctx.send(f'{user.display_name}の落札ポイントを{n}にセットしました')
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
