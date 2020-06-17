@@ -74,10 +74,9 @@ class AdminOnly(commands.Cog):
 
     @bidscore_gs.command(name="get")
     async def _get(self, ctx, user: discord.Member):
-        # cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
-        # data = cur.fetchone()
-        # await ctx.send(f"{user}の落札ポイントは{data[0]}です")
-        await ctx.send(f"{user}の落札ポイントは{0}です")
+        cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
+        data = cur.fetchone()
+        await ctx.send(f"{user}の落札ポイントは{data[0]}です")
 
     @bidscore_gs.command()
     async def set(self, ctx, user: discord.Member, n: int):
@@ -148,6 +147,18 @@ class AdminOnly(commands.Cog):
         cur.execute("INSERT INTO caution values (%s, %s)", (user.id, n))
         db.commit()
         await ctx.send(f'{user}に警告レベル{n}を付与しました')
+
+    @commands.group(invoke_without_command=True)
+    async def debug(self, ctx):
+        await ctx.send(f'{ctx.prefix}debug [set, get]')
+
+    @debug.command(name="get")
+    async def _get(self, ctx, user: discord.Member):
+        await ctx.send(0)
+
+    @debug.command()
+    async def set(self, ctx, user: discord.Member, n: int):
+        await ctx.send(1)
 
 
 def setup(bot):
