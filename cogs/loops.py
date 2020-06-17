@@ -9,6 +9,7 @@ class Loops(commands.Cog):
 
     @tasks.loop(seconds=20)
     async def presence_change_task(self):
+        await self.bot.wait_until_ready()
         game = discord.Game(f"{self.bot.get_guild(558125111081697300).member_count}人を監視中")
         await self.bot.change_presence(status=discord.Status.online, activity=game)
 
