@@ -109,21 +109,14 @@ class AdminOnly(commands.Cog):
 
     @user_caution.command(name="get")
     async def _get(self, ctx, user: discord.Member):
-        cur.execute("SELECT level FROM caution WHERE user_id = %s", (user.id,))
+        cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (user.id,))
         data = cur.fetchone()
-        if data is None:
-            caution_level = 0
-        else:
-            caution_level = data[0]
+        caution_level = data[0]
         await ctx.send(f"{user}の警告レベルは{caution_level}です")
 
     @user_caution.command()
     async def set(self, ctx, user: discord.Member, n: int):
-        cur.execute("DELETE FROM caution WHERE user_id = %s", (user.id,))
-        if n == 0:
-            db.commit()
-            return await ctx.send(f'{user}の警告レベルをリセットしました')
-        cur.execute("INSERT INTO caution values (%s, %s)", (user.id, n))
+        cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (n, user.id))
         db.commit()
         await ctx.send(f'{user}に警告レベル{n}を付与しました')
 
