@@ -150,7 +150,8 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, user_id):
-        await ctx.send(self.bot.get_user_auction_count(user_id))
+        for i in self.bot.walk_commands():
+            await ctx.send(f"{i}")
 
 
 def setup(bot):
