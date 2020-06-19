@@ -150,8 +150,7 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, user_id):
-        for i in self.bot.walk_commands():
-            await ctx.send(f"{i}")
+        await ctx.send([c.qualified_name for c in self.bot.walk_commands()])
 
 
 def setup(bot):
