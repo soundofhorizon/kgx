@@ -232,7 +232,7 @@ class Message(commands.Cog):
         if is_auction_category(ctx):
             # 2つ行ってる場合はreturn
             user = ctx.author.id
-            if self.bot.get_user_auction_count("g", user) >= 2:
+            if self.bot.get_user_auction_count(user) >= 2:
                 description = "貴方はすでにオークションを2つ以上行っているためこれ以上オークションを始められません。\n" \
                               "行っているオークションが2つ未満になってから再度行ってください。"
                 await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
