@@ -202,13 +202,13 @@ class Message(commands.Cog):
         # オークション系
         if is_auction_category(ctx):
             # 2つ行ってる場合はreturn
-            user = ctx.author.id
-            if self.bot.get_user_auction_count(user) >= 2:
-                description = "貴方はすでにオークションを2つ以上行っているためこれ以上オークションを始められません。\n" \
-                              "行っているオークションが2つ未満になってから再度行ってください。"
-                await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
-                await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
-                return
+            # user = ctx.author.id
+            # if self.bot.get_user_auction_count(user) >= 2:
+            #     description = "貴方はすでにオークションを2つ以上行っているためこれ以上オークションを始められません。\n" \
+            #                   "行っているオークションが2つ未満になってから再度行ってください。"
+            #     await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
+            #     await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
+            #     return
 
             # 既にオークションが行われていたらreturn
             if "☆" not in ctx.channel.name:
@@ -364,13 +364,13 @@ class Message(commands.Cog):
         # 通常取引について
         elif is_normal_category(ctx):
             # 2つ行ってる場合はreturn
-            user = ctx.author.id
-            if self.bot.operate_user_auction_count("g", user) >= 2:
-                description = "貴方はすでにオークションを2つ以上行っているためこれ以上オークションを始められません。\n" \
-                              "行っているオークションが2つ未満になってから再度行ってください。"
-                await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
-                await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
-                return
+            # user = ctx.author.id
+            # if self.bot.operate_user_auction_count("g", user) >= 2:
+            #    description = "貴方はすでにオークションを2つ以上行っているためこれ以上オークションを始められません。\n" \
+            #                   "行っているオークションが2つ未満になってから再度行ってください。"
+            #    await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
+            #    await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
+            #    return
 
             # 既にオークションが行われていたらreturn
             if "☆" not in ctx.channel.name:
