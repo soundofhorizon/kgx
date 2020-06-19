@@ -286,9 +286,9 @@ class KGX(commands.Bot):
     @staticmethod
     def get_user_auction_count(user_id):
         cur.execute("SELECT count(*) from auction where auction_owner_id = %s", (user_id,))
-        a = tuple(cur.fetchone)
+        a = tuple(cur.fetchone())
         cur.execute("SELECT count(*) from deal where deal_owner_id = %s", (user_id,))
-        b = tuple(cur.fetchone)
+        b = tuple(cur.fetchone())
         return int(a[0]) + int(b[0])
 
     async def on_ready(self):
