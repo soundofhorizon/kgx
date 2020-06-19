@@ -11,7 +11,6 @@ import traceback
 import asyncio
 from discord import Embed
 import os
-import redis
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
@@ -198,34 +197,6 @@ class Message(commands.Cog):
             await channel.purge(limit=1)
             await channel.send(embed=self.bot.create_ranking_embed())
 
-    # todo 未完成。
-    @commands.command()
-    async def tend(self, ctx):
-        # todo ここでは a st + bの形式で来ることを想定している
-        msg = f'{ctx.content}'.replace('!tend ', '')
-        tend_price = self.bot.stack_check(msg)
-        if not tend_price == 0:
-            r = redis.from_url(os.environ['HEROKU_REDIS_YELLOW_URL'])
-            # todo チャンネルIDと入札額を紐づけする。また、bid操作で個々の値に0をセットする。
-            # todo startの初期価格未満は弾く。同一人物の2回入札も弾く。
-            key = ctx.channel.id
-            before_tend_price = int(r.get(key) or 0)
-            if tend_price > before_tend_price:
-                await ctx.channel.send(f"この入札は以前の入札額より低いです。やり直してください。")
-                return
-        else:
-            await ctx.channel.send(f"Error.有効な入札ではありません。\n{ctx.author.display_name}の入札:{ctx.content}")
-
-    @commands.command()
-    async def set_user_auction_count(self, ctx, user_id: int, n: int):
-        # その人が取り扱ってるオークションの個数を指定
-        r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
-        key = user_id
-        auction_now = n
-        r.set(key, auction_now)
-        await ctx.channel.send(
-            f"{self.bot.get_user(user_id).display_name}さんのオークションの開催個数を**{auction_now}**個にセットしました。")
-
     @commands.command()
     async def start(self, ctx):
         # オークション系
@@ -382,11 +353,6 @@ class Message(commands.Cog):
                                  str(user_input_3), user_input_4.content, unit))
                     db.commit()
 
-                    # ここで、その人が行っているオークションの個数を増やす
-                    user = ctx.author.id
-                    r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
-                    r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
-
                 else:
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
@@ -516,10 +482,6 @@ class Message(commands.Cog):
                                  user_input_3.content, unit))
                     db.commit()
 
-                    # ここで、その人が行っているオークションの個数を増やす
-                    user = ctx.author.id
-                    r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
-                    r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s+", user))
                 else:
                     kazu = 2
                     await ctx.channel.purge(limit=kazu)
@@ -615,10 +577,6 @@ class Message(commands.Cog):
                     await asyncio.sleep(0.3)
                     await ctx.channel.edit(name=ctx.channel.name + '☆')
                     await ctx.author.remove_roles(tmprole)
-                    # ここで、その人が行っているオークションの個数を減らす
-                    user = ctx.author.id
-                    r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
-                    r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s-", user))
 
             else:
                 await ctx.channel.send("RoleError.運営を呼んでください")
@@ -634,10 +592,6 @@ class Message(commands.Cog):
     async def end(self, ctx):
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
         await ctx.channel.edit(name=ctx.channel.name + '☆')
-        # ここで、その人が行っているオークションの個数を減らす
-        user = ctx.author.id
-        r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
-        r.set(int(ctx.author.id), self.bot.operate_user_auction_count("s-", user))
 
     @commands.command()
     async def help(self, ctx):
