@@ -1,11 +1,10 @@
 import asyncio
+import os
+import re
 
+import discord
 import psycopg2
 from discord.ext import commands
-import discord
-import os
-import redis
-import re
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
@@ -155,6 +154,10 @@ class AdminOnly(commands.Cog):
             color=0xf04747
         )
         await channel.send(embed=embed)
+
+    @commands.command()
+    async def test(self, ctx, user_id):
+        await ctx.send(self.bot.get_user_auction_count(user_id))
 
 
 def setup(bot):

@@ -6,7 +6,6 @@ from datetime import datetime
 
 import discord
 import psycopg2
-import redis
 from discord import Embed
 from discord.ext import commands
 
@@ -285,16 +284,12 @@ class KGX(commands.Bot):
             return 0
 
     @staticmethod
-    def operate_user_auction_count(mode, user):
-        r = redis.from_url(os.environ['HEROKU_REDIS_BLACK_URL'])
-        key = int(user)
-        if mode == "g":
-            auction_now = int(r.get(key) or 0)
-            return int(auction_now)
-        if mode == "s+":
-            return int(r.get(key) or 0) + 1
-        if mode == "s-":
-            return int(r.get(key) or 0) - 1
+    def get_user_auction_count(user_id):
+        cur.execute("SELECT count(*) from auction where user_id = %s", (user_id,))
+        a = cur.fetchone or 0
+        cur.execute("SELECT count(*) from deal where user_id = %s", (user_id,))
+        b = cur.fetchone or 0
+        return int(a[0]) + int(b[0])
 
     async def on_ready(self):
         await self.get_channel(678083611697872910).purge(limit=1)
