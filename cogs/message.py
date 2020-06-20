@@ -600,6 +600,10 @@ class Message(commands.Cog):
                 embed.add_field(name="落札価格", value=f'\n\n{user_input_3.content}', inline=False)
                 embed.add_field(name="チャンネル名", value=f'\n\n{ctx.channel}', inline=False)
                 await channel.send(embed=embed)
+
+                # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
+                self.bot.reset_ch_db(ctx.channel.id, "a")
+
                 await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
                 await asyncio.sleep(0.3)
                 await ctx.channel.edit(name=ctx.channel.name + '☆')
@@ -612,6 +616,9 @@ class Message(commands.Cog):
     @commands.command()
     @commands.check(is_normal_category)
     async def end(self, ctx):
+        # chのdbを消し去る
+        self.bot.reset_ch_db(ctx.channel.id, "d")
+
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
         await ctx.channel.edit(name=ctx.channel.name + '☆')
 
