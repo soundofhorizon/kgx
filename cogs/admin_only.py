@@ -150,8 +150,14 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        await ctx.send([c.qualified_name for c in self.bot.walk_commands()])
-
+        ch_list_1 = [c.id for c in ctx.guild.categories if c.name.startswith('>')]
+        ch_list_2 = [c.id for c in ctx.guild.categories if c.name.startswith('*')]
+        await ctx.send("auction\n------")
+        for i in range(len(ch_list_1)):
+            await ctx.send("INSERT INTO auction VALUES (%s, 0, 'undefined', 'undefined', 'undefined', 'undefined', 'undefined')", (ch_list_1[i],))
+        await ctx.send("deal\n------")
+        for i in range(len(ch_list_1)):
+            await ctx.send("INSERT INTO deal VALUES (%s, 0, 'undefined', 'undefined', 'undefined', 'undefined')", (ch_list_2[i],))
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
