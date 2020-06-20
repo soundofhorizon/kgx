@@ -164,7 +164,7 @@ class AdminOnly(commands.Cog):
     @commands.command()
     async def test(self, ctx):
         cur.execute("SELECT embed_message_id FROM auction WHERE ch_id = %s", (ctx.channel.id,))
-        embed_id = cur.fetchone
+        embed_id = cur.fetchone()
         self.bot.delete_to(ctx, embed_id[0])
 
 
