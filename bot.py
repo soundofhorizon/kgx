@@ -1,6 +1,5 @@
 # coding=utf-8
 import os
-import random
 import traceback
 from datetime import datetime
 
@@ -80,10 +79,6 @@ class KGX(commands.Bot):
                     self.load_extension(f"cogs.{cog[:-3]}")
                 except Exception:
                     traceback.print_exc()
-
-    @staticmethod
-    async def generate_random_color():
-        return '0x{:X}{:X}{:X}'.format(*[random.randint(0, 255) for _ in range(3)])
 
     @staticmethod
     def check_role(new_score, user, ctx):
@@ -292,7 +287,7 @@ class KGX(commands.Bot):
         return int(a[0]) + int(b[0])
 
     @staticmethod
-    def delete_to(ctx, channel_id):
+    async def delete_to(ctx, channel_id):
         if not ctx.channel.id == channel_id:
             return
         delete_ch = ctx.channel
