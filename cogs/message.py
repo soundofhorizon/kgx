@@ -287,6 +287,7 @@ class Message(commands.Cog):
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check3)
+                user_input_2 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_2.content))
 
                 embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。"
                                                   "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
@@ -294,6 +295,10 @@ class Message(commands.Cog):
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 user_input_3 = await self.bot.wait_for('message', check=check4)
+                if not user_input_3.content == "なし":
+                    user_input_3 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_3.content))
+                else:
+                    user_input_3 = "なし"
 
                 embed = discord.Embed(
                     description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
@@ -315,12 +320,12 @@ class Message(commands.Cog):
                                       color=0xffaf60)
                 embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
                 embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
-                embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2.content}', inline=False)
+                embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2}', inline=False)
                 # 卒決価格なしなら単位は付与しない
-                if user_input_3.content == "なし":
-                    value = user_input_3.content
+                if user_input_3 == "なし":
+                    value = user_input_3
                 else:
-                    value = f"{unit}{user_input_3.content}"
+                    value = f"{unit}{user_input_3}"
                 embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                 embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
                 embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
@@ -334,7 +339,7 @@ class Message(commands.Cog):
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
-                    embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2.content}', inline=False)
+                    embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2}', inline=False)
                     embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                     embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
                     embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
@@ -344,11 +349,16 @@ class Message(commands.Cog):
                     await ctx.author.remove_roles(tmprole)
 
                     # 椎名の部分を数字に変換(開始と即決)
-                    user_input_2 = self.bot.stack_check(user_input_2.content)
-                    user_input_3 = self.bot.stack_check(user_input_3.content)
+                    user_input_2 = self.bot.stack_check(user_input_2)
+                    if user_input_3 == "なし":
+                        pass
+                    else:
+                        user_input_3 = self.bot.stack_check(user_input_3)
 
                     # SQLにデータ登録
-                    cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, unit = %s WHERE ch_id = %s",
+                    cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, "
+                                "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
+                                "unit = %s WHERE ch_id = %s",
                                 (ctx.author.id, auction_embed.id, user_input_1.content, str(user_input_2),
                                  str(user_input_3), user_input_4.content, unit, ctx.channel.id))
                     db.commit()
@@ -431,7 +441,7 @@ class Message(commands.Cog):
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check3)
-
+                user_input_2 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_2.content))
                 embed = discord.Embed(
                     description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
                                 "例　5月14日の午後8時に終了したい場合：\n**2020/05/14-20:00**と入力してください。\nこの形でない場合認識されません！\n"
@@ -454,7 +464,7 @@ class Message(commands.Cog):
                                       color=0xffaf60)
                 embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
                 embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=False)
-                embed.add_field(name="希望価格", value=f'\n\n{unit}{user_input_2.content}', inline=True)
+                embed.add_field(name="希望価格", value=f'\n\n{unit}{user_input_2}', inline=True)
                 embed.add_field(name="終了日時", value=f'\n\n{user_input_3.content}', inline=True)
                 embed.add_field(name="特記事項", value=f'\n\n{user_input_4.content}', inline=False)
                 await ctx.channel.send(embed=embed)
@@ -466,7 +476,7 @@ class Message(commands.Cog):
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=False)
-                    embed.add_field(name="希望価格", value=f'\n\n{unit}{user_input_2.content}', inline=True)
+                    embed.add_field(name="希望価格", value=f'\n\n{unit}{user_input_2}', inline=True)
                     embed.add_field(name="終了日時", value=f'\n\n{user_input_3.content}', inline=True)
                     embed.add_field(name="特記事項", value=f'\n\n{user_input_4.content}', inline=False)
                     await ctx.channel.send(
@@ -475,9 +485,9 @@ class Message(commands.Cog):
                     await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
                     await ctx.author.remove_roles(tmprole)
 
-                    user_input_2 = self.bot.stack_check(user_input_2.content)
-                    await ctx.send(f"UPDATE deal SET deal_owner_id = {ctx.author.id}, embed_message_id = {deal_embed.id}, deal_item = '{user_input_1.content}', deal_hope_price = '{str(user_input_2)}', deal_end_time = '{user_input_3.content}', unit = '{unit}' WHERE ch_id = {ctx.channel.id}")
-                    cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = '%s', deal_hope_price = '%s', deal_end_time = '%s', unit = '%s' WHERE ch_id = %s",
+                    user_input_2 = self.bot.stack_check(user_input_2)
+                    cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
+                                "deal_hope_price = %s, deal_end_time = %s, unit = %s WHERE ch_id = %s",
                                 (ctx.author.id, deal_embed.id, user_input_1.content, str(user_input_2),
                                  user_input_3.content, unit, ctx.channel.id))
                     db.commit()
