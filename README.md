@@ -25,7 +25,7 @@
 >
 >> bidder_name: 落札者の名前 text<br>
 >> item_name: 出品物の名前 text<br>
->> bid_price 落札額 bigint(shortintの方が10倍マシ)<br>
+>> bid_price 落札額 smallint<br>
 >> seller_id: ※ idと言っておきながら格納されているのはニックネーム。seller_nameにするべき text<br>
 >
 > user_data
