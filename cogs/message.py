@@ -476,7 +476,7 @@ class Message(commands.Cog):
                     await ctx.author.remove_roles(tmprole)
 
                     user_input_2 = self.bot.stack_check(user_input_2.content)
-
+                    await ctx.send(f"UPDATE deal SET deal_owner_id = {ctx.author.id}, embed_message_id = {deal_embed.id}, deal_item = '{user_input_1.content}', deal_hope_price = '{str(user_input_2)}', deal_end_time = '{user_input_3.content}', unit = '{unit}' WHERE ch_id = {ctx.channel.id}")
                     cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = '%s', deal_hope_price = '%s', deal_end_time = '%s', unit = '%s' WHERE ch_id = %s",
                                 (ctx.author.id, deal_embed.id, user_input_1.content, str(user_input_2),
                                  user_input_3.content, unit, ctx.channel.id))
