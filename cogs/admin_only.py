@@ -150,8 +150,8 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        ch_list_1 = [c.id for c in ctx.guild.categories if c.name.startswith('>')]
-        ch_list_2 = [c.id for c in ctx.guild.categories if c.name.startswith('*')]
+        ch_list_1 = {c.id for c in ctx.guild.categories if c.name.startswith('>')}
+        ch_list_2 = {this.id for this in ctx.guild.categories if this.name.startswith('*')}
         await ctx.send("auction\n------")
         for i in range(len(ch_list_1)):
             await ctx.send(f"INSERT INTO auction VALUES ({ch_list_1[i]}, 0, 'undefined', 'undefined', 'undefined', 'undefined', 'undefined')")
