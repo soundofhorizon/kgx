@@ -234,7 +234,7 @@ class Message(commands.Cog):
                 return fourth_user_input.channel == ctx.channel and re.match(
                     r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}",
                     fourth_user_input.content) and datetime.strptime(fourth_user_input.content,
-                                                                        "%Y/%m/%d-%H:%M") and m.author == ctx.author
+                                                                        "%Y/%m/%d-%H:%M") and fourth_user_input.author == ctx.author
 
             # 価格フォーマットチェック
             def check3(m):
