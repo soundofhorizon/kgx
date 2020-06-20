@@ -6,6 +6,7 @@
 >
 >> ch_id: チャンネルID格納. bigint. unique key<br>
 >> auction_owner_id: そのチャンネルにおけるオークションのオーナーのid. bigint<br>
+>> embed_message_id: オークション情報が載ってるembedのmessage_id: bigint<br>
 >> auction_item: そのチャンネルの出品物. text<br>
 >> auction_start_price: text<br>
 >> auction_bin_time: text<br>
@@ -16,6 +17,7 @@
 >
 >> ch_id: チャンネルID格納. bigint. unique key<br>
 >> deal_owner_id: そのチャンネルにおけるオークションのオーナーのid. bigint<br>
+>>> embed_message_id: オークション情報が載ってるembedのmessage_id: bigint<br>
 >> deal_item: そのチャンネルの出品物. text<br>
 >> deal_hope_price: text<br>
 >> deal_end_time: 終了時刻がdatetime型で入る。 text <br>
