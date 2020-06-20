@@ -107,8 +107,8 @@ class AdminOnly(commands.Cog):
     async def user_caution(self, ctx):
         await ctx.send(f'{ctx.prefix}user_caution [set, get]')
 
-    @user_caution.command(name="get")
-    async def _get(self, ctx, user: discord.Member):
+    @user_caution.command()
+    async def get(self, ctx, user: discord.Member):
         cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (user.id,))
         data = cur.fetchone()
         caution_level = data[0]
