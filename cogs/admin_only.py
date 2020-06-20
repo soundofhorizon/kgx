@@ -156,10 +156,10 @@ class AdminOnly(commands.Cog):
         ch_list_2 = list({b.id for b in ctx.guild.text_channels if b.category_id in ch_category_2})
         await ctx.send("auction\n------")
         for i in range(len(ch_list_1)):
-            await ctx.send(f"INSERT INTO auction VALUES ({ch_list_1[i]}, 0, 'undefined', 'undefined', 'undefined', 'undefined', 'undefined')")
+            await ctx.send(f"INSERT INTO auction VALUES ({ch_list_1[i]}, 0, 'undefined', 'undefined', 'undefined', 'undefined', 'undefined');")
         await ctx.send("deal\n------")
         for i in range(len(ch_list_2)):
-            await ctx.send(f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 'undefined', 'undefined', 'undefined', 'undefined')")
+            await ctx.send(f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
