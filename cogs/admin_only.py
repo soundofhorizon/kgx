@@ -165,15 +165,10 @@ class AdminOnly(commands.Cog):
     async def test(self, ctx):
         cur.execute("SELECT embed_message_id FROM auction WHERE ch_id = %s", (ctx.channel.id,))
         embed_id = cur.fetchone()
+        delete_ch = ctx.channel
+        msg = await delete_ch.fetch_message(embed_id[0])
+        await delete_ch.purge(limit=None, after=msg)
 
-        def __delete_to(ctx, channel_id):
-            if not ctx.channel.id == channel_id:
-                return
-            delete_ch = ctx.channel
-            msg = await delete_ch.fetch_message(channel_id)
-            await delete_ch.purge(limit=None, after=msg)
-
-        __delete_to(ctx, embed_id[0])
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
