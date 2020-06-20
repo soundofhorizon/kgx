@@ -130,8 +130,8 @@ class AdminOnly(commands.Cog):
         data = cur.fetchone()
         await ctx.send(f"{user}の落札ポイントは{data[0]}です")
 
-    @bidGS.command()
-    async def set(self, ctx, user: discord.Member, n: int):
+    @bidGS.command(name="set")
+    async def _set(self, ctx, user: discord.Member, n: int):
         cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (n, user.id))
         db.commit()
         await ctx.send(f'{user.display_name}の落札ポイントを{n}にセットしました')
@@ -149,7 +149,7 @@ class AdminOnly(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command()
-    async def test(self, ctx, user_id):
+    async def test(self, ctx):
         await ctx.send([c.qualified_name for c in self.bot.walk_commands()])
 
 
