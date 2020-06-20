@@ -287,14 +287,6 @@ class KGX(commands.Bot):
         return int(a[0]) + int(b[0])
 
     @staticmethod
-    async def delete_to(ctx, channel_id):
-        if not ctx.channel.id == channel_id:
-            return
-        delete_ch = ctx.channel
-        msg = await delete_ch.fetch_message(channel_id)
-        await delete_ch.purge(limit=None, after=msg)
-
-    @staticmethod
     def reset_ch_db(channel_id, mode):
         # SQLにデータ登録
         if mode == "a":
