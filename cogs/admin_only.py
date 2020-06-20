@@ -101,14 +101,6 @@ class AdminOnly(commands.Cog):
         embed = discord.Embed(title="SQL文の実行結果", description=''.join(f"{d}、" for d in data))
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def delete_to(self, ctx):
-        if not ctx.channel.id == 722768808321876068:
-            return
-        delete_ch = ctx.channel
-        msg = await delete_ch.fetch_message(722768855021256706)
-        await delete_ch.purge(limit=None, after=msg)
-
     @commands.group(invoke_without_command=True)
     async def user_caution(self, ctx):
         await ctx.send(f'{ctx.prefix}user_caution [set, get]')
@@ -171,8 +163,9 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        a = await ctx.send("あひゃーｗｗｗｗ")
-        await ctx.send(a.id)
+        cur.execute("SELECT embed_message_id FROM auction WHERE ch_id = %s", (ctx.channel.id,))
+        embed_id = cur.fetchone
+        self.bot.delete_to(ctx, embed_id[0])
 
 
 def setup(bot):
