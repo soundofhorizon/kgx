@@ -199,16 +199,17 @@ class Message(commands.Cog):
 
     @commands.command()
     async def start(self, ctx):
+        # 2つ行ってる場合はreturn
+        user = ctx.author.id
+        if self.bot.get_user_auction_count(user) >= 2:
+            description = "貴方はすでに取引を2つ以上行っているためこれ以上取引を始められません。\n" \
+                          "行っている取引が2つ未満になってから再度行ってください。"
+            await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
+            await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
+            return
+
         # オークション系
         if is_auction_category(ctx):
-            # 2つ行ってる場合はreturn
-            # user = ctx.author.id
-            # if self.bot.get_user_auction_count(user) >= 2:
-            #     description = "貴方はすでにオークションを2つ以上行っているためこれ以上オークションを始められません。\n" \
-            #                   "行っているオークションが2つ未満になってから再度行ってください。"
-            #     await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
-            #     await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
-            #     return
 
             # 既にオークションが行われていたらreturn
             if "☆" not in ctx.channel.name:
@@ -218,8 +219,6 @@ class Message(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 return
 
-            auction_registration_user_id = ctx.author.id
-
             # メッセージを待つだけの変数。ほかの人からの入力は受け付けないようにしている
             def check(m):
                 if m.author.bot:
@@ -227,15 +226,14 @@ class Message(commands.Cog):
                 return m.channel == ctx.channel and m.author == ctx.author
 
             # 日付型になってるかを確かめる
-            def check2(fourth_user_input):
-                if fourth_user_input.author.bot:
+            def check2(m):
+                if m.author.bot:
                     return
                     # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
                 try:
-                    return fourth_user_input.channel == ctx.channel and re.match(
+                    return m.channel == ctx.channel and re.match(
                         r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}",
-                        fourth_user_input.content) and datetime.strptime(fourth_user_input.content,
-                                                                         "%Y/%m/%d-%H:%M") and fourth_user_input.author == ctx.author
+                        m.content) and datetime.strptime(m.content, "%Y/%m/%d-%H:%M") and m.author == ctx.author
                 except ValueError:
                     return False
 
@@ -246,8 +244,10 @@ class Message(commands.Cog):
                 if m.channel != ctx.channel:
                     return False
                 # 〇st+△(記号はint)もしくは△であるのを確かめる
-                return (re.match(r"[0-9]{1,4}st\+[0-9]{1,2}", m.content) or re.match(r"[1-9]{1,2}",
-                                                                                     m.content)) and m.author == ctx.author
+                else:
+                    return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
+                        r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
+                            ) and m.author == ctx.author
 
             # 価格フォーマットチェック(なしを含む)
             def check4(m):
@@ -258,7 +258,7 @@ class Message(commands.Cog):
                         return False
                     # 〇st+△(記号はint)もしくは△であるのを確かめる
                     return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
-                        r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}",m.content)
+                        r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
                             or m.content == "なし") and m.author == ctx.author
 
             # 単位の設定
@@ -387,14 +387,6 @@ class Message(commands.Cog):
 
         # 通常取引について
         elif is_normal_category(ctx):
-            # 2つ行ってる場合はreturn
-            # user = ctx.author.id
-            # if self.bot.operate_user_auction_count("g", user) >= 2:
-            #    description = "貴方はすでに取引を2つ以上行っているためこれ以上取引を始められません。\n" \
-            #                   "行っている取引が2つ未満になってから再度行ってください。"
-            #    await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
-            #    await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
-            #    return
 
             # 既に取引が行われていたらreturn
             if "☆" not in ctx.channel.name:
@@ -404,25 +396,35 @@ class Message(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 return
 
+                # メッセージを待つだけの変数。ほかの人からの入力は受け付けないようにしている
             def check(m):
                 if m.author.bot:
                     return
                 return m.channel == ctx.channel and m.author == ctx.author
 
-            def check2(fourth_user_input):
-                # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
-                return fourth_user_input.channel == ctx.channel and re.match(
-                    r'[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}',
-                    fourth_user_input.content) and datetime.strptime(fourth_user_input.content,
-                                                                     "%Y/%m/%d-%H:%M") and fourth_user_input.author == ctx.author
+            # 日付型になってるかを確かめる
+            def check2(m):
+                if m.author.bot:
+                    return
+                    # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
+                try:
+                    return m.channel == ctx.channel and re.match(
+                        r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}",
+                        m.content) and datetime.strptime(m.content, "%Y/%m/%d-%H:%M") and m.author == ctx.author
+                except ValueError:
+                    return False
 
             # 価格フォーマットチェック
             def check3(m):
                 if m.author.bot:
                     return
+                if m.channel != ctx.channel:
+                    return False
                 # 〇st+△(記号はint)もしくは△であるのを確かめる
-                return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
-                    r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}",m.content)) and m.author == ctx.author
+                else:
+                    return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
+                        r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
+                            ) and m.author == ctx.author
 
             # 単位の設定
             unit = ""
