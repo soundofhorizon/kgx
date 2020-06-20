@@ -6,7 +6,7 @@ import psycopg2
 import requests
 from discord.ext import commands
 import discord
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 import asyncio
 from discord import Embed
@@ -319,6 +319,12 @@ class Message(commands.Cog):
                 if now >= finish_time:
                     #purge()の処理は入っていません
                     await ctx.channel.send("現在時刻より前、又は同時刻に終了時刻が設定されています。やり直してください。")
+                    await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
+                    return
+                two_months_later = now + timedelta(weeks=8)
+                if finish_time > two_months_later:
+                    #purge()の処理は(ry
+                    await ctx.channel.send("2ヵ月以上にわたるオークションは禁止されています。やり直してください。")
                     await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
                     return
 
