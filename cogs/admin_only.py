@@ -69,6 +69,12 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def stop_deal(self, ctx):
+        # dbのリセット
+        if ">" in ctx.channel.category.name:
+            self.bot.reset_ch_db(ctx.channel.id, "a")
+        elif "*" in ctx.channel.category.name:
+            self.bot.reset_ch_db(ctx.channel.id, "d")
+
         embed = discord.Embed(
             description=f"{ctx.author.display_name}によりこの取引は停止させられました。",
             color=0xf04747

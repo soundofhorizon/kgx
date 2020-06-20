@@ -291,6 +291,22 @@ class KGX(commands.Bot):
         b = tuple(cur.fetchone())
         return int(a[0]) + int(b[0])
 
+    @staticmethod
+    def reset_ch_db(channel_id, mode):
+        # SQLにデータ登録
+        if mode == "a":
+            cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, "
+                        "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
+                        "unit = %s WHERE ch_id = %s",
+                        (0, 0, "undefined", "undefined",
+                         "undefined", "undefined", "undefined", channel_id))
+        elif mode == "d":
+            cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
+                        "deal_hope_price = %s, deal_end_time = %s, unit = %s WHERE ch_id = %s",
+                        (0, 0, "undefined", "undefined",
+                         "undefined", "undefined", channel_id))
+        db.commit()
+
     async def on_ready(self):
         await self.get_channel(678083611697872910).purge(limit=1)
         await self.get_channel(678083611697872910).send(embed=self.embed)
