@@ -288,6 +288,7 @@ class Message(commands.Cog):
                 await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check3)
                 user_input_2 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_2.content))
+                kaisi_kakaku = self.bot.stack_check(user_input_2) #kaisi_kakakuはint型
 
                 embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。"
                                                   "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
@@ -297,6 +298,12 @@ class Message(commands.Cog):
                 user_input_3 = await self.bot.wait_for('message', check=check4)
                 if not user_input_3.content == "なし":
                     user_input_3 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_3.content))
+                    sokketu_kakaku = self.bot.stack_check(user_input_3) #sokketu_kakakuはint型
+                    if kaisi_kakaku >= sokketu_kakaku:
+                        #purge()の処理は入っていません
+                        await ctx.channel.send("開始価格が即決価格より高い、又は即決価格と同じです。やり直してください。")
+                        await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
+                        return
                 else:
                     user_input_3 = "なし"
 
@@ -307,6 +314,13 @@ class Message(commands.Cog):
                     color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 user_input_4 = await self.bot.wait_for('message', check=check2)
+                now = datetime.now()
+                finish_time = datetime.strptime(user_input_4.content, r"%Y/%m/%d-%H:%M")
+                if now >= finish_time:
+                    #purge()の処理は入っていません
+                    await ctx.channel.send("現在時刻より前、又は同時刻に終了時刻が設定されています。やり直してください。")
+                    await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
+                    return
 
                 embed = discord.Embed(
                     description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
