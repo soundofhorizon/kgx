@@ -338,8 +338,8 @@ class Message(commands.Cog):
                     embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                     embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
                     embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
-                    await ctx.channel.send(embed=embed)
                     await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
+                    auction_embed = await ctx.channel.send(embed=embed)
                     await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
                     await ctx.author.remove_roles(tmprole)
 
@@ -348,9 +348,11 @@ class Message(commands.Cog):
                     user_input_3 = self.bot.stack_check(user_input_3.content)
 
                     # SQLにデータ登録
-                    cur.execute("INSERT INTO auction values (%s, %s, %s, %s, %s, %s, %s)",
-                                (ctx.channel.id, ctx.author.id, user_input_1.content, str(user_input_2),
-                                 str(user_input_3), user_input_4.content, unit))
+                    cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s,"
+                                "auction_item = '%s', auction_start_price = '%s', auction_bin_price = '%s',"
+                                "auction_end_time = '%s', unit = '%s' WHERE ch_id = %s)",
+                                (ctx.author.id, auction_embed.id, user_input_1.content, str(user_input_2),
+                                 str(user_input_3), user_input_4.content, unit, ctx.channel.id))
                     db.commit()
 
                 else:
@@ -469,17 +471,19 @@ class Message(commands.Cog):
                     embed.add_field(name="希望価格", value=f'\n\n{unit}{user_input_2.content}', inline=True)
                     embed.add_field(name="終了日時", value=f'\n\n{user_input_3.content}', inline=True)
                     embed.add_field(name="特記事項", value=f'\n\n{user_input_4.content}', inline=False)
-                    await ctx.channel.send(embed=embed)
                     await ctx.channel.send(
                         "<:shiina_balance:558175954686705664>取引を開始します<:shiina_balance:558175954686705664>")
+                    deal_embed = await ctx.channel.send(embed=embed)
                     await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
                     await ctx.author.remove_roles(tmprole)
 
-                    # todo 希望価格の部分を数字に変えてstrでキャストしてuser_input2の部分に突っ込みましょう
+                    user_input_2 = self.bot.stack_check(user_input_2.content)
 
-                    cur.execute("INSERT INTO deal values (%s, %s, %s, %s, %s, %s)",
-                                (ctx.channel.id, ctx.author.id, user_input_1.content, user_input_2.content,
-                                 user_input_3.content, unit))
+                    cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s,"
+                                "deal_item = '%s', deal_hope_price = '%s',"
+                                "deal_end_time = '%s', unit = '%s' WHERE ch_id = %s)",
+                                (ctx.author.id, deal_embed.id, user_input_1.content, str(user_input_2),
+                                 user_input_3.content, unit, ctx.channel.id))
                     db.commit()
 
                 else:
