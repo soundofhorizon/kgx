@@ -17,7 +17,7 @@
 >
 >> ch_id: チャンネルID格納. bigint. unique key<br>
 >> deal_owner_id: そのチャンネルにおけるオークションのオーナーのid. bigint<br>
->>> embed_message_id: オークション情報が載ってるembedのmessage_id: bigint<br>
+>> embed_message_id: オークション情報が載ってるembedのmessage_id: bigint<br>
 >> deal_item: そのチャンネルの出品物. text<br>
 >> deal_hope_price: text<br>
 >> deal_end_time: 終了時刻がdatetime型で入る。 text <br>
@@ -35,7 +35,12 @@
 >> user_id: 参加時のmcid認証が通ると登録される。 bigint unique key<br>
 >> bid_score: 落札ポイントを格納。 smallint(3万以上とか考慮してない)<br>
 >> warn_level: 警告レベルを格納。 smallint(0-3以外を取らない変数のため要求を満たす)<br>
-
+>
+> tend
+>
+>> ch_id: チャンネルID格納. bigint. unique key<br>
+>> tender_id: 入札した人のidを格納 bigint. <br>
+>> tend_price: 入札額を格納。stack_check関数を通すこと。 int. <br>
 
 # コミットルール
 始めに英単語1字を付与すること。[ADD] [CHANGE] [DELETE] [Refactor] ここら辺をよく使うかな
