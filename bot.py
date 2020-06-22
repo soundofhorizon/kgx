@@ -301,6 +301,10 @@ class KGX(commands.Bot):
                         (0, 0, "undefined", "undefined",
                          "undefined", "undefined", channel_id))
         db.commit()
+        # SQLにデータ登録
+        if mode == "a":
+            cur.execute("UPDATE tend SET tender_id = 0, tend_price = 0 WHERE ch_id = %s", (channel_id,))
+            db.commit()
 
     async def on_ready(self):
         await self.get_channel(678083611697872910).purge(limit=1)
