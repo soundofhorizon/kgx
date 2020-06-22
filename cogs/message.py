@@ -523,6 +523,14 @@ class Message(commands.Cog):
     @commands.command()
     async def tend(self, ctx, price):
         if is_auction_category(ctx):
+            # そもそもオークションが開催してなかったらreturn
+            if '☆' in ctx.channel.name:
+                embed = discord.Embed(
+                    description=f'{ctx.author.display_name}さん。このチャンネルではオークションは行われていません',
+                    color=0xff0000)
+                await ctx.channel.send(embed=embed)
+                return
+
             # 少数は可能。
             def check_style(m):
                 style_list = m.lower().replace("st", "").replace("lc", "").split("+")
