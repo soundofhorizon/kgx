@@ -155,7 +155,7 @@ class AdminOnly(commands.Cog):
         await ctx.send("auction\n------")
         for i in range(len(ch_list_1)):
             await ctx.send(
-                f"INSERT INTO auction VALUES ({ch_list_1[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined', 'undefined');")
+                f"INSERT INTO tend VALUES ({ch_list_1[i]}, 0, 0);")
         await ctx.send("deal\n------")
         for i in range(len(ch_list_2)):
             await ctx.send(
