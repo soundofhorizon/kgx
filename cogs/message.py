@@ -542,10 +542,33 @@ class Message(commands.Cog):
                 return True
 
             if check_style(price):
+                # 開始価格、即決価格、現在の入札額を取り寄せ
+                cur.execute("SELECT auction_start_price FROM auction where ch_id = %s", (ctx.channel.id,))
+                auction_start_price = cur.fetchone()
+                cur.execute("SELECT auction_bin_price FROM auction where ch_id = %s", (ctx.channel.id,))
+                auction_bin_price = cur.fetchone()
+                cur.execute("SELECT tend_price FROM tend where ch_id = %s", (ctx.channel.id,))
+                tend_price = cur.fetchone()
+
+                # 条件に1つでも合致していたらreturn
+                if self.bot.stack_check(price) < auction_start_price[0] or self.bot.stack_check(price) < tend_price[0]:
+                    embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    return
+                elif self.bot.stack_check(price) >= auction_bin_price[0]:
+                    embed = discord.Embed(description=f"即決価格より高い価格が入札されました。{ctx.author.display_name}さんの落札です。",
+                                          color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    # todo ここにbid処理を挟む
+                    return
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()
-                self.bot.delete_to(ctx.channel.id)
+                cur.execute("SELECT embed_message_id FROM auction where ch_id = %s", (ctx.channel.id,))
+                embed_id = cur.fetchone()
+                delete_ch = ctx.channel
+                msg = await delete_ch.fetch_message(embed_id[0])
+                await delete_ch.purge(limit=None, after=msg)
 
                 # 色々と取り寄せる
                 cur.execute("SELECT unit FROM auction WHERE ch_id = %s", (ctx.channel.id,))
