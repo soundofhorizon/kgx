@@ -525,7 +525,7 @@ class Message(commands.Cog):
         if is_auction_category(ctx):
             # 少数は可能。
             def check_style(m):
-                style_list = m.content.lower().replace("st", "").replace("lc", "").split("+")
+                style_list = m.lower().replace("st", "").replace("lc", "").split("+")
                 for i in range(len(style_list)):
                     try:
                         float(style_list[i])
