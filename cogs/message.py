@@ -551,11 +551,11 @@ class Message(commands.Cog):
                 tend_price = cur.fetchone()
 
                 # 条件に1つでも合致していたらreturn
-                if self.bot.stack_check(price) < auction_start_price[0] or self.bot.stack_check(price) < tend_price[0]:
+                if self.bot.stack_check(price) < int(auction_start_price[0]) or self.bot.stack_check(price) < int(tend_price[0]):
                     embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
-                elif self.bot.stack_check(price) >= auction_bin_price[0]:
+                elif self.bot.stack_check(price) >= int(auction_bin_price[0]):
                     embed = discord.Embed(description=f"即決価格より高い価格が入札されました。{ctx.author.display_name}さんの落札です。",
                                           color=0x4259fb)
                     await ctx.send(embed=embed)
