@@ -549,8 +549,14 @@ class Message(commands.Cog):
                 auction_bin_price = cur.fetchone()
                 cur.execute("SELECT tend_price FROM tend where ch_id = %s", (ctx.channel.id,))
                 tend_price = cur.fetchone()
+                cur.execute("SELECT auction_owner_id FROM auction WHERE ch_id = %s", (ctx.channel.id,))
+                auction_owner_id = cur.fetchone()
 
                 # 条件に1つでも合致していたらreturn
+                if ctx.author.id == auction_owner_id:
+                    embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    return
                 if self.bot.stack_check(price) < int(auction_start_price[0]) or self.bot.stack_check(price) < int(tend_price[0]):
                     embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                     await ctx.send(embed=embed)
