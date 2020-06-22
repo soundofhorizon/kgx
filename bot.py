@@ -222,6 +222,7 @@ class KGX(commands.Bot):
         return embed_list
 
     # [a lc + b st + c]がvalueで来ることを想定する(関数使用前に文の構造確認を取る)
+    # 少数出来た場合、少数で計算して最後にintぐるみをして値を返す
     @staticmethod
     def stack_check(value):
         value = str(value).replace("椎名", "").lower()
@@ -244,10 +245,10 @@ class KGX(commands.Bot):
                 calc_result[2] = data[0]
             except IndexError:
                 pass
-            a = int(calc_result[0])
-            b = int(calc_result[1])
-            c = int(calc_result[2])
-            d = a * 3456 + b * 64 + c
+            a = float(calc_result[0])
+            b = float(calc_result[1])
+            c = float(calc_result[2])
+            d = int(float(a * 3456 + b * 64 + c))
             if d <= 0:
                 return 0
             else:

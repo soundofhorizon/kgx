@@ -397,6 +397,7 @@ class Message(commands.Cog):
                 return
 
                 # メッセージを待つだけの変数。ほかの人からの入力は受け付けないようにしている
+
             def check(m):
                 if m.author.bot:
                     return
@@ -518,6 +519,43 @@ class Message(commands.Cog):
                 kazu = 2
                 await ctx.channel.purge(limit=kazu)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
+
+    @commands.command()
+    async def tend(self, ctx, price):
+        if is_auction_category(ctx):
+            # 少数は可能。
+            def check_style(m):
+                style_list = m.content.lower().replace("st", "").replace("lc", "").split("+")
+                for i in range(len(style_list)):
+                    try:
+                        float(style_list[i])
+                    except ValueError:
+                        return False
+                return True
+
+            if check_style(price):
+                cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
+                            (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
+                db.commit()
+                self.bot.delete_to(ctx.channel.id)
+
+                # 色々と取り寄せる
+                cur.execute("SELECT unit FROM auction WHERE ch_id = %s", (ctx.channel.id,))
+                unit = cur.fetchone()
+                time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+                await ctx.send(f"入札者: {ctx.author.display_name}, \n"
+                               f"入札額: {unit[0]}{self.bot.stack_check_reverse(price)}\n"
+                               f"入札時刻: {time}")
+                # todo ここにembedを創る・。・
+            else:
+                embed = discord.Embed(description=f"{ctx.author.display_name}さん。入力した値が不正です。もう一度正しく入力を行ってください。",
+                                      color=0x4259fb)
+                await ctx.send(embed=embed)
+
+        else:
+            embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def bid(self, ctx):
