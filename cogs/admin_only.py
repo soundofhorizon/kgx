@@ -79,7 +79,7 @@ class AdminOnly(commands.Cog):
             time = d.strftime("%Y/%m/%d")
             embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
             embed.add_field(name="落札日", value=f'\n\n{time}', inline=False)
-            embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=False)
+            embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=int(auction_data[1])).display_name}', inline=False)
             embed.add_field(name="品物", value=f'\n\n{auction_data[3]}', inline=False)
             embed.add_field(name="落札者", value=f'\n\n{self.bot.get_user(id=int(tend_data[1])).display_name}', inline=False)
             embed.add_field(name="落札価格", value=f'\n\n{self.bot.stack_check_reverse(self.bot.stack_check(int(tend_data[2])))}', inline=False)
