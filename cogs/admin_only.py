@@ -110,141 +110,141 @@ class AdminOnly(commands.Cog):
             self.bot.reset_ch_db(deal_data[0], "d")
 
 
-@commands.command()
-async def bidscore_ranking(self, ctx):
-    channel = self.bot.get_channel(677905288665235475)
-    # とりあえず、ランキングチャンネルの中身を消す
-    await channel.purge(limit=1)
-    await channel.send(embed=self.bot.create_ranking_embed())
-    await asyncio.sleep(0.3)
-    embed = discord.Embed(
-        description=f"このサーバーの全メンバーの落札ポイントの照会が終わりました。"
-                    f"\nランキングを出力しました。 ",
-        color=0x1e90ff
-    )
-    await ctx.send(embed=embed)
+    @commands.command()
+    async def bidscore_ranking(self, ctx):
+        channel = self.bot.get_channel(677905288665235475)
+        # とりあえず、ランキングチャンネルの中身を消す
+        await channel.purge(limit=1)
+        await channel.send(embed=self.bot.create_ranking_embed())
+        await asyncio.sleep(0.3)
+        embed = discord.Embed(
+            description=f"このサーバーの全メンバーの落札ポイントの照会が終わりました。"
+                        f"\nランキングを出力しました。 ",
+            color=0x1e90ff
+        )
+        await ctx.send(embed=embed)
 
 
-@commands.command()
-async def show_bid_ranking(self, ctx):
-    await self.bot.get_channel(705040893593387039).purge(limit=10)
-    await asyncio.sleep(0.1)
-    embed = self.bot.create_high_bid_ranking()
-    for i in range(len(embed)):
-        await self.bot.get_channel(705040893593387039).send(embed=embed[i])
+    @commands.command()
+    async def show_bid_ranking(self, ctx):
+        await self.bot.get_channel(705040893593387039).purge(limit=10)
+        await asyncio.sleep(0.1)
+        embed = self.bot.create_high_bid_ranking()
+        for i in range(len(embed)):
+            await self.bot.get_channel(705040893593387039).send(embed=embed[i])
 
 
-@commands.command()
-async def stop_deal(self, ctx):
-    # dbのリセット
-    if ">" in ctx.channel.category.name:
-        self.bot.reset_ch_db(ctx.channel.id, "a")
-    elif "*" in ctx.channel.category.name:
-        self.bot.reset_ch_db(ctx.channel.id, "d")
+    @commands.command()
+    async def stop_deal(self, ctx):
+        # dbのリセット
+        if ">" in ctx.channel.category.name:
+            self.bot.reset_ch_db(ctx.channel.id, "a")
+        elif "*" in ctx.channel.category.name:
+            self.bot.reset_ch_db(ctx.channel.id, "d")
 
-    embed = discord.Embed(
-        description=f"{ctx.author.display_name}によりこの取引は停止させられました。",
-        color=0xf04747
-    )
-    await ctx.channel.send(embed=embed)
-    await ctx.channel.edit(name=ctx.channel.name + '☆')
-    await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
-
-
-@commands.command()
-async def star_delete(self, ctx):
-    embed = discord.Embed(
-        description=f"{ctx.author.display_name}により☆を強制的に取り外しました。",
-        color=0xf04747
-    )
-    await ctx.channel.send(embed=embed)
-    await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
+        embed = discord.Embed(
+            description=f"{ctx.author.display_name}によりこの取引は停止させられました。",
+            color=0xf04747
+        )
+        await ctx.channel.send(embed=embed)
+        await ctx.channel.edit(name=ctx.channel.name + '☆')
+        await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
 
 
-@commands.command()
-async def execute_sql(self, ctx, *, content):
-    cur.execute(content)
-    data = cur.fetchone()
-    if len(data) == 0:
-        return await ctx.send(f'SQL文`{content}`は正常に実行されました')
-    embed = discord.Embed(title="SQL文の実行結果", description=''.join(f"{d}、" for d in data))
-    await ctx.send(embed=embed)
+    @commands.command()
+    async def star_delete(self, ctx):
+        embed = discord.Embed(
+            description=f"{ctx.author.display_name}により☆を強制的に取り外しました。",
+            color=0xf04747
+        )
+        await ctx.channel.send(embed=embed)
+        await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
 
 
-@commands.group(invoke_without_command=True)
-async def user_caution(self, ctx):
-    await ctx.send(f'{ctx.prefix}user_caution [set, get]')
+    @commands.command()
+    async def execute_sql(self, ctx, *, content):
+        cur.execute(content)
+        data = cur.fetchone()
+        if len(data) == 0:
+            return await ctx.send(f'SQL文`{content}`は正常に実行されました')
+        embed = discord.Embed(title="SQL文の実行結果", description=''.join(f"{d}、" for d in data))
+        await ctx.send(embed=embed)
 
 
-@user_caution.command()
-async def get(self, ctx, user: discord.Member):
-    cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (user.id,))
-    data = cur.fetchone()
-    caution_level = data[0]
-    await ctx.send(f"{user}の警告レベルは{caution_level}です")
+    @commands.group(invoke_without_command=True)
+    async def user_caution(self, ctx):
+        await ctx.send(f'{ctx.prefix}user_caution [set, get]')
 
 
-@user_caution.command()
-async def set(self, ctx, user: discord.Member, n: int):
-    cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (n, user.id))
-    db.commit()
-    await ctx.send(f'{user}に警告レベル{n}を付与しました')
+    @user_caution.command()
+    async def get(self, ctx, user: discord.Member):
+        cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (user.id,))
+        data = cur.fetchone()
+        caution_level = data[0]
+        await ctx.send(f"{user}の警告レベルは{caution_level}です")
 
 
-@commands.group(invoke_without_command=True)
-async def bidGS(self, ctx):
-    await ctx.send(f'{ctx.prefix}score [set, get]')
+    @user_caution.command()
+    async def set(self, ctx, user: discord.Member, n: int):
+        cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (n, user.id))
+        db.commit()
+        await ctx.send(f'{user}に警告レベル{n}を付与しました')
 
 
-@bidGS.command(name="get")
-async def _get(self, ctx, user: discord.Member):
-    cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
-    data = cur.fetchone()
-    await ctx.send(f"{user}の落札ポイントは{data[0]}です")
+    @commands.group(invoke_without_command=True)
+    async def bidGS(self, ctx):
+        await ctx.send(f'{ctx.prefix}score [set, get]')
 
 
-@bidGS.command(name="set")
-async def _set(self, ctx, user: discord.Member, n: int):
-    cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (n, user.id))
-    db.commit()
-    await ctx.send(f'{user.display_name}の落札ポイントを{n}にセットしました')
-
-    channel = self.bot.get_channel(677905288665235475)
-    # とりあえず、ランキングチャンネルの中身を消す
-    await channel.purge(limit=1)
-    await channel.send(embed=self.bot.create_ranking_embed())
-    channel = self.bot.get_channel(602197766218973185)
-    embed = discord.Embed(
-        description=f"{ctx.author.display_name}により、{user.display_name}"
-                    f"の落札ポイントが{n}にセットされました。",
-        color=0xf04747
-    )
-    await channel.send(embed=embed)
+    @bidGS.command(name="get")
+    async def _get(self, ctx, user: discord.Member):
+        cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
+        data = cur.fetchone()
+        await ctx.send(f"{user}の落札ポイントは{data[0]}です")
 
 
-@commands.command()
-async def get_auction_and_deal_ch_id(self, ctx):
-    ch_category_1 = list({c.id for c in ctx.guild.categories if c.name.startswith('>')})
-    ch_list_1 = list({a.id for a in ctx.guild.text_channels if a.category_id in ch_category_1})
-    ch_category_2 = list({this.id for this in ctx.guild.categories if this.name.startswith('*')})
-    ch_list_2 = list({b.id for b in ctx.guild.text_channels if b.category_id in ch_category_2})
-    await ctx.send("auction\n------")
-    for i in range(len(ch_list_1)):
-        await ctx.send(
-            f"INSERT INTO tend VALUES ({ch_list_1[i]}, 0, 0);")
-    await ctx.send("deal\n------")
-    for i in range(len(ch_list_2)):
-        await ctx.send(
-            f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
+    @bidGS.command(name="set")
+    async def _set(self, ctx, user: discord.Member, n: int):
+        cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (n, user.id))
+        db.commit()
+        await ctx.send(f'{user.display_name}の落札ポイントを{n}にセットしました')
+
+        channel = self.bot.get_channel(677905288665235475)
+        # とりあえず、ランキングチャンネルの中身を消す
+        await channel.purge(limit=1)
+        await channel.send(embed=self.bot.create_ranking_embed())
+        channel = self.bot.get_channel(602197766218973185)
+        embed = discord.Embed(
+            description=f"{ctx.author.display_name}により、{user.display_name}"
+                        f"の落札ポイントが{n}にセットされました。",
+            color=0xf04747
+        )
+        await channel.send(embed=embed)
 
 
-@commands.command()
-async def test(self, ctx):
-    cur.execute("SELECT embed_message_id FROM auction WHERE ch_id = %s", (ctx.channel.id,))
-    embed_id = cur.fetchone()
-    delete_ch = ctx.channel
-    msg = await delete_ch.fetch_message(embed_id[0])
-    await delete_ch.purge(limit=None, after=msg)
+    @commands.command()
+    async def get_auction_and_deal_ch_id(self, ctx):
+        ch_category_1 = list({c.id for c in ctx.guild.categories if c.name.startswith('>')})
+        ch_list_1 = list({a.id for a in ctx.guild.text_channels if a.category_id in ch_category_1})
+        ch_category_2 = list({this.id for this in ctx.guild.categories if this.name.startswith('*')})
+        ch_list_2 = list({b.id for b in ctx.guild.text_channels if b.category_id in ch_category_2})
+        await ctx.send("auction\n------")
+        for i in range(len(ch_list_1)):
+            await ctx.send(
+                f"INSERT INTO tend VALUES ({ch_list_1[i]}, 0, 0);")
+        await ctx.send("deal\n------")
+        for i in range(len(ch_list_2)):
+            await ctx.send(
+                f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
+
+
+    @commands.command()
+    async def test(self, ctx):
+        cur.execute("SELECT embed_message_id FROM auction WHERE ch_id = %s", (ctx.channel.id,))
+        embed_id = cur.fetchone()
+        delete_ch = ctx.channel
+        msg = await delete_ch.fetch_message(embed_id[0])
+        await delete_ch.purge(limit=None, after=msg)
 
 
 def setup(bot):
