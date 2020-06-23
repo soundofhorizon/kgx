@@ -305,7 +305,7 @@ class KGX(commands.Bot):
                         (0, 0, "undefined", "undefined",
                          "undefined", "undefined", channel_id))
         db.commit()
-        # SQLにデータ登録
+        # tendもリセット
         if mode == "a":
             cur.execute("UPDATE tend SET tender_id = 0, tend_price = 0 WHERE ch_id = %s", (channel_id,))
             db.commit()

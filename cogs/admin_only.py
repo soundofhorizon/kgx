@@ -51,27 +51,32 @@ class AdminOnly(commands.Cog):
         # 終わるの早いやつ1つ取ってくる
         cur.execute("SELECT * from auction ORDER BY auction_end_time ASC")
         auction_data = cur.fetchone()
-        end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
-        if end_time <= datetime.datetime.now():
-            await self.bot.get_channel(id=int(auction_data[0])).send("終わりです。")
+        auction_end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
+        cur.execute("SELECT * from deal ORDER BY deal_end_time ASC")
+        deal_data = cur.fetchone()
+        deal_end_time = datetime.datetime.strptime(deal_data[5], '%Y/%m/%d-%H:%M')
+        if auction_end_time <= datetime.datetime.now():
             cur.execute("SELECT * from tend WHERE ch_id = %s", (auction_data[0], ))
             tend_data = cur.fetchone()
+            if tend_data[0] == 0:
+                await self.bot.get_channel(id=int(auction_data[0])).send(f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、入札者は…誰一人いませんでした…\nオークションを終了します")
+                await self.bot.get_channel(id=int(auction_data[0])).send("--------ｷﾘﾄﾘ線--------")
+                self.bot.reset_ch_db(auction_data[0], "a")
+                return
+            else:
+                await self.bot.get_channel(id=int(auction_data[0])).send(f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、{self.bot.get_user(id=int(tend_data[1])).mention}さんの落札で終了です。")
+                await self.bot.get_channel(id=int(auction_data[0])).send("--------ｷﾘﾄﾘ線--------")
 
-            # ランキング送信
-            def is_siina_category(ctx):
-                """チャンネルが椎名カテゴリに入っているかの真偽値を返す関数"""
-                siina_channel_ids = {siina.id for siina in ctx.guild.text_channels if "椎名" in siina.name}
-                return ctx.channel.id in siina_channel_ids
-
-            # if is_siina_category(ctx):
-            #    # INSERTを実行。%sで後ろのタプルがそのまま代入される
-            #    cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-            #                (self.bot.get_user(id=int(tend_data[1])).display_name, auction_data[3], tend_data[2], self.bot.get_user(id=int(auction_data[1])).display_name))
-            #    db.commit()
-            #    await asyncio.sleep(0.1)
-            #    embed = self.bot.create_high_bid_ranking()
-            #    for i in range(len(embed)):
-            #        await self.bot.get_channel(705040893593387039).send(embed=embed[i])
+            # 椎名カテゴリならランキングを更新
+            if "椎名" in self.bot.get_channel(id=int(auction_data[0])).name:
+                # INSERTを実行。%sで後ろのタプルがそのまま代入される
+                cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
+                            (self.bot.get_user(id=int(tend_data[1])).display_name, auction_data[3], tend_data[2], self.bot.get_user(id=int(auction_data[1])).display_name))
+                db.commit()
+                await asyncio.sleep(0.1)
+                embed = self.bot.create_high_bid_ranking()
+                for i in range(len(embed)):
+                    await self.bot.get_channel(705040893593387039).send(embed=embed[i])
 
             # 記録送信
             channel = self.bot.get_channel(558132754953273355)
@@ -82,9 +87,16 @@ class AdminOnly(commands.Cog):
             embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=int(auction_data[1])).display_name}', inline=False)
             embed.add_field(name="品物", value=f'\n\n{auction_data[3]}', inline=False)
             embed.add_field(name="落札者", value=f'\n\n{self.bot.get_user(id=int(tend_data[1])).display_name}', inline=False)
-            embed.add_field(name="落札価格", value=f'\n\n{self.bot.stack_check_reverse(self.bot.stack_check(int(tend_data[2])))}', inline=False)
+            embed.add_field(name="落札価格", value=f'\n\n{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(int(tend_data[2])))}', inline=False)
             embed.add_field(name="チャンネル名", value=f'\n\n{self.bot.get_channel(id=auction_data[0]).name}', inline=False)
             await channel.send(embed=embed)
+
+            # 各種db削除
+            self.bot.reset_ch_db(auction_data[0], "a")
+
+        elif deal_end_time <= datetime.datetime.now():
+            await self.bot.get_channel(id=int(auction_data[0])).send(f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、取引は成立しませんでした…")
+            self.bot.reset_ch_db(deal_data[0], "d")
 
 
 @commands.command()
