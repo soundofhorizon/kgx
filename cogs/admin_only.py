@@ -52,7 +52,7 @@ class AdminOnly(commands.Cog):
         cur.execute("SELECT * from auction ORDER BY auction_end_time ASC")
         auction_data = cur.fetchone()
         end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
-        if end_time >= datetime.datetime.now():
+        if end_time <= datetime.datetime.now():
             await self.bot.get_channel(id=int(auction_data[0])).send("終わりです。")
         else:
             await ctx.send("??")
