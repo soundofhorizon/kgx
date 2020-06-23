@@ -557,7 +557,7 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
-                if self.bot.stack_check(price) < int(auction_start_price[0]) or self.bot.stack_check(price) < int(tend_price[0]):
+                if self.bot.stack_check(price) < int(auction_start_price[0]) or self.bot.stack_check(price) <= int(tend_price[0]):
                     embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
