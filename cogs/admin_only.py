@@ -54,7 +54,7 @@ class AdminOnly(commands.Cog):
         end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
         if end_time <= datetime.datetime.now():
             await self.bot.get_channel(id=int(auction_data[0])).send("終わりです。")
-            cur.execute("SELECT * from tend WHERE ch_id = %s", (auction_data[0]))
+            cur.execute("SELECT * from tend WHERE ch_id = %s", (auction_data[0], ))
             tend_data = cur.fetchone()
 
             # ランキング送信
