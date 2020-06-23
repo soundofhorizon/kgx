@@ -448,9 +448,11 @@ class Message(commands.Cog):
 
             # ALLにおいて
             if "all" in ctx.channel.name.lower() and (unit == "椎名" or unit == "ガチャ券"):
+                await ctx.channel.purge(limit=2)
                 embed = discord.Embed(description="椎名、ガチャ券の取引は専用のチャンネルで行ってください。",
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
+                await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
                 return
 
             embed = discord.Embed(
