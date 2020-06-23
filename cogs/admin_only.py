@@ -54,8 +54,23 @@ class AdminOnly(commands.Cog):
         end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
         if end_time <= datetime.datetime.now():
             await self.bot.get_channel(id=int(auction_data[0])).send("終わりです。")
-        else:
-            await ctx.send("??")
+            cur.execute("SELECT * from tend WHERE ch_id = %s", (auction_data[0]))
+            tend_data = cur.fetchone()
+            # ランキング送信
+            def is_siina_category(ctx):
+                """チャンネルが椎名カテゴリに入っているかの真偽値を返す関数"""
+                siina_channel_ids = {siina.id for siina in ctx.guild.text_channels if "椎名" in siina.name}
+                return ctx.channel.id in siina_channel_ids
+
+            if is_siina_category(ctx):
+                # INSERTを実行。%sで後ろのタプルがそのまま代入される
+                cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
+                            (self.bot.get_user(id=int(tend_data[1])).display_name, auction_data[3], tend_data[2], self.bot.get_user(id=int(auction_data[1])).display_name))
+                db.commit()
+                await asyncio.sleep(0.1)
+                embed = self.bot.create_high_bid_ranking()
+                for i in range(len(embed)):
+                    await self.bot.get_channel(705040893593387039).send(embed=embed[i])
 
     @commands.command()
     async def bidscore_ranking(self, ctx):
