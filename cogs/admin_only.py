@@ -54,6 +54,8 @@ class AdminOnly(commands.Cog):
         end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
         if end_time >= datetime.datetime.now():
             await self.bot.get_channel(id=int(auction_data[0])).send("終わりです。")
+        else:
+            await ctx.send("??")
 
     @commands.command()
     async def bidscore_ranking(self, ctx):
