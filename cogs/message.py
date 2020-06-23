@@ -586,7 +586,7 @@ class Message(commands.Cog):
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
-                               f"入札額: {unit[0]}{self.bot.stack_check_reverse(price)}\n"
+                               f"入札額: {unit[0]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n"
                                f"入札時刻: {time}")
                 # todo ここにembedを創る・。・
             else:

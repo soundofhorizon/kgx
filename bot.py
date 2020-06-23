@@ -228,7 +228,7 @@ class KGX(commands.Bot):
     # 少数出来た場合、少数で計算して最後にintぐるみをして値を返す
     @staticmethod
     def stack_check(value):
-        value = str(value).replace("椎名", "").lower()
+        value = str(value).lower()
         stack_frag = False
         lc_frag = False
         calc_result = [0, 0, 0]
