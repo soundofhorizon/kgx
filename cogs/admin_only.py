@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import os
 import re
 
@@ -44,6 +45,15 @@ class AdminOnly(commands.Cog):
                     color=0x1e90ff)
                 await channel.send(embed=embed)
                 await channel.send("--------ｷﾘﾄﾘ線--------")
+
+    @commands.command()
+    async def bid_task(self, ctx):
+        # 終わるの早いやつ1つ取ってくる
+        cur.execute("SELECT * from auction ORDER BY auction_end_time ASC")
+        auction_data = cur.fetchone()
+        end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
+        if end_time >= datetime.datetime.now():
+            await self.bot.get_channel(id=int(auction_data[0])).send("終わりです。")
 
     @commands.command()
     async def bidscore_ranking(self, ctx):
