@@ -274,6 +274,13 @@ class Message(commands.Cog):
                 user_input_0 = await self.bot.wait_for("message", check=check)
                 unit = user_input_0.content
 
+            # ALLにおいて
+            if "all" in ctx.channel.name.lower() and (unit == "椎名" or unit == "ガチャ券"):
+                embed = discord.Embed(description="椎名、ガチャ券のオークションは専用のチャンネルで行ってください。",
+                                      color=0xffaf60)
+                await ctx.channel.send(embed=embed)
+                return
+
             embed = discord.Embed(
                 description="出品するものを入力してください。",
                 color=0xffaf60)
@@ -396,8 +403,7 @@ class Message(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 return
 
-                # メッセージを待つだけの変数。ほかの人からの入力は受け付けないようにしている
-
+            # メッセージを待つだけの変数。ほかの人からの入力は受け付けないようにしている
             def check(m):
                 if m.author.bot:
                     return
@@ -439,6 +445,13 @@ class Message(commands.Cog):
                 await ctx.channel.send(embed=embed)
                 user_input_0 = await self.bot.wait_for("message", check=check)
                 unit = user_input_0.content
+
+            # ALLにおいて
+            if "all" in ctx.channel.name.lower() and (unit == "椎名" or unit == "ガチャ券"):
+                embed = discord.Embed(description="椎名、ガチャ券の取引は専用のチャンネルで行ってください。",
+                                      color=0xffaf60)
+                await ctx.channel.send(embed=embed)
+                return
 
             embed = discord.Embed(
                 description="出品するものを入力してください。",
