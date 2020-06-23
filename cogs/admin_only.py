@@ -52,14 +52,14 @@ class AdminOnly(commands.Cog):
         cur.execute("SELECT * from auction ORDER BY auction_end_time ASC")
         auction_data = cur.fetchone()
         auction_end_time = "null"
-        if auction_data[0] == 0:
+        if auction_data[1] == 0:
             pass
         else:
             auction_end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
         cur.execute("SELECT * from deal ORDER BY deal_end_time ASC")
         deal_data = cur.fetchone()
         deal_end_time = "null"
-        if deal_data[0] == 0:
+        if deal_data[1] == 0:
             pass
         else:
             deal_end_time = datetime.datetime.strptime(deal_data[5], '%Y/%m/%d-%H:%M')
