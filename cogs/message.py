@@ -567,6 +567,10 @@ class Message(commands.Cog):
                     await ctx.send(embed=embed)
                     # todo ここにbid処理を挟む
                     return
+                elif self.bot.stack_check(price) == 0:
+                    embed = discord.Embed(description="不正な値です。", color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    return
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()
