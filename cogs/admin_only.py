@@ -53,7 +53,7 @@ class AdminOnly(commands.Cog):
         auction_data = cur.fetchone()
         auction_end_time = "null"
         if auction_data[0] == 0:
-            return
+            pass
         else:
             auction_end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
         cur.execute("SELECT * from deal ORDER BY deal_end_time ASC")
