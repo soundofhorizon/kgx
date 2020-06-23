@@ -167,8 +167,11 @@ class KGX(commands.Bot):
             # 落札ポイント0ptは表示しない
             if data[i][1] == 0:
                 continue
-            description += f"{rank}位: {str(self.get_user(data[i][0]).display_name)} - 落札ポイント -> {str(data[i][1])}\n"
-            rank += 1
+            elif self.get_user(data[i][0]):
+                description += f"{rank}位: {str(self.get_user(data[i][0]).display_name)} - 落札ポイント -> {str(data[i][1])}\n"
+                rank += 1
+            else:
+                continue
 
         # 表示する
         d = datetime.now()  # 現在時刻の取得
