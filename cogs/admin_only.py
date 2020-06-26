@@ -199,7 +199,7 @@ class AdminOnly(commands.Cog):
 
             while not self.bot.is_closed():
                 try:
-                    user, reaction = await self.bot.wait_for("add_reaction", check=check, timeout=300)
+                    user, reaction = await self.bot.wait_for("reaction_add", check=check, timeout=300)
                 except asyncio.TimeoutError:
                     return await msg.clear_reactions()
                 else:
