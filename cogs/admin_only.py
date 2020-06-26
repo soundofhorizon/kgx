@@ -160,16 +160,63 @@ class AdminOnly(commands.Cog):
         await ctx.channel.send(embed=embed)
         await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
 
-
     @commands.command()
     async def execute_sql(self, ctx, *, content):
         cur.execute(content)
-        data = cur.fetchone()
+        data = cur.fetchall()
         if len(data) == 0:
             return await ctx.send(f'SQL文`{content}`は正常に実行されました')
-        embed = discord.Embed(title="SQL文の実行結果", description=''.join(f"{d}、" for d in data))
-        await ctx.send(embed=embed)
 
+        result = ""
+        for i in range(len(data)):
+            result += '、'.join(d for d in data[i])
+            result += "\n"
+
+        if len(result) <= 2000:
+            embed = discord.Embed(title="SQL文の実行結果", description=result)
+            await ctx.send(embed=embed)
+        else:
+            result_list = result.splitlines()
+            react_list = ["\U000025c0\U0000fe0f", "\U000025b6\U0000fe0f"]
+
+            page = 0
+            max_page = round(len(result_list))
+            embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)", description=result_list[0:10])
+            msg = await ctx.send(embed=embed)
+            for react in react_list:
+                msg.add_reaction(react)
+
+            def check(user, reaction):
+                if reaction.message != msg:
+                    return False
+                elif ctx.author.bot or user != ctx.author:
+                    return False
+                elif str(reaction.emoji) in react_list:
+                    return user, reaction
+                else:
+                    return False
+
+            while not self.bot.is_closed():
+                try:
+                    user, reaction = await self.bot.wait_for("add_reaction", check=check, timeout=300)
+                except asyncio.TimeoutError:
+                    return await msg.clear_reactions()
+                else:
+                    if str(reaction.emoji) == react_list[0]:  # 戻るリアクションだったら
+                        if page == 0:
+                            page = max_page
+                        else:
+                            page -= 1
+
+                    if str(reaction.emoji) == react_list[1]:  # 進むリアクションだったら
+                        if page == max_page:
+                            page = 0
+                        else:
+                            page += 1
+                    start_num = page * 10 + 1
+                    embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{start_num + 9}件目)",
+                                          description=result_list[start_num - 1:start_num + 9])
+                    await msg.edit(embed=embed)
 
     @commands.group(invoke_without_command=True)
     async def user_caution(self, ctx):
