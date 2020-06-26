@@ -181,10 +181,11 @@ class AdminOnly(commands.Cog):
 
             page = 0
             max_page = round(len(result_list))
-            embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)", description="".join(value for value in result_list[0:10]))
+            embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)", description="\n".join(value for value in result_list[0:10]))
             msg = await ctx.send(embed=embed)
+
             for react in react_list:
-                msg.add_reaction(react)
+                await msg.add_reaction(react)
 
             def check(user, reaction):
                 if reaction.message != msg:
