@@ -169,7 +169,7 @@ class AdminOnly(commands.Cog):
 
         result = ""
         for i in range(len(data)):
-            result += '、'.join(d for d in data[i])
+            result += '、'.join(str(d) for d in data[i])
             result += "\n"
 
         if len(result) <= 2000:
