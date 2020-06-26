@@ -67,22 +67,25 @@ class AdminOnly(commands.Cog):
         if auction_end_time == "null" and deal_end_time == "null":
             return
         if auction_end_time <= datetime.datetime.now():
-            cur.execute("SELECT * from tend WHERE ch_id = %s", (auction_data[0], ))
+            cur.execute("SELECT * from tend WHERE ch_id = %s", (auction_data[0],))
             tend_data = cur.fetchone()
             if tend_data[0] == 0:
-                await self.bot.get_channel(id=int(auction_data[0])).send(f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、入札者は…誰一人いませんでした…\nオークションを終了します")
+                await self.bot.get_channel(id=int(auction_data[0])).send(
+                    f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、入札者は…誰一人いませんでした…\nオークションを終了します")
                 await self.bot.get_channel(id=int(auction_data[0])).send("--------ｷﾘﾄﾘ線--------")
                 self.bot.reset_ch_db(auction_data[0], "a")
                 return
             else:
-                await self.bot.get_channel(id=int(auction_data[0])).send(f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、{self.bot.get_user(id=int(tend_data[1])).mention}さんの落札で終了です。")
+                await self.bot.get_channel(id=int(auction_data[0])).send(
+                    f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、{self.bot.get_user(id=int(tend_data[1])).mention}さんの落札で終了です。")
                 await self.bot.get_channel(id=int(auction_data[0])).send("--------ｷﾘﾄﾘ線--------")
 
             # 椎名カテゴリならランキングを更新
             if "椎名" in self.bot.get_channel(id=int(auction_data[0])).name:
                 # INSERTを実行。%sで後ろのタプルがそのまま代入される
                 cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                            (self.bot.get_user(id=int(tend_data[1])).display_name, auction_data[3], tend_data[2], self.bot.get_user(id=int(auction_data[1])).display_name))
+                            (self.bot.get_user(id=int(tend_data[1])).display_name, auction_data[3], tend_data[2],
+                             self.bot.get_user(id=int(auction_data[1])).display_name))
                 db.commit()
                 await asyncio.sleep(0.1)
                 embed = self.bot.create_high_bid_ranking()
@@ -95,10 +98,14 @@ class AdminOnly(commands.Cog):
             time = d.strftime("%Y/%m/%d")
             embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
             embed.add_field(name="落札日", value=f'\n\n{time}', inline=False)
-            embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=int(auction_data[1])).display_name}', inline=False)
+            embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=int(auction_data[1])).display_name}',
+                            inline=False)
             embed.add_field(name="品物", value=f'\n\n{auction_data[3]}', inline=False)
-            embed.add_field(name="落札者", value=f'\n\n{self.bot.get_user(id=int(tend_data[1])).display_name}', inline=False)
-            embed.add_field(name="落札価格", value=f'\n\n{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(int(tend_data[2])))}', inline=False)
+            embed.add_field(name="落札者", value=f'\n\n{self.bot.get_user(id=int(tend_data[1])).display_name}',
+                            inline=False)
+            embed.add_field(name="落札価格",
+                            value=f'\n\n{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(int(tend_data[2])))}',
+                            inline=False)
             embed.add_field(name="チャンネル名", value=f'\n\n{self.bot.get_channel(id=auction_data[0]).name}', inline=False)
             await channel.send(embed=embed)
 
@@ -106,9 +113,9 @@ class AdminOnly(commands.Cog):
             self.bot.reset_ch_db(auction_data[0], "a")
 
         elif deal_end_time <= datetime.datetime.now():
-            await self.bot.get_channel(id=int(auction_data[0])).send(f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、取引は成立しませんでした…")
+            await self.bot.get_channel(id=int(auction_data[0])).send(
+                f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、取引は成立しませんでした…")
             self.bot.reset_ch_db(deal_data[0], "d")
-
 
     @commands.command()
     async def bidscore_ranking(self, ctx):
@@ -124,7 +131,6 @@ class AdminOnly(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-
     @commands.command()
     async def show_bid_ranking(self, ctx):
         await self.bot.get_channel(705040893593387039).purge(limit=10)
@@ -132,7 +138,6 @@ class AdminOnly(commands.Cog):
         embed = self.bot.create_high_bid_ranking()
         for i in range(len(embed)):
             await self.bot.get_channel(705040893593387039).send(embed=embed[i])
-
 
     @commands.command()
     async def stop_deal(self, ctx):
@@ -150,7 +155,6 @@ class AdminOnly(commands.Cog):
         await ctx.channel.edit(name=ctx.channel.name + '☆')
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
 
-
     @commands.command()
     async def star_delete(self, ctx):
         embed = discord.Embed(
@@ -162,7 +166,14 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def execute_sql(self, ctx, *, content):
-        cur.execute(content)
+        try:
+            cur.execute(content)
+        except psycopg2.Error:
+            await ctx.send("SQL分が違うだろう！！？？")
+            # トランザクションを消し飛ばす
+            cur.close()
+        finally:
+            cur.close()
         data = cur.fetchall()
         if len(data) == 0:
             return await ctx.send(f'SQL文`{content}`は正常に実行されました')
@@ -181,7 +192,8 @@ class AdminOnly(commands.Cog):
 
             page = 0
             max_page = round(len(result_list))
-            embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)", description="\n".join(value for value in result_list[0:10]))
+            embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)",
+                                  description="\n".join(value for value in result_list[0:10]))
             msg = await ctx.send(embed=embed)
 
             for react in react_list:
@@ -216,13 +228,13 @@ class AdminOnly(commands.Cog):
                             page += 1
                     start_num = page * 10 + 1
                     embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{start_num + 9}件目)",
-                                          description="".join(value for value in result_list[start_num - 1:start_num + 9]))
+                                          description="".join(
+                                              value for value in result_list[start_num - 1:start_num + 9]))
                     await msg.edit(embed=embed)
 
     @commands.group(invoke_without_command=True)
     async def user_caution(self, ctx):
         await ctx.send(f'{ctx.prefix}user_caution [set, get]')
-
 
     @user_caution.command()
     async def get(self, ctx, user: discord.Member):
@@ -231,25 +243,21 @@ class AdminOnly(commands.Cog):
         caution_level = data[0]
         await ctx.send(f"{user}の警告レベルは{caution_level}です")
 
-
     @user_caution.command()
     async def set(self, ctx, user: discord.Member, n: int):
         cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (n, user.id))
         db.commit()
         await ctx.send(f'{user}に警告レベル{n}を付与しました')
 
-
     @commands.group(invoke_without_command=True)
     async def bidGS(self, ctx):
         await ctx.send(f'{ctx.prefix}score [set, get]')
-
 
     @bidGS.command(name="get")
     async def _get(self, ctx, user: discord.Member):
         cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
         data = cur.fetchone()
         await ctx.send(f"{user}の落札ポイントは{data[0]}です")
-
 
     @bidGS.command(name="set")
     async def _set(self, ctx, user: discord.Member, n: int):
@@ -269,7 +277,6 @@ class AdminOnly(commands.Cog):
         )
         await channel.send(embed=embed)
 
-
     @commands.command()
     async def get_auction_and_deal_ch_id(self, ctx):
         ch_category_1 = list({c.id for c in ctx.guild.categories if c.name.startswith('>')})
@@ -284,7 +291,6 @@ class AdminOnly(commands.Cog):
         for i in range(len(ch_list_2)):
             await ctx.send(
                 f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
-
 
     @commands.command()
     async def test(self, ctx):
