@@ -166,14 +166,7 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def execute_sql(self, ctx, *, content):
-        try:
-            cur.execute(content)
-        except psycopg2.Error:
-            await ctx.send("SQL分が違うだろう！！？？")
-            # トランザクションを消し飛ばす
-            cur.close()
-        finally:
-            cur.close()
+        cur.execute(content)
         data = cur.fetchall()
         if len(data) == 0:
             return await ctx.send(f'SQL文`{content}`は正常に実行されました')
@@ -231,6 +224,11 @@ class AdminOnly(commands.Cog):
                                           description="".join(
                                               value for value in result_list[start_num - 1:start_num + 9]))
                     await msg.edit(embed=embed)
+
+    @execute_sql.error
+    async def sql_error(self, ctx, error):
+        await ctx.send("SQL文が違うだろう！！？？")
+        db.commit()
 
     @commands.group(invoke_without_command=True)
     async def user_caution(self, ctx):
