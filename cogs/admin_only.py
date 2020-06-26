@@ -187,7 +187,7 @@ class AdminOnly(commands.Cog):
             for react in react_list:
                 await msg.add_reaction(react)
 
-            def check(user, reaction):
+            def check(reaction, user):
                 if reaction.message != msg:
                     return False
                 elif ctx.author.bot or user != ctx.author:
