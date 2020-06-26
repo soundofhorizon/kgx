@@ -181,7 +181,7 @@ class AdminOnly(commands.Cog):
 
             page = 0
             max_page = round(len(result_list))
-            embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)", description=result_list[0:10])
+            embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)", description="".join(value for value in result_list[0:10]))
             msg = await ctx.send(embed=embed)
             for react in react_list:
                 msg.add_reaction(react)
@@ -215,7 +215,7 @@ class AdminOnly(commands.Cog):
                             page += 1
                     start_num = page * 10 + 1
                     embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{start_num + 9}件目)",
-                                          description=result_list[start_num - 1:start_num + 9])
+                                          description="".join(value for value in result_list[start_num - 1:start_num + 9]))
                     await msg.edit(embed=embed)
 
     @commands.group(invoke_without_command=True)
