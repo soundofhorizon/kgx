@@ -21,7 +21,7 @@ class RawReactionAdd(commands.Cog):
             message = await channel.fetch_message(payload.message_id)
 
             # ここに反応させたい絵文字IDを入れる
-            if payload.emoji.id == 558251559394213888:
+            if payload.emoji.id == 558175789284196354:
                 await message.remove_reaction(str(payload.emoji), payload.member)
 
                 # ここに付与,剥奪させたい役職のIDを入れる
