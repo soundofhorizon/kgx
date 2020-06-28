@@ -584,12 +584,13 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
-                elif self.bot.stack_check(price) >= int(auction[5]):
-                    embed = discord.Embed(description=f"即決価格より高い価格が入札されました。{ctx.author.display_name}さんの落札です。",
-                                          color=0x4259fb)
-                    await ctx.send(embed=embed)
-                    # todo ここにbid処理を挟む
-                    return
+                elif auction[5] != "なし":
+                    if self.bot.stack_check(price) >= int(auction[5]):
+                        embed = discord.Embed(description=f"即決価格より高い価格が入札されました。{ctx.author.display_name}さんの落札です。",
+                                              color=0x4259fb)
+                        await ctx.send(embed=embed)
+                        # todo ここにbid処理を挟む
+                        return
                 elif self.bot.stack_check(price) == 0:
                     embed = discord.Embed(description="不正な値です。", color=0x4259fb)
                     await ctx.send(embed=embed)
