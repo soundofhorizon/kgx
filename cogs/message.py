@@ -541,7 +541,7 @@ class Message(commands.Cog):
 
             # priceのスタイルを調整
             price = f"{price}".replace(" ", "").replace("　", "")
-
+            await ctx.send(price)
             # そもそもオークションが開催してなかったらreturn
             if '☆' in ctx.channel.name:
                 embed = discord.Embed(
