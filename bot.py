@@ -296,14 +296,14 @@ class KGX(commands.Bot):
         if mode == "a":
             cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, "
                         "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
-                        "unit = %s WHERE ch_id = %s",
+                        "unit = %s, notice = %s WHERE ch_id = %s",
                         (0, 0, "undefined", "undefined",
-                         "undefined", "undefined", "undefined", channel_id))
+                         "undefined", "undefined", "undefined","undefined", channel_id))
         elif mode == "d":
             cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
-                        "deal_hope_price = %s, deal_end_time = %s, unit = %s WHERE ch_id = %s",
+                        "deal_hope_price = %s, deal_end_time = %s, unit = %s, notice = %s WHERE ch_id = %s",
                         (0, 0, "undefined", "undefined",
-                         "undefined", "undefined", channel_id))
+                         "undefined", "undefined","undefined", channel_id))
         db.commit()
         # tendもリセット
         if mode == "a":

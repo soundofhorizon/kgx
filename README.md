@@ -12,6 +12,7 @@
 >> auction_bin_time: text<br>
 >> auction_end_time: 終了時刻がdatetime型で入る。 text <br>
 >> unit: 単位. text<br>
+>> notice: 特記事項. text<br>
 >
 > deal
 >
@@ -22,6 +23,7 @@
 >> deal_hope_price: text<br>
 >> deal_end_time: 終了時刻がdatetime型で入る。 text <br>
 >> unit: 単位. text<br>
+>> notice: 特記事項. text<br>
 >
 > bid_ranking
 >
