@@ -558,25 +558,23 @@ class Message(commands.Cog):
 
             if check_style(price):
                 # 開始価格、即決価格、現在の入札額を取り寄せ
-                cur.execute("SELECT auction_start_price FROM auction where ch_id = %s", (ctx.channel.id,))
-                auction_start_price = cur.fetchone()
-                cur.execute("SELECT auction_bin_price FROM auction where ch_id = %s", (ctx.channel.id,))
-                auction_bin_price = cur.fetchone()
+                # auction[0] - auction[7]が各種auctionDBのデータとなる
+                cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
+                auction = cur.fetchone()
                 cur.execute("SELECT tend_price FROM tend where ch_id = %s", (ctx.channel.id,))
                 tend_price = cur.fetchone()
-                cur.execute("SELECT auction_owner_id FROM auction WHERE ch_id = %s", (ctx.channel.id,))
-                auction_owner_id = cur.fetchone()
 
                 # 条件に1つでも合致していたらreturn
-                if ctx.author.id == auction_owner_id:
+                await ctx.send(f"{ctx.author.id} : {auction[1]}")
+                if ctx.author.id == auction[1]:
                     embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
-                if self.bot.stack_check(price) < int(auction_start_price[0]) or self.bot.stack_check(price) <= int(tend_price[0]):
+                if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend_price[0]):
                     embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
-                elif self.bot.stack_check(price) >= int(auction_bin_price[0]):
+                elif self.bot.stack_check(price) >= int(auction[5]):
                     embed = discord.Embed(description=f"即決価格より高い価格が入札されました。{ctx.author.display_name}さんの落札です。",
                                           color=0x4259fb)
                     await ctx.send(embed=embed)
@@ -595,13 +593,10 @@ class Message(commands.Cog):
                 msg = await delete_ch.fetch_message(embed_id[0])
                 await delete_ch.purge(limit=None, after=msg)
 
-                # 色々と取り寄せる
-                cur.execute("SELECT unit FROM auction WHERE ch_id = %s", (ctx.channel.id,))
-                unit = cur.fetchone()
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
-                               f"入札額: {unit[0]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n"
+                               f"入札額: {auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n"
                                f"入札時刻: {time}")
                 # todo ここにembedを創る・。・
             else:
