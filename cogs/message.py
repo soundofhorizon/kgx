@@ -565,8 +565,8 @@ class Message(commands.Cog):
                 # auction[0] - auction[7]が各種auctionDBのデータとなる
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
-                cur.execute("SELECT tend_price FROM tend where ch_id = %s", (ctx.channel.id,))
-                tend_price = cur.fetchone()
+                cur.execute("SELECT * FROM tend where ch_id = %s", (ctx.channel.id,))
+                tend = cur.fetchone()
 
                 # 条件に1つでも合致していたらreturn
                 await ctx.send(f"{ctx.author.id} : {auction[1]}")
@@ -574,7 +574,11 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
-                if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend_price[0]):
+                elif ctx.author.id == tend[1]:
+                    embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    return
+                if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend[2]):
                     embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
