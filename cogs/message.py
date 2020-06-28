@@ -538,6 +538,10 @@ class Message(commands.Cog):
     @commands.command()
     async def tend(self, ctx, price):
         if is_auction_category(ctx):
+
+            # priceのスタイルを調整
+            price = f"{price}".replace(" ", "").replace("　", "")
+
             # そもそもオークションが開催してなかったらreturn
             if '☆' in ctx.channel.name:
                 embed = discord.Embed(
