@@ -382,9 +382,9 @@ class Message(commands.Cog):
                 # SQLにデータ登録
                 cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, "
                             "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
-                            "unit = %s WHERE ch_id = %s",
+                            "unit = %s, notice = %s WHERE ch_id = %s",
                             (ctx.author.id, auction_embed.id, user_input_1.content, str(user_input_2),
-                             str(user_input_3), user_input_4.content, unit, ctx.channel.id))
+                             str(user_input_3), user_input_4.content, unit, user_input_5.content, ctx.channel.id))
                 db.commit()
 
             else:
@@ -525,9 +525,9 @@ class Message(commands.Cog):
 
                 user_input_2 = self.bot.stack_check(user_input_2)
                 cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
-                            "deal_hope_price = %s, deal_end_time = %s, unit = %s WHERE ch_id = %s",
+                            "deal_hope_price = %s, deal_end_time = %s, unit = %s, notice = %s WHERE ch_id = %s",
                             (ctx.author.id, deal_embed.id, user_input_1.content, str(user_input_2),
-                             user_input_3.content, unit, ctx.channel.id))
+                             user_input_3.content, unit, user_input_4.content, ctx.channel.id))
                 db.commit()
 
             else:
