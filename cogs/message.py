@@ -609,7 +609,6 @@ class Message(commands.Cog):
                     await asyncio.sleep(2)
 
                     _delete_to(ctx, auction[2])
-                    # todo 特記事項, noticeカラムをtextで作成。初期はundefined, reset_ch_db関数も調整。
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1].display_name)}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{auction[3]}', inline=True)
