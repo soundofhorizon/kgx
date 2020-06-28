@@ -536,7 +536,7 @@ class Message(commands.Cog):
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
     @commands.command()
-    async def tend(self, ctx, price):
+    async def tend(self, ctx, *, price):
         if is_auction_category(ctx):
 
             # priceのスタイルを調整
