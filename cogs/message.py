@@ -560,6 +560,11 @@ class Message(commands.Cog):
                         return False
                 return True
 
+            def _delete_to(ctx, ch_id):
+                delete_ch = ctx.channel
+                msg = await delete_ch.fetch_message(ch_id)
+                await delete_ch.purge(limit=None, after=msg)
+
             if check_style(price):
                 # 開始価格、即決価格、現在の入札額を取り寄せ
                 # auction[0] - auction[7]が各種auctionDBのデータとなる
@@ -601,16 +606,29 @@ class Message(commands.Cog):
                 if time > finish_time:
                     embed = discord.Embed(description="修了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
                     await ctx.send(embed=embed)
-                    # todo 1日伸ばす処理を入れる。
-                    return
+                    await asyncio.sleep(2)
+
+                    _delete_to(ctx, auction[2])
+                    # todo 特記事項, noticeカラムをtextで作成。初期はundefined, reset_ch_db関数も調整。
+                    embed = discord.Embed(title="オークション内容", color=0xffaf60)
+                    embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1].display_name)}', inline=True)
+                    embed.add_field(name="出品物", value=f'\n\n{auction[3]}', inline=True)
+                    embed.add_field(name="開始価格", value=f'\n\n{auction[7]}{self.bot.stack_check_reverse(auction[4])}', inline=False)
+                    embed.add_field(name="即決価格", value=f'\n\n{self.bot.stack_check_reverse(auction[5]) if auction[5] == "なし"  else "なし"}', inline=False)
+                    finish_time = (finish_time + timedelta(days=1)).strftime("%Y/%m/%d %H:%M")
+                    embed.add_field(name="終了日時", value=f'\n\n{finish_time}', inline=True)
+                    embed.add_field(name="特記事項", value=f'\n\n{auction[8]}', inline=True)
+
+                    await ctx.channel.purge(limit=1)
+                    embed_id = await ctx.send(embed=embed)
+
+                    cur.execute("UPDATE auction SET embed_message_id = %s WHERE ch_id = %s", (embed_id.id, ctx.channel.id))
+                    db.commit()
+
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()
-                cur.execute("SELECT embed_message_id FROM auction where ch_id = %s", (ctx.channel.id,))
-                embed_id = cur.fetchone()
-                delete_ch = ctx.channel
-                msg = await delete_ch.fetch_message(embed_id[0])
-                await delete_ch.purge(limit=None, after=msg)
+                _delete_to(ctx, auction[2])
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
                                f"入札額: {auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n"
