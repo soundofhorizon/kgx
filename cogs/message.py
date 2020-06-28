@@ -569,7 +569,8 @@ class Message(commands.Cog):
                 tend = cur.fetchone()
 
                 # 条件に1つでも合致していたらreturn
-                await ctx.send(f"{ctx.author.id} : {auction[1]}")
+
+                # 入札人物の判定
                 if ctx.author.id == auction[1]:
                     embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
@@ -578,6 +579,7 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
+                # 入札価格の判定
                 if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend[2]):
                     embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                     await ctx.send(embed=embed)
@@ -592,6 +594,14 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="不正な値です。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
+                # 入札時間の判定
+                time = datetime.now() + timedelta(hours=1)
+                finish_time = datetime.strptime(auction[6], r"%Y/%m/%d-%H:%M")
+                if time > finish_time:
+                    embed = discord.Embed(description="修了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    # todo 1日伸ばす処理を入れる。
+                    return
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()
@@ -600,9 +610,7 @@ class Message(commands.Cog):
                 delete_ch = ctx.channel
                 msg = await delete_ch.fetch_message(embed_id[0])
                 await delete_ch.purge(limit=None, after=msg)
-
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
                                f"入札額: {auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n"
                                f"入札時刻: {time}")
