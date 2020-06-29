@@ -541,7 +541,6 @@ class Message(commands.Cog):
 
             # priceのスタイルを調整
             price = f"{price}".replace(" ", "").replace("　", "")
-            await ctx.send(price)
             # そもそもオークションが開催してなかったらreturn
             if '☆' in ctx.channel.name:
                 embed = discord.Embed(
@@ -580,10 +579,10 @@ class Message(commands.Cog):
                     embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
-                elif ctx.author.id == tend[1]:
-                    embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
-                    await ctx.send(embed=embed)
-                    return
+                # elif ctx.author.id == tend[1]:
+                #    embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
+                #    await ctx.send(embed=embed)
+                #    return
                 # 入札価格の判定
                 if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend[2]):
                     embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
