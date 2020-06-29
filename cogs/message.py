@@ -624,9 +624,14 @@ class Message(commands.Cog):
                     cur.execute("UPDATE auction SET embed_message_id = %s WHERE ch_id = %s", (embed_id.id, ctx.channel.id))
                     db.commit()
 
+                # オークションが変わってる可能性があるのでここで再度auctionのデータを取る
+                cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
+                auction = cur.fetchone()
+
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()
+                await asyncio.sleep(0.1)
                 await delete_to(ctx, auction[2])
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
