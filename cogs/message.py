@@ -608,7 +608,7 @@ class Message(commands.Cog):
                     await ctx.send(embed=embed)
                     await asyncio.sleep(2)
 
-                    delete_to(ctx, auction[2])
+                    await delete_to(ctx, auction[2])
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1].display_name)}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{auction[3]}', inline=True)
@@ -627,7 +627,7 @@ class Message(commands.Cog):
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()
-                delete_to(ctx, auction[2])
+                await delete_to(ctx, auction[2])
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
                                f"入札額: {auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n"
