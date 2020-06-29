@@ -610,7 +610,7 @@ class Message(commands.Cog):
 
                     await delete_to(ctx, auction[2])
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
-                    embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1].display_name)}', inline=True)
+                    embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{auction[3]}', inline=True)
                     embed.add_field(name="開始価格", value=f'\n\n{auction[7]}{self.bot.stack_check_reverse(auction[4])}', inline=False)
                     embed.add_field(name="即決価格", value=f'\n\n{self.bot.stack_check_reverse(auction[5]) if auction[5] == "なし"  else "なし"}', inline=False)
