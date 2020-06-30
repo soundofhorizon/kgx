@@ -640,7 +640,7 @@ class Message(commands.Cog):
                 if text != "None":
                     embed = discord.Embed(description=text, color=0x4259fb)
                     embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
-                    await self.bot.get_channel(id=auction_notice_ch_id).send(embed=discord.Embed(description=text, color=0x4259fb))
+                    await self.bot.get_channel(id=auction_notice_ch_id).send(embed=embed)
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 # todo ここをembedに置き換える。iconを貼りたい・。・
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
