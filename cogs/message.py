@@ -1,9 +1,11 @@
+import io
 import random
 import re
 
 import bs4
 import psycopg2
 import requests
+from PIL import Image
 from discord.ext import commands
 import discord
 from datetime import datetime, timedelta
@@ -644,9 +646,21 @@ class Message(commands.Cog):
                     await self.bot.get_channel(id=auction_notice_ch_id).send(embed=embed)
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 # todo ここをembedに置き換える。iconを貼りたい・。・
-                await ctx.send(f"入札者: {ctx.author.display_name}, \n"
-                               f"入札額: {auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n"
-                               f"入札時刻: {time}")
+                avatar_url = ctx.author.avatar_url_as(format="png")
+                image = requests.get(avatar_url)
+                image = io.BytesIO(image.content)
+                image.seek(0)
+                image = Image.open(image)
+                image = image.resize((100, 100))
+                image.save("./icon.png")
+                image = discord.File("./icon.png", filename="icon.png")
+                embed = discord.Embed(description=f"入札者: {ctx.author.display_name}, \n"
+                                                  f"入札額: {auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n",
+                                      color=0x4259fb
+                                      )
+                embed.set_image(url="attachment://icon.png")
+                embed.set_footer(text=f"入札時刻: {time}")
+                await ctx.channel.send(file=image, embed=embed)
             else:
                 embed = discord.Embed(description=f"{ctx.author.display_name}さん。入力した値が不正です。もう一度正しく入力を行ってください。",
                                       color=0x4259fb)
