@@ -602,6 +602,7 @@ class Message(commands.Cog):
                 # 入札時間の判定
                 time = datetime.now() + timedelta(hours=1)
                 finish_time = datetime.strptime(auction[6], r"%Y/%m/%d-%H:%M")
+                text = "None"
                 if time > finish_time:
                     embed = discord.Embed(description="終了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
                     await ctx.send(embed=embed)
@@ -626,17 +627,17 @@ class Message(commands.Cog):
 
                     # 延長をオークション主催者に伝える
                     text = f"{self.bot.get_user(id=auction[1]).mention}さん、終了1時間前に入札があったため終了時刻を1日延長します。"
-                    await ctx.channel.send(embed=discord.Embed(description=text, color=0x4259fb))
 
                 # オークションが変わってる可能性があるのでここで再度auctionのデータを取る
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
-
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()
                 await asyncio.sleep(0.1)
                 await delete_to(ctx, auction[2])
+                if text != "None":
+                    await ctx.channel.send(embed=discord.Embed(description=text, color=0x4259fb))
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 # todo ここをembedに置き換える。iconを貼りたい・。・
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
