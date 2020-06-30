@@ -1,4 +1,7 @@
 # coding=utf-8
+from random import random
+
+import math
 import os
 import traceback
 from datetime import datetime
@@ -298,12 +301,12 @@ class KGX(commands.Bot):
                         "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
                         "unit = %s, notice = %s WHERE ch_id = %s",
                         (0, 0, "undefined", "undefined",
-                         "undefined", "undefined", "undefined","undefined", channel_id))
+                         "undefined", "undefined", "undefined", "undefined", channel_id))
         elif mode == "d":
             cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
                         "deal_hope_price = %s, deal_end_time = %s, unit = %s, notice = %s WHERE ch_id = %s",
                         (0, 0, "undefined", "undefined",
-                         "undefined", "undefined","undefined", channel_id))
+                         "undefined", "undefined", "undefined", channel_id))
         db.commit()
         # tendもリセット
         if mode == "a":
@@ -311,9 +314,11 @@ class KGX(commands.Bot):
             db.commit()
 
     async def on_ready(self):
+        color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
         await self.get_channel(678083611697872910).purge(limit=1)
         await self.get_channel(678083611697872910).send(embed=self.embed)
-        await self.get_channel(722092542249795679).send(embed=discord.Embed(description="起動しました。", color=0x82fc74))
+        await self.get_channel(722092542249795679).send(
+            embed=discord.Embed(description="起動しました。", color=color[random(6)]))
 
     async def on_guild_channel_create(self, channel):
         if ">" not in channel.category.name and "*" not in channel.category.name:
