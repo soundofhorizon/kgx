@@ -608,6 +608,9 @@ class Message(commands.Cog):
                     await asyncio.sleep(2)
 
                     await delete_to(ctx, auction[2])
+                    await asyncio.sleep(0.1)
+                    await ctx.channel.purge(limit=1)
+
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{auction[3]}', inline=True)
@@ -616,8 +619,6 @@ class Message(commands.Cog):
                     finish_time = (finish_time + timedelta(days=1)).strftime("%Y/%m/%d %H:%M")
                     embed.add_field(name="終了日時", value=f'\n\n{finish_time}', inline=True)
                     embed.add_field(name="特記事項", value=f'\n\n{auction[8]}', inline=True)
-
-                    # await ctx.channel.purge(limit=1)
                     embed_id = await ctx.send(embed=embed)
 
                     cur.execute("UPDATE auction SET embed_message_id = %s WHERE ch_id = %s", (embed_id.id, ctx.channel.id))
