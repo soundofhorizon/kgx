@@ -654,8 +654,8 @@ class Message(commands.Cog):
                 image = image.resize((100, 100))
                 image.save("./icon.png")
                 image = discord.File("./icon.png", filename="icon.png")
-                embed = discord.Embed(description=f"入札者: {ctx.author.display_name}, \n"
-                                                  f"入札額: {auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n",
+                embed = discord.Embed(description=f"入札者: **{ctx.author.display_name}**, \n"
+                                                  f"入札額: **{auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}**\n",
                                       color=0x4259fb
                                       )
                 embed.set_image(url="attachment://icon.png")
