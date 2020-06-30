@@ -170,9 +170,11 @@ class AdminOnly(commands.Cog):
     @commands.command()
     async def execute_sql(self, ctx, *, content):
         cur.execute(content)
+        if not content.lower().startswith("select"):  # select以外だったらcommitしてreturn
+            await ctx.send(f'SQL文`{content}`は正常に実行されました')
+            return db.commit()
+
         data = cur.fetchall()
-        if len(data) == 0:
-            return await ctx.send(f'SQL文`{content}`は正常に実行されました')
 
         result = ""
         for i in range(len(data)):
