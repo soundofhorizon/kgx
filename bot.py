@@ -1,7 +1,6 @@
 # coding=utf-8
-from random import random
 
-import math
+import random
 import os
 import traceback
 from datetime import datetime
@@ -318,7 +317,7 @@ class KGX(commands.Bot):
         await self.get_channel(678083611697872910).purge(limit=1)
         await self.get_channel(678083611697872910).send(embed=self.embed)
         await self.get_channel(722092542249795679).send(
-            embed=discord.Embed(description="起動しました。", color=color[random(6)]))
+            embed=discord.Embed(description="起動しました。", color=color[random.randint(0, 6)]))
 
     async def on_guild_channel_create(self, channel):
         if ">" not in channel.category.name and "*" not in channel.category.name:
