@@ -1,10 +1,13 @@
 import asyncio
 import datetime
+import io
 import os
 import re
 
 import discord
 import psycopg2
+import requests
+from PIL import Image
 from discord.ext import commands
 
 SQLpath = os.environ["DATABASE_URL"]
@@ -292,11 +295,15 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        cur.execute("SELECT embed_message_id FROM auction WHERE ch_id = %s", (ctx.channel.id,))
-        embed_id = cur.fetchone()
-        delete_ch = ctx.channel
-        msg = await delete_ch.fetch_message(embed_id[0])
-        await delete_ch.purge(limit=None, after=msg)
+        avatar_url = ctx.author.avatar_url_as(format="png")
+        image = requests.get(avatar_url)
+        image = io.BytesIO(image.content)
+        image.seek(0)
+        image = Image.open(image)
+        image = image.resize((400, 400))
+        image.save("./icon.png")
+        image = discord.File("./icon.png")
+        await ctx.channel.send(file=image)
 
 
 def setup(bot):
