@@ -302,8 +302,10 @@ class AdminOnly(commands.Cog):
         image = Image.open(image)
         image = image.resize((400, 400))
         image.save("./icon.png")
-        image = discord.File("./icon.png")
-        await ctx.channel.send(file=image)
+        image = discord.File("./icon.png", filename="icon.png")
+        embed = discord.Embed()
+        embed.set_image(url="attachment://icon.png")
+        await ctx.channel.send(file=image, embed=embed)
 
 
 def setup(bot):
