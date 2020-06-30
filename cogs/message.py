@@ -639,6 +639,7 @@ class Message(commands.Cog):
                 await delete_to(ctx, auction[2])
                 if text != "None":
                     embed = discord.Embed(description=text, color=0x4259fb)
+                    time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
                     await self.bot.get_channel(id=auction_notice_ch_id).send(embed=embed)
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
