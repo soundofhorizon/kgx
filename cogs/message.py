@@ -620,8 +620,9 @@ class Message(commands.Cog):
                     embed.add_field(name="終了日時", value=f'\n\n{finish_time}', inline=True)
                     embed.add_field(name="特記事項", value=f'\n\n{auction[8]}', inline=True)
                     embed_id = await ctx.send(embed=embed)
-
-                    cur.execute("UPDATE auction SET embed_message_id = %s WHERE ch_id = %s", (embed_id.id, ctx.channel.id))
+                    # 変更点をUPDATE
+                    cur.execute("UPDATE auction SET embed_message_id = %s, auction_end_time = %s WHERE ch_id = %s",
+                                (embed_id.id, finish_time, ctx.channel.id))
                     db.commit()
 
                 # オークションが変わってる可能性があるのでここで再度auctionのデータを取る
