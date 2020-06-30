@@ -638,6 +638,8 @@ class Message(commands.Cog):
                 await asyncio.sleep(0.1)
                 await delete_to(ctx, auction[2])
                 if text != "None":
+                    embed = discord.Embed(description=text, color=0x4259fb)
+                    embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
                     await self.bot.get_channel(id=auction_notice_ch_id).send(embed=discord.Embed(description=text, color=0x4259fb))
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 # todo ここをembedに置き換える。iconを貼りたい・。・
