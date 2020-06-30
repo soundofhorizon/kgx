@@ -618,7 +618,7 @@ class Message(commands.Cog):
                     embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{auction[3]}', inline=True)
                     embed.add_field(name="開始価格", value=f'\n\n{auction[7]}{self.bot.stack_check_reverse(auction[4])}', inline=False)
-                    embed.add_field(name="即決価格", value=f'\n\n{self.bot.stack_check_reverse(auction[5]) if auction[5] == "なし"  else "なし"}', inline=False)
+                    embed.add_field(name="即決価格", value=f'\n\n{"なし" if auction[5] == "なし"  else self.bot.stack_check_reverse(auction[5]) }', inline=False)
                     finish_time = (finish_time + timedelta(days=1)).strftime("%Y/%m/%d-%H:%M")
                     embed.add_field(name="終了日時", value=f'\n\n{finish_time}', inline=True)
                     embed.add_field(name="特記事項", value=f'\n\n{auction[8]}', inline=True)
