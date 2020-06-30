@@ -16,6 +16,7 @@ SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
 cur = db.cursor()  # なんか操作する時に使うやつ
 
+auction_notice_ch_id = 727333695450775613
 
 def is_auction_category(ctx):
     """チャンネルがオークションカテゴリに入っているかの真偽値を返す関数"""
@@ -637,7 +638,7 @@ class Message(commands.Cog):
                 await asyncio.sleep(0.1)
                 await delete_to(ctx, auction[2])
                 if text != "None":
-                    await ctx.channel.send(embed=discord.Embed(description=text, color=0x4259fb))
+                    await self.bot.get_channel(id=auction_notice_ch_id).send(embed=discord.Embed(description=text, color=0x4259fb))
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 # todo ここをembedに置き換える。iconを貼りたい・。・
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
