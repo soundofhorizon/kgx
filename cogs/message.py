@@ -603,7 +603,7 @@ class Message(commands.Cog):
                 time = datetime.now() + timedelta(hours=1)
                 finish_time = datetime.strptime(auction[6], r"%Y/%m/%d-%H:%M")
                 if time > finish_time:
-                    embed = discord.Embed(description="修了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
+                    embed = discord.Embed(description="終了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     await asyncio.sleep(2)
 
@@ -624,6 +624,10 @@ class Message(commands.Cog):
                                 (embed_id.id, finish_time, ctx.channel.id))
                     db.commit()
 
+                    # 延長をオークション主催者に伝える
+                    text = f"{self.bot.get_user(id=auction[1]).mention}さん、終了1時間前に入札があったため終了時刻を1日延長します。"
+                    await ctx.channel.send(embed=discord.Embed(description=text, color=0x4259fb))
+
                 # オークションが変わってる可能性があるのでここで再度auctionのデータを取る
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
@@ -634,10 +638,10 @@ class Message(commands.Cog):
                 await asyncio.sleep(0.1)
                 await delete_to(ctx, auction[2])
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+                # todo ここをembedに置き換える。iconを貼りたい・。・
                 await ctx.send(f"入札者: {ctx.author.display_name}, \n"
                                f"入札額: {auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}\n"
                                f"入札時刻: {time}")
-                # todo ここにembedを創る・。・
             else:
                 embed = discord.Embed(description=f"{ctx.author.display_name}さん。入力した値が不正です。もう一度正しく入力を行ってください。",
                                       color=0x4259fb)
