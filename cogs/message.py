@@ -87,7 +87,7 @@ class Message(commands.Cog):
                             await channel.send(embed=embed)
 
                             # SQLのuser_dataに新規登録
-                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY['%s']);", (message.author.id, 0, 0, uuid))
+                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);", (message.author.id, 0, 0, uuid))
                             db.commit()
                         else:
                             embed = discord.Embed(
