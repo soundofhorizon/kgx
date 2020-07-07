@@ -74,6 +74,8 @@ class Message(commands.Cog):
                             await message.author.remove_roles(role1)
                             await message.author.add_roles(role2)
                             await message.add_reaction(random.choice(emoji))
+                            # uuidを確かめる
+                            uuid = self.bot.mcid_to_uuid(mcid)
                             channel = self.bot.get_channel(591244559019802650)
                             color = [0x3efd73, 0xfb407c, 0xf3f915, 0xc60000, 0xed8f10, 0xeacf13, 0x9d9d9d, 0xebb652,
                                      0x4259fb,
@@ -85,7 +87,7 @@ class Message(commands.Cog):
                             await channel.send(embed=embed)
 
                             # SQLのuser_dataに新規登録
-                            cur.execute("INSERT INTO user_data values (%s, %s, %s);", (message.author.id, 0, 0))
+                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY['%s']);", (message.author.id, 0, 0, uuid))
                             db.commit()
                         else:
                             embed = discord.Embed(
