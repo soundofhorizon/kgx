@@ -296,9 +296,9 @@ class AdminOnly(commands.Cog):
                 f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
 
     @commands.command()
-    async def test(self, ctx, input):
-        await ctx.channel.send(self.bot.mcid_to_uuid(mcid=input))
-        await ctx.channel.send(self.bot.uuid_to_mcid(uuid=input))
+    async def test(self, ctx, *, input):
+        await ctx.channel.send(self.bot.mcid_to_uuid(input))
+        await ctx.channel.send(self.bot.uuid_to_mcid(input))
 
 
 def setup(bot):
