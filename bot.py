@@ -314,6 +314,7 @@ class KGX(commands.Bot):
             cur.execute("UPDATE tend SET tender_id = 0, tend_price = 0 WHERE ch_id = %s", (channel_id,))
             db.commit()
 
+    @staticmethod
     def mcid_to_uuid(mcid):
         """
         MCIDをUUIDに変換する関数
@@ -333,6 +334,7 @@ class KGX(commands.Bot):
         except requests.exceptions.HTTPError:  # よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
             return False
 
+    @staticmethod
     def uuid_to_mcid(uuid):
         """
         UUIDをMCIDに変換する関数
