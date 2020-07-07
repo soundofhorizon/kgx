@@ -1,12 +1,14 @@
 # coding=utf-8
-
+import json
 import random
 import os
 import traceback
 from datetime import datetime
 
+import bs4
 import discord
 import psycopg2
+import requests
 from discord import Embed
 from discord.ext import commands
 
@@ -312,7 +314,6 @@ class KGX(commands.Bot):
             cur.execute("UPDATE tend SET tender_id = 0, tend_price = 0 WHERE ch_id = %s", (channel_id,))
             db.commit()
 
-
     def mcid_to_uuid(mcid):
         """
         MCIDをUUIDに変換する関数
@@ -325,11 +326,11 @@ class KGX(commands.Bot):
             sorp = bs4.BeautifulSoup(res.text, "html.parser")
             try:
                 player_data_dict = json.loads(sorp.decode("utf-8"))
-            except json.decoder.JSONDecodeError: #mcidが存在しないとき
+            except json.decoder.JSONDecodeError:  # mcidが存在しないとき
                 return False
             uuid = player_data_dict["id"]
             return uuid
-        except requests.exceptions.HTTPError: #よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
+        except requests.exceptions.HTTPError:  # よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
             return False
 
     def uuid_to_mcid(uuid):
@@ -345,9 +346,8 @@ class KGX(commands.Bot):
             player_data_dict = json.loads(sorp.decode("utf-8"))
             mcid = player_data_dict["name"]
             return mcid
-        except requests.exceptions.HTTPError: #よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
+        except requests.exceptions.HTTPError:  # よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
             return False
-
 
     async def on_ready(self):
         color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
