@@ -312,6 +312,43 @@ class KGX(commands.Bot):
             cur.execute("UPDATE tend SET tender_id = 0, tend_price = 0 WHERE ch_id = %s", (channel_id,))
             db.commit()
 
+
+    def mcid_to_uuid(mcid):
+        """
+        MCIDをUUIDに変換する関数
+        uuidを返す"""
+
+        url = f"https://api.mojang.com/users/profiles/minecraft/{mcid}"
+        try:
+            res = requests.get(url)
+            res.raise_for_status()
+            sorp = bs4.BeautifulSoup(res.text, "html.parser")
+            try:
+                player_data_dict = json.loads(sorp.decode("utf-8"))
+            except json.decoder.JSONDecodeError: #mcidが存在しないとき
+                return False
+            uuid = player_data_dict["id"]
+            return uuid
+        except requests.exceptions.HTTPError: #よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
+            return False
+
+    def uuid_to_mcid(uuid):
+        """
+        UUIDをMCIDに変換する関数
+        mcid(\なし)を返す"""
+
+        url = f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
+        try:
+            res = requests.get(url)
+            res.raise_for_status()
+            sorp = bs4.BeautifulSoup(res.text, "html.parser")
+            player_data_dict = json.loads(sorp.decode("utf-8"))
+            mcid = player_data_dict["name"]
+            return mcid
+        except requests.exceptions.HTTPError: #よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
+            return False
+
+
     async def on_ready(self):
         color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
         await self.get_channel(678083611697872910).purge(limit=1)
