@@ -296,18 +296,9 @@ class AdminOnly(commands.Cog):
                 f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
 
     @commands.command()
-    async def test(self, ctx):
-        avatar_url = ctx.author.avatar_url_as(format="png")
-        image = requests.get(avatar_url)
-        image = io.BytesIO(image.content)
-        image.seek(0)
-        image = Image.open(image)
-        image = image.resize((400, 400))
-        image.save("./icon.png")
-        image = discord.File("./icon.png", filename="icon.png")
-        embed = discord.Embed()
-        embed.set_image(url="attachment://icon.png")
-        await ctx.channel.send(file=image, embed=embed)
+    async def test(self, ctx, input):
+        await ctx.channel.send(mcid_to_uuid(input))
+        await ctx.channel.send(uuid_to_mcid(input))
 
 
 def setup(bot):
