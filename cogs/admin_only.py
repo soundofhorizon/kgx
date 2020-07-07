@@ -297,8 +297,8 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, input):
-        await ctx.channel.send(self.bot.mcid_to_uuid(input))
-        await ctx.channel.send(self.bot.uuid_to_mcid(input))
+        await ctx.channel.send(self.bot.mcid_to_uuid(mcid=input))
+        await ctx.channel.send(self.bot.uuid_to_mcid(uuid=input))
 
 
 def setup(bot):
