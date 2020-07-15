@@ -187,7 +187,7 @@ class AdminOnly(commands.Cog):
             react_list = ["\U000025c0\U0000fe0f", "\U000025b6\U0000fe0f"]
 
             page = 0
-            max_page = round(len(result_list))
+            max_page = round(len(result_list) / 10)
             embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)",
                                   description="\n".join(value for value in result_list[0:10]))
             msg = await ctx.send(embed=embed)
@@ -201,23 +201,24 @@ class AdminOnly(commands.Cog):
                 elif ctx.author.bot or user != ctx.author:
                     return 0
                 elif str(reaction.emoji) in react_list:
-                    return reaction, user
+                    return str(reaction.emoji), user
                 else:
                     return 0
 
             while not self.bot.is_closed():
                 try:
-                    reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=300)
+                    emoji, user = await self.bot.wait_for("reaction_add", check=check, timeout=300)
                 except asyncio.TimeoutError:
                     return await msg.clear_reactions()
                 else:
-                    if str(reaction.emoji) == react_list[0]:  # 戻るリアクションだったら
+                    await msg.remove_reaction(emoji, user)
+                    if emoji == react_list[0]:  # 戻るリアクションだったら
                         if page == 0:
                             page = max_page
                         else:
                             page -= 1
 
-                    if str(reaction.emoji) == react_list[1]:  # 進むリアクションだったら
+                    if emoji == react_list[1]:  # 進むリアクションだったら
                         if page == max_page:
                             page = 0
                         else:
