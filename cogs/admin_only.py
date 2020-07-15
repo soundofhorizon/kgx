@@ -187,7 +187,7 @@ class AdminOnly(commands.Cog):
             react_list = ["\U000025c0\U0000fe0f", "\U000025b6\U0000fe0f"]
 
             page = 0
-            max_page = round(len(result_list))
+            max_page = round(len(result_list) / 10)
             embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)",
                                   description="\n".join(value for value in result_list[0:10]))
             msg = await ctx.send(embed=embed)
