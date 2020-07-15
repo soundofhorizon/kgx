@@ -303,7 +303,11 @@ class AdminOnly(commands.Cog):
         img = qrcode.make("https://discord.gg/Syp85R4")
         img.save("./icon.png")
         image = discord.File("./icon.png", filename="icon.png")
-        await ctx.send(image)
+        embed = discord.Embed(description=f"招待URL",
+                              color=0x4259fb
+                              )
+        embed.set_image(url="attachment://icon.png")
+        await ctx.channel.send(file=image, embed=embed)
 
 
 def setup(bot):
