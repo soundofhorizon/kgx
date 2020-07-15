@@ -1,13 +1,11 @@
 import asyncio
 import datetime
-import io
 import os
 import re
 
+import qrcode
 import discord
 import psycopg2
-import requests
-from PIL import Image
 from discord.ext import commands
 
 SQLpath = os.environ["DATABASE_URL"]
@@ -303,6 +301,13 @@ class AdminOnly(commands.Cog):
     async def test(self, ctx, *, input):
         await ctx.channel.send(self.bot.mcid_to_uuid(input))
         await ctx.channel.send(self.bot.uuid_to_mcid(input))
+
+    @commands.command()
+    async def qr(self, ctx):
+        img = qrcode.make("https://discord.gg/Syp85R4")
+        img.save("./icon.png")
+        image = discord.File("./icon.png", filename="icon.png")
+        await ctx.send(image)
 
 
 def setup(bot):
