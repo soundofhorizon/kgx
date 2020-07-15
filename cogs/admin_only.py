@@ -198,14 +198,14 @@ class AdminOnly(commands.Cog):
                 await msg.add_reaction(react)
 
             def check(reaction, user):
-                if reaction.message != msg:
-                    return False
+                if reaction.message.id != msg.id:
+                    return 0
                 elif ctx.author.bot or user != ctx.author:
-                    return False
+                    return 0
                 elif str(reaction.emoji) in react_list:
                     return reaction, user
                 else:
-                    return False
+                    return 0
 
             while not self.bot.is_closed():
                 try:
