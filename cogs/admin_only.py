@@ -310,7 +310,7 @@ class AdminOnly(commands.Cog):
                                   )
             embed.set_image(url="attachment://icon.png")
             await ctx.channel.send(file=image, embed=embed)
-        except OverflowError:
+        except:
             await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
 def setup(bot):
