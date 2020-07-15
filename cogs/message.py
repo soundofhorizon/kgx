@@ -4,6 +4,7 @@ import re
 
 import bs4
 import psycopg2
+import qrcode
 import requests
 from PIL import Image
 from discord.ext import commands
@@ -775,6 +776,20 @@ class Message(commands.Cog):
 
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
         await ctx.channel.edit(name=ctx.channel.name + '☆')
+
+    @commands.command()
+    async def qr(self, ctx, *, input):
+        try:
+            img = qrcode.make(f"{input}")
+            img.save("./icon.png")
+            image = discord.File("./icon.png", filename="icon.png")
+            embed = discord.Embed(description=f"招待URL",
+                                  color=0x4259fb
+                                  )
+            embed.set_image(url="attachment://icon.png")
+            await ctx.channel.send(file=image, embed=embed)
+        except:
+            await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
     @commands.command()
     async def help(self, ctx):

@@ -3,7 +3,6 @@ import datetime
 import os
 import re
 
-import qrcode
 import discord
 import psycopg2
 from discord.ext import commands
@@ -299,19 +298,6 @@ class AdminOnly(commands.Cog):
         await ctx.channel.send(self.bot.mcid_to_uuid(input))
         await ctx.channel.send(self.bot.uuid_to_mcid(input))
 
-    @commands.command()
-    async def qr(self, ctx, *, input):
-        try:
-            img = qrcode.make(f"{input}")
-            img.save("./icon.png")
-            image = discord.File("./icon.png", filename="icon.png")
-            embed = discord.Embed(description=f"招待URL",
-                                  color=0x4259fb
-                                  )
-            embed.set_image(url="attachment://icon.png")
-            await ctx.channel.send(file=image, embed=embed)
-        except:
-            await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
