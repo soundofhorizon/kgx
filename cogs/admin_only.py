@@ -299,8 +299,8 @@ class AdminOnly(commands.Cog):
         await ctx.channel.send(self.bot.uuid_to_mcid(input))
 
     @commands.command()
-    async def qr(self, ctx):
-        img = qrcode.make("https://discord.gg/Syp85R4")
+    async def qr(self, ctx, *, input):
+        img = qrcode.make(f"{input}")
         img.save("./icon.png")
         image = discord.File("./icon.png", filename="icon.png")
         embed = discord.Embed(description=f"招待URL",
