@@ -783,7 +783,7 @@ class Message(commands.Cog):
             img = qrcode.make(f"{input}")
             img.save("./icon.png")
             image = discord.File("./icon.png", filename="icon.png")
-            embed = discord.Embed(description=f"招待URL",
+            embed = discord.Embed(description=f"作成結果",
                                   color=0x4259fb
                                   )
             embed.set_image(url="attachment://icon.png")
