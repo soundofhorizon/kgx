@@ -201,23 +201,24 @@ class AdminOnly(commands.Cog):
                 elif ctx.author.bot or user != ctx.author:
                     return 0
                 elif str(reaction.emoji) in react_list:
-                    return reaction, user
+                    return str(reaction.emoji), user
                 else:
                     return 0
 
             while not self.bot.is_closed():
                 try:
-                    reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=300)
+                    emoji, user = await self.bot.wait_for("reaction_add", check=check, timeout=300)
                 except asyncio.TimeoutError:
                     return await msg.clear_reactions()
                 else:
-                    if str(reaction.emoji) == react_list[0]:  # 戻るリアクションだったら
+                    await msg.remove_reaction(emoji, user)
+                    if emoji == react_list[0]:  # 戻るリアクションだったら
                         if page == 0:
                             page = max_page
                         else:
                             page -= 1
 
-                    if str(reaction.emoji) == react_list[1]:  # 進むリアクションだったら
+                    if emoji == react_list[1]:  # 進むリアクションだったら
                         if page == max_page:
                             page = 0
                         else:
