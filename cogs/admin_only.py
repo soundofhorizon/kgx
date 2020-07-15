@@ -301,15 +301,17 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def qr(self, ctx, *, input):
-        img = qrcode.make(f"{input}")
-        img.save("./icon.png")
-        image = discord.File("./icon.png", filename="icon.png")
-        embed = discord.Embed(description=f"招待URL",
-                              color=0x4259fb
-                              )
-        embed.set_image(url="attachment://icon.png")
-        await ctx.channel.send(file=image, embed=embed)
-
+        try:
+            img = qrcode.make(f"{input}")
+            img.save("./icon.png")
+            image = discord.File("./icon.png", filename="icon.png")
+            embed = discord.Embed(description=f"招待URL",
+                                  color=0x4259fb
+                                  )
+            embed.set_image(url="attachment://icon.png")
+            await ctx.channel.send(file=image, embed=embed)
+        except OverflowError:
+            await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
