@@ -200,16 +200,17 @@ class AdminOnly(commands.Cog):
                 elif ctx.author.bot or user != ctx.author:
                     return 0
                 elif str(reaction.emoji) in react_list:
-                    return str(reaction.emoji), user
+                    return reaction, user
                 else:
                     return 0
 
             while not self.bot.is_closed():
                 try:
-                    emoji, user = await self.bot.wait_for("reaction_add", check=check, timeout=300)
+                    reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=300)
                 except asyncio.TimeoutError:
                     return await msg.clear_reactions()
                 else:
+                    emoji = str(reaction.emoji)
                     await msg.remove_reaction(emoji, user)
                     if emoji == react_list[0]:  # 戻るリアクションだったら
                         if page == 0:
@@ -224,7 +225,7 @@ class AdminOnly(commands.Cog):
                             page += 1
                     start_num = page * 10 + 1
                     embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{start_num + 9}件目)",
-                                          description="".join(
+                                          description="\n".join(
                                               value for value in result_list[start_num - 1:start_num + 9]))
                     await msg.edit(embed=embed)
 
