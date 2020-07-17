@@ -3,8 +3,12 @@ import discord
 
 
 class SimpleCommand(commands.Cog):
+    """引数を持たないコマンド"""
     def __init__(self, bot):
         self.bot = bot
+
+    async def cog_check(self, ctx):
+        return ctx.message.content == ctx.prefix + ctx.invoked_with
 
     @commands.command()
     async def version(self, ctx):
