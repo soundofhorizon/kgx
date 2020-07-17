@@ -224,9 +224,14 @@ class AdminOnly(commands.Cog):
                         else:
                             page += 1
                     start_num = page * 10 + 1
-                    embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{start_num + 9}件目)",
-                                          description="\n".join(
-                                              value for value in result_list[start_num - 1:start_num + 9]))
+                    if len(result_list) < start_num + 9:
+                        embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{len(result_list)}件目)",
+                                              description="\n".join(
+                                                  value for value in result_list[start_num - 1:len(result_list)]))
+                    else:
+                        embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{start_num + 9}件目)",
+                                              description="\n".join(
+                                                  value for value in result_list[start_num - 1:start_num + 9]))
                     await msg.edit(embed=embed)
 
     @execute_sql.error
