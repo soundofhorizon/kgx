@@ -21,29 +21,6 @@ cur = db.cursor()  # なんか操作する時に使うやつ
 
 auction_notice_ch_id = 727333695450775613
 
-def is_auction_category(ctx):
-    """チャンネルがオークションカテゴリに入っているかの真偽値を返す関数"""
-    auction_category_ids = {c.id for c in ctx.guild.categories if c.name.startswith('>')}
-    return ctx.channel.category_id in auction_category_ids
-
-
-def is_normal_category(ctx):
-    """チャンネルがノーマルカテゴリに入っているかの真偽値を返す関数"""
-    normal_category_ids = {this.id for this in ctx.guild.categories if this.name.startswith('*')}
-    return ctx.channel.category_id in normal_category_ids
-
-
-def is_siina_category(ctx):
-    """チャンネルが椎名カテゴリに入っているかの真偽値を返す関数"""
-    siina_channel_ids = {siina.id for siina in ctx.guild.text_channels if "椎名" in siina.name}
-    return ctx.channel.id in siina_channel_ids
-
-
-def is_gacha_category(ctx):
-    """チャンネルがガチャ券カテゴリに入っているかの真偽値を返す関数"""
-    gacha_channel_ids = {gacha.id for gacha in ctx.guild.text_channels if "ガチャ券" in gacha.name}
-    return ctx.channel.id in gacha_channel_ids
-
 
 class Message(commands.Cog):
     def __init__(self, bot):
@@ -158,16 +135,6 @@ class Message(commands.Cog):
             embed.set_footer(text=f'channel:{message.channel}\ntime:{time}\nuser:{message.author.display_name}')
             await ch.send(embed=embed)
 
-    @commands.command()
-    async def version(self, ctx):
-        if not is_normal_category(ctx) and not is_auction_category(ctx):
-            embed = discord.Embed(description="現在のバージョンは**5.0.0**です\nNow version **5.0.0** working.", color=0x4259fb)
-            await ctx.send(embed=embed)
-
-    @commands.command()
-    async def invite(self, ctx):
-        if not is_normal_category(ctx) and not is_auction_category(ctx):
-            await ctx.send('招待用URL:https://discord.gg/Syp85R4')
 
     @commands.command()
     async def bidscore(self, ctx, pt):  # カウントしてその数字に対応する役職を付与する
@@ -215,7 +182,7 @@ class Message(commands.Cog):
             return
 
         # オークション系
-        if is_auction_category(ctx):
+        if self.bot.is_auction_category(ctx):
 
             # 既にオークションが行われていたらreturn
             if "☆" not in ctx.channel.name:
@@ -269,9 +236,9 @@ class Message(commands.Cog):
 
             # 単位の設定
             unit = ""
-            if is_siina_category(ctx):
+            if self.bot.is_siina_category(ctx):
                 unit = "椎名"
-            elif is_gacha_category(ctx):
+            elif self.bot.is_gacha_category(ctx):
                 unit = "ガチャ券"
             else:
                 embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
@@ -399,7 +366,7 @@ class Message(commands.Cog):
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
         # 通常取引について
-        elif is_normal_category(ctx):
+        elif self.bot.is_normal_category(ctx):
 
             # 既に取引が行われていたらreturn
             if "☆" not in ctx.channel.name:
@@ -441,9 +408,9 @@ class Message(commands.Cog):
 
             # 単位の設定
             unit = ""
-            if is_siina_category(ctx):
+            if self.bot.is_siina_category(ctx):
                 unit = "椎名"
-            elif is_gacha_category(ctx):
+            elif self.bot.is_gacha_category(ctx):
                 unit = "ガチャ券"
             else:
                 embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
@@ -543,7 +510,7 @@ class Message(commands.Cog):
 
     @commands.command()
     async def tend(self, ctx, *, price):
-        if is_auction_category(ctx):
+        if self.bot.is_auction_category(ctx):
 
             # priceのスタイルを調整
             price = f"{price}".replace(" ", "").replace("　", "")
@@ -676,7 +643,7 @@ class Message(commands.Cog):
 
     @commands.command()
     async def bid(self, ctx):
-        if is_auction_category(ctx):
+        if self.bot.is_auction_category(ctx):
             if '☆' in ctx.channel.name:
                 embed = discord.Embed(
                     description=f'{ctx.author.display_name}さん。このチャンネルではオークションは行われていません',
@@ -708,14 +675,14 @@ class Message(commands.Cog):
                 await ctx.channel.send(embed=embed)
                 user_input_2 = await self.bot.wait_for('message', check=check)
                 description = "落札価格を入力してください。\n"
-                if is_siina_category(ctx):
+                if self.bot.is_siina_category(ctx):
                     description += "以下のような形式以外は認識されません。(個はなくてもOK): **椎名○○st+△(個)(椎名○○(個)も可)\n" \
                                    "ex: 椎名5st+16個 椎名336個"
                 embed = discord.Embed(description=description, color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 siina_amount = -1
                 user_input_3 = ""
-                if is_siina_category(ctx):
+                if self.bot.is_siina_category(ctx):
                     frag = True
                     while frag:
                         user_input_3 = await self.bot.wait_for('message', check=check_siina_style)
@@ -732,7 +699,7 @@ class Message(commands.Cog):
                 await ctx.channel.send(embed=embed)
 
                 # ランキング送信
-                if is_siina_category(ctx):
+                if self.bot.is_siina_category(ctx):
                     # INSERTを実行。%sで後ろのタプルがそのまま代入される
                     cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
                                 (user_input_2.content, user_input_1.content, siina_amount, ctx.author.display_name))
@@ -763,14 +730,15 @@ class Message(commands.Cog):
                 await asyncio.sleep(0.3)
                 await ctx.channel.edit(name=ctx.channel.name + '☆')
 
-        elif is_normal_category(ctx):
+        elif self.bot.is_normal_category(ctx):
             description = "ここは通常取引チャンネルです。終了報告は``!end``をお使いください。"
             embed = discord.Embed(description=description, color=0x4259fb)
             await ctx.channel.send(embed=embed)
 
     @commands.command()
-    @commands.check(is_normal_category)
     async def end(self, ctx):
+        if not self.bot.is_normal_category(ctx):
+            return
         # chのdbを消し去る
         self.bot.reset_ch_db(ctx.channel.id, "d")
 

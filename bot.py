@@ -378,6 +378,29 @@ class KGX(commands.Bot):
         except requests.exceptions.HTTPError:  # よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
             return False
 
+    @staticmethod
+    def is_auction_category(ctx):
+        """チャンネルがオークションカテゴリに入っているかの真偽値を返す関数"""
+        auction_category_ids = {c.id for c in ctx.guild.categories if c.name.startswith('>')}
+        return ctx.channel.category_id in auction_category_ids
+
+    @staticmethod
+    def is_normal_category(ctx):
+        """チャンネルがノーマルカテゴリに入っているかの真偽値を返す関数"""
+        normal_category_ids = {this.id for this in ctx.guild.categories if this.name.startswith('*')}
+        return ctx.channel.category_id in normal_category_ids
+
+    @staticmethod
+    def is_siina_category(ctx):
+        """チャンネルが椎名カテゴリに入っているかの真偽値を返す関数"""
+        siina_channel_ids = {siina.id for siina in ctx.guild.text_channels if "椎名" in siina.name}
+        return ctx.channel.id in siina_channel_ids
+
+    @staticmethod
+    def is_gacha_category(ctx):
+        """チャンネルがガチャ券カテゴリに入っているかの真偽値を返す関数"""
+        gacha_channel_ids = {gacha.id for gacha in ctx.guild.text_channels if "ガチャ券" in gacha.name}
+        return ctx.channel.id in gacha_channel_ids
 
 if __name__ == '__main__':
     bot = KGX(prefix="!")
