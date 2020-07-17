@@ -84,6 +84,33 @@ class KGX(commands.Bot):
                 except Exception:
                     traceback.print_exc()
 
+
+    async def on_ready(self):
+        color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
+        await self.get_channel(678083611697872910).purge(limit=1)
+        await self.get_channel(678083611697872910).send(embed=self.embed)
+        await self.get_channel(722092542249795679).send(
+            embed=discord.Embed(description="起動しました。", color=color[random.randint(0, 6)]))
+
+    async def on_guild_channel_create(self, channel):
+        if ">" not in channel.category.name and "*" not in channel.category.name:
+            return
+        if "☆" in channel.name:
+            return
+        await channel.edit(name=f"{channel.name}☆")
+
+    async def on_command_error(self, ctx, error):  # すべてのコマンドで発生したエラーを拾う
+        if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
+            orig_error = getattr(error, "original", error)
+            error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+            error_message = f'```{error_msg}```'
+            ch = ctx.guild.get_channel(628807266753183754)
+            d = datetime.now()  # 現在時刻の取得
+            time = d.strftime("%Y/%m/%d %H:%M:%S")
+            embed = Embed(title='Error_log', description=error_message, color=0xf04747)
+            embed.set_footer(text=f'channel:{ctx.channel}\ntime:{time}\nuser:{ctx.author.display_name}')
+            await ch.send(embed=embed)
+
     @staticmethod
     def check_role(new_score, user, ctx):
         role1 = discord.utils.get(ctx.guild.roles, name="新星")
@@ -231,7 +258,7 @@ class KGX(commands.Bot):
     # [a lc + b st + c]がvalueで来ることを想定する(関数使用前に文の構造確認を取る)
     # 少数出来た場合、少数で計算して最後にintぐるみをして値を返す
     @staticmethod
-    def stack_check(value):
+    def stack_check(value) -> int:
         value = str(value).replace("椎名", "").lower()
         stack_frag = False
         lc_frag = False
@@ -265,7 +292,7 @@ class KGX(commands.Bot):
 
     # intがvalueで来ることを想定する
     @staticmethod
-    def stack_check_reverse(value):
+    def stack_check_reverse(value: int):
         try:
             value2 = int(value)
             if value2 <= 63:
@@ -350,32 +377,6 @@ class KGX(commands.Bot):
             return mcid
         except requests.exceptions.HTTPError:  # よくわからん、どのサイト見ても書いてあるからとりあえずtry-exceptで囲っとく
             return False
-
-    async def on_ready(self):
-        color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
-        await self.get_channel(678083611697872910).purge(limit=1)
-        await self.get_channel(678083611697872910).send(embed=self.embed)
-        await self.get_channel(722092542249795679).send(
-            embed=discord.Embed(description="起動しました。", color=color[random.randint(0, 6)]))
-
-    async def on_guild_channel_create(self, channel):
-        if ">" not in channel.category.name and "*" not in channel.category.name:
-            return
-        if "☆" in channel.name:
-            return
-        await channel.edit(name=f"{channel.name}☆")
-
-    async def on_command_error(self, ctx, error):  # すべてのコマンドで発生したエラーを拾う
-        if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
-            orig_error = getattr(error, "original", error)
-            error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-            error_message = f'```{error_msg}```'
-            ch = ctx.guild.get_channel(628807266753183754)
-            d = datetime.now()  # 現在時刻の取得
-            time = d.strftime("%Y/%m/%d %H:%M:%S")
-            embed = Embed(title='Error_log', description=error_message, color=0xf04747)
-            embed.set_footer(text=f'channel:{ctx.channel}\ntime:{time}\nuser:{ctx.author.display_name}')
-            await ch.send(embed=embed)
 
 
 if __name__ == '__main__':
