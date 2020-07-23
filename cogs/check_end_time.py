@@ -30,9 +30,9 @@ class CheckEndTime(commands.Cog):
             auction_data = cur.fetchall()
             for row in auction_data:
                 await self.bot.get_channel(735708199377961072).send(f"検索対象: {row}")
-                if row[6] == "undefined" or datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") > now:
+                if row[6] == "undefined":
                     continue
-                else:
+                if datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
                     ch = self.bot.get_channel(int(row[0]))
                     owner = kgx.get_member(int(row[1]))
                     item = row[3]
