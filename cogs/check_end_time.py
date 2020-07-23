@@ -21,7 +21,6 @@ class CheckEndTime(commands.Cog):
     async def check_time(self):
         try:
             await self.bot.wait_until_ready()
-            await self.bot.get_channel(735708199377961072).send("読み込み開始")  # copied
             now = datetime.datetime.now()
             kgx = self.bot.get_guild(558125111081697300)
             log_ch = self.bot.get_channel(558132754953273355)
@@ -32,7 +31,7 @@ class CheckEndTime(commands.Cog):
             teststr1 = ""
             for row in auction_data:
                 await self.bot.get_channel(735708199377961072).send(f"検索対象: {row}")
-                if row[6] == "undefined" or datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
+                if row[6] == "undefined" or datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") > now:
                     teststr1 += f"id: {row[6]} 範囲外\n"
                     continue
                 else:
@@ -82,7 +81,7 @@ class CheckEndTime(commands.Cog):
             cur.execute("SELECT * from deal;")
             deal_data = cur.fetchall()
             for row in deal_data:
-                if row[5] <= now:
+                if row[5] == "undefined" or datetime.datetime.strptime(row[5], "%Y/%m/%d-%H:%M") > now:
                     pass
         except Exception as e:
             orig_error = getattr(e, "original", e)
