@@ -84,7 +84,6 @@ class KGX(commands.Bot):
                 except Exception:
                     traceback.print_exc()
 
-
     async def on_ready(self):
         color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
         await self.get_channel(678083611697872910).purge(limit=1)
@@ -401,6 +400,7 @@ class KGX(commands.Bot):
         """チャンネルがガチャ券カテゴリに入っているかの真偽値を返す関数"""
         gacha_channel_ids = {gacha.id for gacha in ctx.guild.text_channels if "ガチャ券" in gacha.name}
         return ctx.channel.id in gacha_channel_ids
+
 
 if __name__ == '__main__':
     bot = KGX(prefix="!")

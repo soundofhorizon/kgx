@@ -21,6 +21,7 @@ class CheckEndTime(commands.Cog):
     async def check_time(self):
         try:
             await self.bot.wait_until_ready()
+            await self.bot.get_channel(735708199377961072).send("読み込み開始")
             now = datetime.datetime.now()
             kgx = self.bot.get_guild(558125111081697300)
             log_ch = self.bot.get_channel(558132754953273355)
@@ -29,8 +30,13 @@ class CheckEndTime(commands.Cog):
             cur.execute("SELECT * from auction;")
             auction_data = cur.fetchall()
             for row in auction_data:
+                teststr1 = ""
                 if datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
+                    await self.bot.get_channel(735708199377961072).send(f"id: {row[6]}ヒット")
                     continue
+                else:
+                    teststr1 += f"id: {row[6]} False\n"
+                await self.bot.get_channel(735708199377961072).send(f"{teststr1}")
 
                 ch = self.bot.get_channel(row[0])
                 owner = kgx.get_member(row[1])
