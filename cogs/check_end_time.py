@@ -42,7 +42,12 @@ class CheckEndTime(commands.Cog):
                     tender = kgx.get_member(int(tend_data[1]))
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
                     tend_price = f"{row[7]}{price}"
-                    await self.bot.get_channel(735708199377961072).send(f"{now.strftime('%Y/%m/%d')}, {owner.display_name}, {item}, {tender.display_name}, {tend_price}, {ch.name}")
+                    await self.bot.get_channel(735708199377961072).send(f"{now.strftime('%Y/%m/%d')}, {ch.name}")
+                    await self.bot.get_channel(735708199377961072).send(f"{item}")
+                    await self.bot.get_channel(735708199377961072).send(f"{tend_price}")
+                    await self.bot.get_channel(735708199377961072).send(f"{ch.name}")
+                    await self.bot.get_channel(735708199377961072).send(f"{owner.display_name}")
+                    await self.bot.get_channel(735708199377961072).send(f"{tender.display_name}")
 
                     embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
                     embed.add_field(name="落札日", value=f'\n\n{now.strftime("%Y/%m/%d")}', inline=False)
