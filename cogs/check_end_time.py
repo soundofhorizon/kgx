@@ -25,10 +25,11 @@ class CheckEndTime(commands.Cog):
             kgx = self.bot.get_guild(558125111081697300)
             log_ch = self.bot.get_channel(558132754953273355)
 
+            # オークションについて
             cur.execute("SELECT * from auction;")
             auction_data = cur.fetchall()
             for row in auction_data:
-                if not datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
+                if datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
                     continue
 
                 ch = self.bot.get_channel(row[0])
@@ -71,6 +72,7 @@ class CheckEndTime(commands.Cog):
                 await asyncio.sleep(0.3)
                 await ch.edit(name=f"{ch.name}☆")
 
+            # 取引について
             cur.execute("SELECT * from deal;")
             deal_data = cur.fetchall()
             for row in deal_data:
