@@ -28,23 +28,23 @@ class CheckEndTime(commands.Cog):
             # オークションについて
             cur.execute("SELECT * from auction;")
             auction_data = cur.fetchall()
-            teststr1 = ""
             for row in auction_data:
                 await self.bot.get_channel(735708199377961072).send(f"検索対象: {row}")
                 if row[6] == "undefined" or datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") > now:
-                    teststr1 += f"id: {row[6]} 範囲外\n"
                     continue
                 else:
-                    teststr1 += f"id: {row[6]} ヒット\n"
+                    await self.bot.get_channel(735708199377961072).send(f"検索対象: {row[6]} ヒット")
                     ch = self.bot.get_channel(int(row[0]))
                     owner = kgx.get_member(int(row[1]))
                     item = row[3]
+                    await self.bot.get_channel(735708199377961072).send(f"各種データ読み込み完了")
 
                     cur.execute("SELECT * from tend WHERE ch_id=%s;", (ch.id,))
                     tend_data = cur.fetchone()
                     tender = kgx.get_member(int(tend_data[1]))
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
                     tend_price = f"{row[7]}{price}"
+                    await self.bot.get_channel(735708199377961072).send(f"tendデータ読み込み完了")
 
                     embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
                     embed.add_field(name="落札日", value=f'\n\n{now}', inline=False)
@@ -53,7 +53,7 @@ class CheckEndTime(commands.Cog):
                     embed.add_field(name="落札者", value=f'\n\n{tender.display_name}', inline=False)
                     embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
                     embed.add_field(name="チャンネル名", value=f'\n\n{ch}', inline=False)
-
+                    await self.bot.get_channel(735708199377961072).send(f"embed作成完了")
                     await log_ch.send(embed=embed)
 
                     # ランキング送信
@@ -75,7 +75,6 @@ class CheckEndTime(commands.Cog):
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
                     await ch.edit(name=f"{ch.name}☆")
-            await self.bot.get_channel(735708199377961072).send(f"{teststr1}")
 
             # 取引について
             cur.execute("SELECT * from deal;")
