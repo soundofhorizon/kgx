@@ -3,6 +3,7 @@ import discord
 
 
 class SimpleCommand(commands.Cog):
+
     """引数を持たないコマンド"""
     def __init__(self, bot):
         self.bot = bot
@@ -47,6 +48,7 @@ class SimpleCommand(commands.Cog):
                       "-------\n"
         embed = discord.Embed(description=description, color=0x66cdaa)
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(SimpleCommand(bot))

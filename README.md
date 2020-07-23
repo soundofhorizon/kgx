@@ -9,7 +9,7 @@
 >> embed_message_id: オークション情報が載ってるembedのmessage_id: bigint<br>
 >> auction_item: そのチャンネルの出品物. text<br>
 >> auction_start_price: text<br>
->> auction_bin_time: text<br>
+>> auction_bin_price: text<br>
 >> auction_end_time: 終了時刻がdatetime型で入る。 text <br>
 >> unit: 単位. text<br>
 >> notice: 特記事項. text<br>

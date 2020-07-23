@@ -21,19 +21,19 @@ class CheckEndTime(commands.Cog):
     async def check_time(self):
         try:
             await self.bot.wait_until_ready()
-            now = datetime.datetime.now().strftime("%Y/%m/%d")
+            now = datetime.datetime.now()
             kgx = self.bot.get_guild(558125111081697300)
             log_ch = self.bot.get_channel(558132754953273355)
 
             cur.execute("SELECT * from auction;")
             auction_data = cur.fetchall()
             for row in auction_data:
-                if not row[5] <= now:
+                if not datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
                     continue
 
                 ch = self.bot.get_channel(row[0])
                 owner = kgx.get_member(row[1])
-                item = row[2]
+                item = row[3]
 
                 cur.execute("SELECT * from tend WHERE ch_id=%s;", (ch.id,))
                 tend_data = cur.fetchone()
@@ -86,6 +86,7 @@ class CheckEndTime(commands.Cog):
             embed = discord.Embed(title='Error_log', description=error_message, color=0xf04747)
             embed.set_footer(text=f'channel:on_check_time_loop\ntime:{time}\nuser:None')
             await ch.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(CheckEndTime(bot))

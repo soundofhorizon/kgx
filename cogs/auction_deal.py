@@ -501,7 +501,6 @@ class AuctionDael(commands.Cog):
                     embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
                     await self.bot.get_channel(id=auction_notice_ch_id).send(embed=embed)
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-                # todo ここをembedに置き換える。iconを貼りたい・。・
                 avatar_url = ctx.author.avatar_url_as(format="png")
                 image = requests.get(avatar_url)
                 image = io.BytesIO(image.content)
