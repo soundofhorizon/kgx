@@ -41,6 +41,18 @@ class CheckEndTime(commands.Cog):
                     tend_data = cur.fetchone()
                     tender = kgx.get_member(int(tend_data[1]))
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
+                    if int(price) == 0:
+                        # 入札者なしという事
+                        embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
+                        await self.bot.get_channel(727333695450775613).send(embed=embed)
+                        embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
+                        await ch.send(embed=embed)
+                        # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
+                        self.bot.reset_ch_db(ch.id, "a")
+                        await ch.send('--------ｷﾘﾄﾘ線--------')
+                        await asyncio.sleep(0.3)
+                        await ch.edit(name=f"{ch.name}☆")
+
                     tend_price = f"{row[7]}{price}"
                     await self.bot.get_channel(735708199377961072).send(f"{now.strftime('%Y/%m/%d')}, {ch.name}")
                     await self.bot.get_channel(735708199377961072).send(f"{item}")
@@ -74,7 +86,7 @@ class CheckEndTime(commands.Cog):
                     embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                     await ch.send(embed=embed)
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
-                    self.bot.reset_ch_db(ch, "a")
+                    self.bot.reset_ch_db(ch.id, "a")
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
                     await ch.edit(name=f"{ch.name}☆")
