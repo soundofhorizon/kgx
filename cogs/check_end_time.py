@@ -29,7 +29,6 @@ class CheckEndTime(commands.Cog):
             cur.execute("SELECT * from auction;")
             auction_data = cur.fetchall()
             for row in auction_data:
-                await self.bot.get_channel(735708199377961072).send(f"検索対象: {row}")
                 if row[6] == "undefined":
                     continue
                 if datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:

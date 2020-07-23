@@ -404,4 +404,4 @@ class KGX(commands.Bot):
 
 if __name__ == '__main__':
     bot = KGX(prefix="!")
-    #bot.run(os.environ['TOKEN'])
+    bot.run(os.environ['TOKEN'])
