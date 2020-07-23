@@ -52,6 +52,7 @@ class CheckEndTime(commands.Cog):
                         await ch.send('--------ｷﾘﾄﾘ線--------')
                         await asyncio.sleep(0.3)
                         await ch.edit(name=f"{ch.name}☆")
+                        continue
 
                     tend_price = f"{row[7]}{price}"
                     await self.bot.get_channel(735708199377961072).send(f"{now.strftime('%Y/%m/%d')}, {ch.name}")
@@ -90,6 +91,7 @@ class CheckEndTime(commands.Cog):
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
                     await ch.edit(name=f"{ch.name}☆")
+                await asyncio.sleep(1)
 
             # 取引について
             cur.execute("SELECT * from deal;")
