@@ -42,16 +42,17 @@ class CheckEndTime(commands.Cog):
                     tender = kgx.get_member(int(tend_data[1]))
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
                     tend_price = f"{row[7]}{price}"
+                    await self.bot.get_channel(735708199377961072).send(f"{now.strftime('%Y/%m/%d')}, {owner.display_name}, {item}, {tender.display_name}, {tend_price}, {ch.name}")
 
                     embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
-                    embed.add_field(name="落札日", value=f'\n\n{now.strftime("%Y/%m/%d %H:%M")}', inline=False)
+                    embed.add_field(name="落札日", value=f'\n\n{now.strftime("%Y/%m/%d")}', inline=False)
                     embed.add_field(name="出品者", value=f'\n\n{owner.display_name}', inline=False)
                     embed.add_field(name="品物", value=f'\n\n{item}', inline=False)
                     embed.add_field(name="落札者", value=f'\n\n{tender.display_name}', inline=False)
                     embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
                     embed.add_field(name="チャンネル名", value=f'\n\n{ch.name}', inline=False)
-                    await self.bot.get_channel(735708199377961072).send(f"embed作成完了")
                     await log_ch.send(embed=embed)
+                    await self.bot.get_channel(735708199377961072).send(f"embed作成完了")
 
                     # ランキング送信
                     if "椎名" in ch.name:
