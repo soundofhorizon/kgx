@@ -17,6 +17,7 @@ class CheckEndTime(commands.Cog):
 
     @tasks.loop(minutes=1)
     async def check_time(self):
+        await self.bot.wait_until_ready()
         now = datetime.datetime.now().strftime("%Y/%m/%d")
         kgx = self.bot.get_guild(558125111081697300)
         log_ch = self.bot.get_channel(558132754953273355)
