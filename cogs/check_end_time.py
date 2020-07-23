@@ -31,7 +31,6 @@ class CheckEndTime(commands.Cog):
                 if not row[5] <= now:
                     continue
 
-                time = now.strftime("%Y/%m/%d")
                 ch = self.bot.get_channel(row[0])
                 owner = kgx.get_member(row[1])
                 item = row[2]
@@ -49,6 +48,8 @@ class CheckEndTime(commands.Cog):
                 embed.add_field(name="落札者", value=f'\n\n{tender.display_name}', inline=False)
                 embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
                 embed.add_field(name="チャンネル名", value=f'\n\n{ch}', inline=False)
+
+                await log_ch.send(embed=embed)
 
                 # ランキング送信
                 if "椎名" in ch.name:
