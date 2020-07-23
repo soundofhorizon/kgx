@@ -32,51 +32,50 @@ class CheckEndTime(commands.Cog):
             teststr1 = ""
             for row in auction_data:
                 await self.bot.get_channel(735708199377961072).send(f"検索対象: {row}")
-                if datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
-                    await self.bot.get_channel(735708199377961072).send(f"id: {row[6]}ヒット")
+                if row[6] == "undefined" or datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
+                    teststr1 += f"id: {row[6]} 範囲外\n"
                     continue
                 else:
-                    teststr1 += f"id: {row[6]} False\n"
+                    teststr1 += f"id: {row[6]} ヒット\n"
+                    ch = self.bot.get_channel(row[0])
+                    owner = kgx.get_member(row[1])
+                    item = row[3]
 
-                ch = self.bot.get_channel(row[0])
-                owner = kgx.get_member(row[1])
-                item = row[3]
+                    cur.execute("SELECT * from tend WHERE ch_id=%s;", (ch.id,))
+                    tend_data = cur.fetchone()
+                    tender = kgx.get_member(tend_data[1])
+                    price = self.bot.stack_check_reverse(tend_data[2])
+                    tend_price = f"{row[7]}{price}"
 
-                cur.execute("SELECT * from tend WHERE ch_id=%s;", (ch.id,))
-                tend_data = cur.fetchone()
-                tender = kgx.get_member(tend_data[1])
-                price = self.bot.stack_check_reverse(tend_data[2])
-                tend_price = f"{row[7]}{price}"
+                    embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
+                    embed.add_field(name="落札日", value=f'\n\n{now}', inline=False)
+                    embed.add_field(name="出品者", value=f'\n\n{owner.display_name}', inline=False)
+                    embed.add_field(name="品物", value=f'\n\n{item}', inline=False)
+                    embed.add_field(name="落札者", value=f'\n\n{tender.display_name}', inline=False)
+                    embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
+                    embed.add_field(name="チャンネル名", value=f'\n\n{ch}', inline=False)
 
-                embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
-                embed.add_field(name="落札日", value=f'\n\n{now}', inline=False)
-                embed.add_field(name="出品者", value=f'\n\n{owner.display_name}', inline=False)
-                embed.add_field(name="品物", value=f'\n\n{item}', inline=False)
-                embed.add_field(name="落札者", value=f'\n\n{tender.display_name}', inline=False)
-                embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
-                embed.add_field(name="チャンネル名", value=f'\n\n{ch}', inline=False)
+                    await log_ch.send(embed=embed)
 
-                await log_ch.send(embed=embed)
+                    # ランキング送信
+                    if "椎名" in ch.name:
+                        # INSERTを実行。%sで後ろのタプルがそのまま代入される
+                        cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
+                                    (tender.display_name, item, price, owner.display_name))
+                        db.commit()
+                        await self.bot.get_channel(705040893593387039).purge(limit=10)
+                        await asyncio.sleep(0.1)
+                        embed = self.bot.create_high_3_ranking()
+                        for i in range(len(embed)):
+                            await self.bot.get_channel(705040893593387039).send(embed=embed[i])
 
-                # ランキング送信
-                if "椎名" in ch.name:
-                    # INSERTを実行。%sで後ろのタプルがそのまま代入される
-                    cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                                (tender.display_name, item, price, owner.display_name))
-                    db.commit()
-                    await self.bot.get_channel(705040893593387039).purge(limit=10)
-                    await asyncio.sleep(0.1)
-                    embed = self.bot.create_high_3_ranking()
-                    for i in range(len(embed)):
-                        await self.bot.get_channel(705040893593387039).send(embed=embed[i])
-
-                embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
-                await ch.send(embed=embed)
-                # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
-                self.bot.reset_ch_db(ch, "a")
-                await ch.send('--------ｷﾘﾄﾘ線--------')
-                await asyncio.sleep(0.3)
-                await ch.edit(name=f"{ch.name}☆")
+                    embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
+                    await ch.send(embed=embed)
+                    # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
+                    self.bot.reset_ch_db(ch, "a")
+                    await ch.send('--------ｷﾘﾄﾘ線--------')
+                    await asyncio.sleep(0.3)
+                    await ch.edit(name=f"{ch.name}☆")
             await self.bot.get_channel(735708199377961072).send(f"{teststr1}")
 
             # 取引について
