@@ -32,6 +32,7 @@ class CheckEndTime(commands.Cog):
                 if row[6] == "undefined":
                     continue
                 if datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
+                    await self.bot.get_channel(735708199377961072).send(f"検索対象: {row}　条件ヒット、処理開始")
                     ch = self.bot.get_channel(int(row[0]))
                     owner = kgx.get_member(int(row[1]))
                     item = row[3]
@@ -40,6 +41,7 @@ class CheckEndTime(commands.Cog):
                     tend_data = cur.fetchone()
                     tender = kgx.get_member(int(tend_data[1]))
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
+                    await self.bot.get_channel(735708199377961072).send(f"tendデータ取得完了: data>{tend_data}, tender: {tender}, price: {price}")
                     if int(price) == 0:
                         # 入札者なしという事
                         embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
