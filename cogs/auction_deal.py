@@ -451,8 +451,48 @@ class AuctionDael(commands.Cog):
                         embed = discord.Embed(description=f"即決価格より高い価格が入札されました。{ctx.author.display_name}さんの落札です。",
                                               color=0x4259fb)
                         await ctx.send(embed=embed)
-                        # todo ここにbid処理を挟む
+                        # オークション情報を取る
+                        cur.execute(f"SELECT * FROM auction where ch_id = {ctx.channel.id}")
+                        auction_data = cur.fetchone()
+                        tend_price = f"{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}"
+
+                        embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
+                        embed.add_field(name="落札日", value=f'\n\n{datetime.now().strftime("%Y/%m/%d")}', inline=False)
+                        embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=auction_data[1]).display_name}', inline=False)
+                        embed.add_field(name="品物", value=f'\n\n{auction_data[3]}', inline=False)
+                        embed.add_field(name="落札者", value=f'\n\n{ctx.author.display_name}', inline=False)
+                        embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
+                        embed.add_field(name="チャンネル名", value=f'\n\n{ctx.channel.name}', inline=False)
+                        await self.bot.get_channel(558132754953273355).send(embed=embed)
+                        # オークションが終わったらその結果を通知
+                        description = f"{ctx.channel.name}にて行われていた 品物名: **{auction_data[3]}** のオークションは\n{ctx.author.display_name}により" \
+                                      f"**{tend_price}**にて落札されました"
+                        embed = discord.Embed(description=description, color=0xffaf60)
+                        time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+                        embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
+                        await self.bot.get_channel(727333695450775613).send(self.bot.get_user(id=auction_data[1]).mention, embed=embed)
+
+                        # ランキング送信
+                        if "椎名" in ctx.channel.name:
+                            # INSERTを実行。%sで後ろのタプルがそのまま代入される
+                            cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
+                                        (ctx.author.display_name, auction_data[3], self.bot.stack_check(price), self.bot.get_user(id=auction_data[1]).display_name))
+                            db.commit()
+                            await self.bot.get_channel(705040893593387039).purge(limit=10)
+                            await asyncio.sleep(0.1)
+                            embed = self.bot.create_high_bid_ranking()
+                            for i in range(len(embed)):
+                                await self.bot.get_channel(705040893593387039).send(embed=embed[i])
+
+                        embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
+                        await ctx.channel.send(embed=embed)
+                        # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
+                        self.bot.reset_ch_db(ctx.channel.id, "a")
+                        await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
+                        await asyncio.sleep(0.3)
+                        await ctx.channel.edit(name=f"{ctx.channel.name}☆")
                         return
+
                 elif self.bot.stack_check(price) == 0:
                     embed = discord.Embed(description="不正な値です。", color=0x4259fb)
                     await ctx.send(embed=embed)

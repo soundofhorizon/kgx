@@ -41,10 +41,10 @@ class CheckEndTime(commands.Cog):
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
                     if int(self.bot.stack_check(price)) == 0:
                         # 入札者なしという事
-                        embed = discord.Embed(description=f"{owner.mention}\n{ch.name}のオークションは入札者が誰もいなかったので終了します")
+                        embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
                         time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                         embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                        await self.bot.get_channel(727333695450775613).send(embed=embed)
+                        await self.bot.get_channel(727333695450775613).send(owner.mention, embed=embed)
                         embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                         await ch.send(embed=embed)
                         # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
