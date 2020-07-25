@@ -67,15 +67,20 @@ class CheckEndTime(commands.Cog):
 
                     # ランキング送信
                     if "椎名" in ch.name:
+                        await self.bot.get_channel(735708199377961072).send(f"椎名カテゴリを検知、ランキング処理開始")
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
                                     (tender.display_name, item, tend_data[2], owner.display_name))
                         db.commit()
+                        await self.bot.get_channel(735708199377961072).send(f"INSERT完了")
                         await self.bot.get_channel(705040893593387039).purge(limit=10)
+                        await self.bot.get_channel(735708199377961072).send(f"purge完了")
                         await asyncio.sleep(0.1)
                         embed = self.bot.create_high_bid_ranking()
+                        await self.bot.get_channel(735708199377961072).send(f"embed作成完了")
                         for i in range(len(embed)):
                             await self.bot.get_channel(705040893593387039).send(embed=embed[i])
+                            await self.bot.get_channel(735708199377961072).send(f"embed{i}の表示完了")
 
                     embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                     await ch.send(embed=embed)
