@@ -113,7 +113,7 @@ class CheckEndTime(commands.Cog):
             orig_error = getattr(e, "original", e)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
             error_message = f'```{error_msg}```'
-            ch = self.bot.guild.get_channel(628807266753183754)
+            ch = self.bot.get_channel(628807266753183754)
             d = datetime.datetime.now()  # 現在時刻の取得
             time = d.strftime("%Y/%m/%d %H:%M:%S")
             embed = discord.Embed(title='Error_log', description=error_message, color=0xf04747)
