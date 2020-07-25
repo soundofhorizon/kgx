@@ -110,6 +110,7 @@ class CheckEndTime(commands.Cog):
                     await ch.edit(name=f"{ch.name}☆")
 
         except Exception as e:
+            return
             orig_error = getattr(e, "original", e)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
             error_message = f'```{error_msg}```'
