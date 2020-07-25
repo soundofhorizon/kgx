@@ -42,7 +42,7 @@ class CheckEndTime(commands.Cog):
                     tender = kgx.get_member(int(tend_data[1]))
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
                     await self.bot.get_channel(735708199377961072).send(f"tendデータ取得完了: data>{tend_data}, tender: {tender}, price: {price}")
-                    if int(self.bot.stack_check_reverse(price)) == 0:
+                    if int(self.bot.stack_check(price)) == 0:
                         # 入札者なしという事
                         embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
                         await self.bot.get_channel(727333695450775613).send(embed=embed)
