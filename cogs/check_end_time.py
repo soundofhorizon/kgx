@@ -40,11 +40,11 @@ class CheckEndTime(commands.Cog):
                     tend_data = cur.fetchone()
                     tender = kgx.get_member(int(tend_data[1]))
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
-                    await self.bot.get_channel(735708199377961072).send("tendデータまで取得完了")
                     if int(self.bot.stack_check(price)) == 0:
                         # 入札者なしという事
-                        await self.bot.get_channel(727333695450775613).send(owner.mention)
-                        embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
+                        embed = discord.Embed(description=f"{owner.mention}\n{ch.name}のオークションは入札者が誰もいなかったので終了します")
+                        time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+                        embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
                         await self.bot.get_channel(727333695450775613).send(embed=embed)
                         embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                         await ch.send(embed=embed)
@@ -67,9 +67,12 @@ class CheckEndTime(commands.Cog):
                     await log_ch.send(embed=embed)
 
                     # オークションが終わったらその結果を通知
-                    await self.bot.get_channel(727333695450775613).send(owner.mention)
-                    description = f"{ch.name}にて行われていた {item} のオークションは\n{tender.display_name}により{tend_price}にて落札されました"
-                    await self.bot.get_channel(727333695450775613).send(embed=discord.Embed(description=description, color=0xffaf60))
+                    description = f"{ch.name}にて行われていた 品物名: **{item}** のオークションは\n{tender.display_name}により" \
+                                  f"**{tend_price}**にて落札されました"
+                    embed = discord.Embed(description=description, color=0xffaf60)
+                    time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+                    embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
+                    await self.bot.get_channel(727333695450775613).send(owner.mention, embed=embed)
 
                     # ランキング送信
                     if "椎名" in ch.name:
@@ -98,9 +101,10 @@ class CheckEndTime(commands.Cog):
             for row in deal_data:
                 if row[5] == "undefined" or datetime.datetime.strptime(row[5], "%Y/%m/%d-%H:%M") > now:
                     ch = self.bot.get_channel(id=row[0])
-                    await self.bot.get_channel(727333695450775613).send(self.bot.get_user(id=row[1]).mention)
                     embed = discord.Embed(description=f"{ch.name}の取引は不成立でしたので終了します")
-                    await self.bot.get_channel(727333695450775613).send(embed=embed)
+                    time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+                    embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
+                    await self.bot.get_channel(727333695450775613).send(self.bot.get_user(id=row[1]).mention, embed=embed)
                     embed = discord.Embed(description="取引が終了しました", color=0xffaf60)
                     await ch.send(embed=embed)
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
