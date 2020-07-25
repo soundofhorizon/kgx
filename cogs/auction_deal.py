@@ -126,7 +126,7 @@ class AuctionDael(commands.Cog):
             elif self.bot.is_gacha_category(ctx):
                 unit = "ガチャ券"
             else:
-                embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
+                embed = discord.Embed(description="何によるオークションですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
                 user_input_0 = await self.bot.wait_for("message", check=check)

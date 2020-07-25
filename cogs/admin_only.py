@@ -148,7 +148,7 @@ class AdminOnly(commands.Cog):
             self.bot.reset_ch_db(ctx.channel.id, "d")
 
         embed = discord.Embed(
-            description=f"{ctx.author.display_name}によりこの取引は停止させられました。",
+            description=f"{ctx.author.display_name}によりこのフローは停止させられました。",
             color=0xf04747
         )
         await ctx.channel.send(embed=embed)
