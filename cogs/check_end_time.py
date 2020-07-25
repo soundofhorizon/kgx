@@ -40,6 +40,7 @@ class CheckEndTime(commands.Cog):
                     tend_data = cur.fetchone()
                     tender = kgx.get_member(int(tend_data[1]))
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
+                    await self.bot.get_channel(735708199377961072).send("tendデータまで取得完了")
                     if int(self.bot.stack_check(price)) == 0:
                         # 入札者なしという事
                         await self.bot.get_channel(727333695450775613).send(owner.mention)
