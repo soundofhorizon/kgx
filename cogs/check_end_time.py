@@ -67,7 +67,7 @@ class CheckEndTime(commands.Cog):
 
                     # ランキング送信
                     if "椎名" in ch.name:
-                        await self.bot.get_channel(735708199377961072).send(f"椎名カテゴリを検知、ランキング処理開始\nINSERT INTO bid_ranking VALUES ({tender.display_name}, {item}, {tend_data[2]}, {owner.display_name})")
+                        await self.bot.get_channel(735708199377961072).send(f"椎名カテゴリを検知、ランキング処理開始")
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
                                     (tender.display_name, item, tend_data[2], owner.display_name))
