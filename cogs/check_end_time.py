@@ -99,7 +99,9 @@ class CheckEndTime(commands.Cog):
             cur.execute("SELECT * from deal;")
             deal_data = cur.fetchall()
             for row in deal_data:
-                if row[5] == "undefined" or datetime.datetime.strptime(row[5], "%Y/%m/%d-%H:%M") > now:
+                if row[5] == "undefined":
+                    continue
+                if datetime.datetime.strptime(row[5], "%Y/%m/%d-%H:%M") <= now:
                     ch = self.bot.get_channel(id=row[0])
                     embed = discord.Embed(description=f"{ch.name}の取引は不成立でしたので終了します")
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
@@ -117,7 +119,7 @@ class CheckEndTime(commands.Cog):
             orig_error = getattr(e, "original", e)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
             error_message = f'```{error_msg}```'
-            ch = self.bot.guild.get_channel(628807266753183754)
+            ch = self.bot.get_channel(628807266753183754)
             d = datetime.datetime.now()  # 現在時刻の取得
             time = d.strftime("%Y/%m/%d %H:%M:%S")
             embed = discord.Embed(title='Error_log', description=error_message, color=0xf04747)
