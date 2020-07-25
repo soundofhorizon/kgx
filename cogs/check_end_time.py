@@ -32,7 +32,6 @@ class CheckEndTime(commands.Cog):
                 if row[6] == "undefined":
                     continue
                 if datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
-                    await self.bot.get_channel(735708199377961072).send(f"検索対象: {row}　条件ヒット、処理開始")
                     ch = self.bot.get_channel(int(row[0]))
                     owner = kgx.get_member(int(row[1]))
                     item = row[3]
@@ -43,6 +42,7 @@ class CheckEndTime(commands.Cog):
                     price = self.bot.stack_check_reverse(int(tend_data[2]))
                     if int(self.bot.stack_check(price)) == 0:
                         # 入札者なしという事
+                        await self.bot.get_channel(727333695450775613).send(owner.mention)
                         embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
                         await self.bot.get_channel(727333695450775613).send(embed=embed)
                         embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
@@ -65,22 +65,22 @@ class CheckEndTime(commands.Cog):
                     embed.add_field(name="チャンネル名", value=f'\n\n{ch.name}', inline=False)
                     await log_ch.send(embed=embed)
 
+                    # オークションが終わったらその結果を通知
+                    await self.bot.get_channel(727333695450775613).send(owner.mention)
+                    description = f"{ch.name}にて行われていた {item} のオークションは\n{tender.display_name}により{tend_price}にて落札されました"
+                    await self.bot.get_channel(727333695450775613).send(embed=discord.Embed(description=description, color=0xffaf60))
+
                     # ランキング送信
                     if "椎名" in ch.name:
-                        await self.bot.get_channel(735708199377961072).send(f"椎名カテゴリを検知、ランキング処理開始")
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
                                     (tender.display_name, item, tend_data[2], owner.display_name))
                         db.commit()
-                        await self.bot.get_channel(735708199377961072).send(f"INSERT完了")
                         await self.bot.get_channel(705040893593387039).purge(limit=10)
-                        await self.bot.get_channel(735708199377961072).send(f"purge完了")
                         await asyncio.sleep(0.1)
                         embed = self.bot.create_high_bid_ranking()
-                        await self.bot.get_channel(735708199377961072).send(f"embed作成完了")
                         for i in range(len(embed)):
                             await self.bot.get_channel(705040893593387039).send(embed=embed[i])
-                            await self.bot.get_channel(735708199377961072).send(f"embed{i}の表示完了")
 
                     embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                     await ch.send(embed=embed)
@@ -89,7 +89,6 @@ class CheckEndTime(commands.Cog):
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
                     await ch.edit(name=f"{ch.name}☆")
-                    await self.bot.get_channel(735708199377961072).send(f"処理完了")
                 await asyncio.sleep(1)
 
             # 取引について
@@ -97,7 +96,18 @@ class CheckEndTime(commands.Cog):
             deal_data = cur.fetchall()
             for row in deal_data:
                 if row[5] == "undefined" or datetime.datetime.strptime(row[5], "%Y/%m/%d-%H:%M") > now:
-                    pass
+                    ch = self.bot.get_channel(id=row[0])
+                    await self.bot.get_channel(727333695450775613).send(self.bot.get_user(id=row[1]).mention)
+                    embed = discord.Embed(description=f"{ch.name}の取引は不成立でしたので終了します")
+                    await self.bot.get_channel(727333695450775613).send(embed=embed)
+                    embed = discord.Embed(description="取引が終了しました", color=0xffaf60)
+                    await ch.send(embed=embed)
+                    # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
+                    self.bot.reset_ch_db(row[0], "d")
+                    await ch.send('--------ｷﾘﾄﾘ線--------')
+                    await asyncio.sleep(0.3)
+                    await ch.edit(name=f"{ch.name}☆")
+
         except Exception as e:
             orig_error = getattr(e, "original", e)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
