@@ -1,6 +1,5 @@
 import asyncio
 import traceback
-
 from discord.ext import commands, tasks
 import discord
 import psycopg2
