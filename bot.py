@@ -401,6 +401,18 @@ class KGX(commands.Bot):
         gacha_channel_ids = {gacha.id for gacha in ctx.guild.text_channels if "ガチャ券" in gacha.name}
         return ctx.channel.id in gacha_channel_ids
 
+    async def dm_send(self, user_id: int, content):
+        user = self.get_user(user_id)
+        try:
+            if isinstance(content, discord.Embed):
+                await user.send(embed=content)
+            else:
+                await user.send(content)
+        except Exception as e:
+            return False
+        else:
+            return True
+
 
 if __name__ == '__main__':
     bot = KGX(prefix="!")
