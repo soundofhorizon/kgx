@@ -570,105 +570,11 @@ class AuctionDael(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def bid(self, ctx):
-        if self.bot.is_auction_category(ctx):
-            if '☆' in ctx.channel.name:
-                embed = discord.Embed(
-                    description=f'{ctx.author.display_name}さん。このチャンネルではオークションは行われていません',
-                    color=0xff0000)
-                await ctx.channel.send(embed=embed)
-            else:
-                auction_finish_user_id = ctx.author.id
-
-                def check(m):
-                    if m.author.bot:
-                        return
-                    elif m.author.id == auction_finish_user_id:
-                        return m.channel == ctx.channel and "," not in m.content
-
-                def check_siina_style(m):
-                    if m.author.bot:
-                        return
-                    elif "椎名" in m.content:
-                        return m.channel == ctx.channel
-
-                kazu = 6
-                embed = discord.Embed(
-                    description="注:**全体の入力を通して[,]の記号は使用できません。何か代替の記号をお使いください。**\n\n"
-                                "出品した品物名を書いてください。",
-                    color=0xffaf60)
-                await ctx.channel.send(embed=embed)
-                user_input_1 = await self.bot.wait_for('message', check=check)
-                embed = discord.Embed(description="落札者のユーザーネームを書いてください。", color=0xffaf60)
-                await ctx.channel.send(embed=embed)
-                user_input_2 = await self.bot.wait_for('message', check=check)
-                description = "落札価格を入力してください。\n"
-                if self.bot.is_siina_category(ctx):
-                    description += "以下のような形式以外は認識されません。(個はなくてもOK): **椎名○○st+△(個)(椎名○○(個)も可)\n" \
-                                   "ex: 椎名5st+16個 椎名336個"
-                embed = discord.Embed(description=description, color=0xffaf60)
-                await ctx.channel.send(embed=embed)
-                siina_amount = -1
-                user_input_3 = ""
-                if self.bot.is_siina_category(ctx):
-                    frag = True
-                    while frag:
-                        user_input_3 = await self.bot.wait_for('message', check=check_siina_style)
-                        siina_amount = self.bot.stack_check(user_input_3.content)
-                        if siina_amount == 0:
-                            await ctx.channel.send("値が不正です。椎名○○st+△(個)の○と△には整数以外は入りません。再度入力してください。")
-                            kazu += 2
-                        else:
-                            frag = False
-                else:
-                    user_input_3 = await self.bot.wait_for('message', check=check)
-                await ctx.channel.purge(limit=kazu)
-                embed = discord.Embed(description="オークション終了報告を受け付けました。", color=0xffaf60)
-                await ctx.channel.send(embed=embed)
-
-                # ランキング送信
-                if self.bot.is_siina_category(ctx):
-                    # INSERTを実行。%sで後ろのタプルがそのまま代入される
-                    cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                                (user_input_2.content, user_input_1.content, siina_amount, ctx.author.display_name))
-                    db.commit()
-                    await self.bot.get_channel(705040893593387039).purge(limit=10)
-                    await asyncio.sleep(0.1)
-                    embed = self.bot.create_high_bid_ranking()
-                    for i in range(len(embed)):
-                        await self.bot.get_channel(705040893593387039).send(embed=embed[i])
-
-                # 記録送信
-                channel = self.bot.get_channel(558132754953273355)
-                d = datetime.now()  # 現在時刻の取得
-                time = d.strftime("%Y/%m/%d")
-                embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
-                embed.add_field(name="落札日", value=f'\n\n{time}', inline=False)
-                embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=False)
-                embed.add_field(name="品物", value=f'\n\n{user_input_1.content}', inline=False)
-                embed.add_field(name="落札者", value=f'\n\n{user_input_2.content}', inline=False)
-                embed.add_field(name="落札価格", value=f'\n\n{user_input_3.content}', inline=False)
-                embed.add_field(name="チャンネル名", value=f'\n\n{ctx.channel}', inline=False)
-                await channel.send(embed=embed)
-
-                # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
-                self.bot.reset_ch_db(ctx.channel.id, "a")
-
-                await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
-                await asyncio.sleep(0.3)
-                await ctx.channel.edit(name=ctx.channel.name + '☆')
-
-        elif self.bot.is_normal_category(ctx):
-            description = "ここは通常取引チャンネルです。終了報告は``!end``をお使いください。"
-            embed = discord.Embed(description=description, color=0x4259fb)
-            await ctx.channel.send(embed=embed)
-
-    @commands.command()
     async def consent(self, ctx):
         if not self.bot.is_normal_category(ctx):
             return
         # chのdbを消し去る
-        cur.execute("SELECT * from dael WHERE ch_id = %s", (ctx.channel.id,))
+        cur.execute("SELECT * from deal WHERE ch_id = %s", (ctx.channel.id,))
         dael_data = cur.fetchone()
         owner = self.bot.get_user(int(dael_data[1]))
         await owner.send(f"{ctx.author.name}が{ctx.channel.mention}の取引を承諾しました")
