@@ -20,14 +20,14 @@ class CheckChannel(commands.Cog):
 
     @tasks.loop(minutes=1)
     async def check_channel(self):
-        log_ch = self.bot.get_channel(id=735708199377961072)
         try:
             await self.bot.wait_until_ready()
             # オークションについて
-            cur.execute("SELECT * from auction;")
+            cur.execute("SELECT * from auction")
             auction_data = cur.fetchall()
             for row in auction_data:
-                await log_ch.send(f"{row[0]}")
+                if self.bot.get_channel(id=row[0]):
+                    await self.bot.get_channel(id=735708199377961072).send("True")
                 ch = self.bot.get_channel(id=row[0])
                 if row[1] == 0 and "☆" not in ch.name:
                     try:
