@@ -402,7 +402,7 @@ class KGX(commands.Bot):
         return ctx.channel.id in gacha_channel_ids
 
     async def dm_send(self, user_id: int, content):
-        user = self.get_user(user_id)
+        user = self.get_user(int(user_id))
         try:
             if isinstance(content, discord.Embed):
                 await user.send(embed=content)
