@@ -20,6 +20,7 @@ class CheckChannel(commands.Cog):
 
     @tasks.loop(minutes=1)
     async def check_channel(self):
+        log_ch = self.bot.get_channel(id=735708199377961072)
         try:
             await self.bot.wait_until_ready()
             # オークションについて
@@ -28,11 +29,13 @@ class CheckChannel(commands.Cog):
             for row in auction_data:
                 ch = self.bot.get_channel(id=row[0])
                 if row[1] == 0 and "☆" not in ch.name:
+                    await log_ch.send(f"{ch.name}がヒット-1")
                     try:
                         await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
                     except asyncio.TimeoutError:
                         continue
                 elif row[1] != 0 and "☆" in ch.name:
+                    await log_ch.send(f"{ch.name}がヒット-2")
                     try:
                         await asyncio.wait_for(ch.edit(name=ch.name.split('☆')[0]), timeout=3.0)
                     except asyncio.TimeoutError:
@@ -44,11 +47,13 @@ class CheckChannel(commands.Cog):
             for row in deal_data:
                 ch = self.bot.get_channel(id=row[0])
                 if row[1] == 0 and "☆" not in ch.name:
+                    await log_ch.send(f"{ch.name}がヒット-3")
                     try:
                         await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
                     except asyncio.TimeoutError:
                         continue
                 elif row[1] != 0 and "☆" in ch.name:
+                    await log_ch.send(f"{ch.name}がヒット-4")
                     try:
                         await asyncio.wait_for(ch.edit(name=ch.name.split('☆')[0]), timeout=3.0)
                     except asyncio.TimeoutError:
