@@ -44,7 +44,7 @@ class CheckEndTime(commands.Cog):
                         embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
                         time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                         embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                        await self.bot.get_channel(727333695450775613).send(owner.mention, embed=embed)
+                        self.bot.dm_send(row[1], embed)
                         embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                         await ch.send(embed=embed)
                         # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
@@ -65,13 +65,14 @@ class CheckEndTime(commands.Cog):
                     embed.add_field(name="チャンネル名", value=f'\n\n{ch.name}', inline=False)
                     await log_ch.send(embed=embed)
 
-                    # オークションが終わったらその結果を通知
+                    # オークションが終わったらその結果を主催者と落札者に通知
                     description = f"{ch.name}にて行われていた 品物名: **{item}** のオークションは\n{tender.display_name}により" \
                                   f"**{tend_price}**にて落札されました"
                     embed = discord.Embed(description=description, color=0xffaf60)
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                    await self.bot.get_channel(727333695450775613).send(owner.mention, embed=embed)
+                    self.bot.dm_send(row[1], embed)
+                    self.bot.dm_send(tend_data[1], embed)
 
                     # ランキング送信
                     if "椎名" in ch.name:
@@ -105,7 +106,7 @@ class CheckEndTime(commands.Cog):
                     embed = discord.Embed(description=f"{ch.name}の取引は不成立でしたので終了します")
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                    await self.bot.get_channel(727333695450775613).send(self.bot.get_user(id=row[1]).mention, embed=embed)
+                    self.bot.dm_send(row[1], embed)
                     embed = discord.Embed(description="取引が終了しました", color=0xffaf60)
                     await ch.send(embed=embed)
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる

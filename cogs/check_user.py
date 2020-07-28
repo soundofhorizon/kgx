@@ -34,7 +34,8 @@ class CheckUser(commands.Cog):
                     d = datetime.datetime.now()  # 現在時刻の取得
                     time = d.strftime("%Y/%m/%d %H:%M:%S")
 
-                    description = f"ユーザーID: {row[1]} はこのサーバーから退出したためこのオークションは終了します。"
+                    description = f"このオークションの主催者であるユーザーID: {row[1]} は\n" \
+                                  f"このサーバーから退出したためこのオークションは終了します。"
                     embed = discord.Embed(description=description, color=0xdc143c)
                     embed.set_footer(text=f'channel:{ch.name}\ntime:{time}')
                     self.bot.reset_ch_db(row[0], "a")
@@ -54,7 +55,8 @@ class CheckUser(commands.Cog):
                     d = datetime.datetime.now()  # 現在時刻の取得
                     time = d.strftime("%Y/%m/%d %H:%M:%S")
 
-                    description = f"ユーザーID: {row[1]} はこのサーバーから退出したためこの取引は終了します。"
+                    description = f"この取引の主催者であるユーザーID: {row[1]} は\n" \
+                                  f"このサーバーから退出したためこの取引は終了します。"
                     embed = discord.Embed(description=description, color=0xdc143c)
                     embed.set_footer(text=f'channel:{ch.name}\ntime:{time}')
                     self.bot.reset_ch_db(row[0], "d")
@@ -77,4 +79,3 @@ class CheckUser(commands.Cog):
 
 def setup(bot):
     bot.add_cog(CheckUser(bot))
-
