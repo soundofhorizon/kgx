@@ -23,7 +23,6 @@ class CheckUser(commands.Cog):
         try:
             await self.bot.wait_until_ready()
             kgx = self.bot.get_guild(558125111081697300)
-
             # オークションについて
             cur.execute("SELECT * from auction;")
             auction_data = cur.fetchall()
@@ -32,11 +31,14 @@ class CheckUser(commands.Cog):
                     continue
                 if not kgx.get_member(row[1]):
                     ch = self.bot.get_channel(id=row[0])
+                    d = datetime.datetime.now()  # 現在時刻の取得
+                    time = d.strftime("%Y/%m/%d %H:%M:%S")
+
                     description = f"ユーザーID: {row[1]} はこのサーバーから退出したためこのオークションは終了します。"
                     embed = discord.Embed(description=description, color=0xdc143c)
-                    embed.set_footer(text=f'channel:{ch.name}\ntime:{datetime.datetime.now()}')
+                    embed.set_footer(text=f'channel:{ch.name}\ntime:{time}')
                     self.bot.reset_ch_db(row[0], "a")
-                    ch.send(embed=embed)
+                    await ch.send(embed=embed)
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
                     await ch.edit(name=f"{ch.name}☆")
@@ -49,11 +51,14 @@ class CheckUser(commands.Cog):
                     continue
                 if not kgx.get_member(row[1]):
                     ch = self.bot.get_channel(id=row[0])
+                    d = datetime.datetime.now()  # 現在時刻の取得
+                    time = d.strftime("%Y/%m/%d %H:%M:%S")
+
                     description = f"ユーザーID: {row[1]} はこのサーバーから退出したためこの取引は終了します。"
                     embed = discord.Embed(description=description, color=0xdc143c)
-                    embed.set_footer(text=f'channel:{ch.name}\ntime:{datetime.datetime.now()}')
+                    embed.set_footer(text=f'channel:{ch.name}\ntime:{time}')
                     self.bot.reset_ch_db(row[0], "d")
-                    ch.send(embed=embed)
+                    await ch.send(embed=embed)
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
                     await ch.edit(name=f"{ch.name}☆")
