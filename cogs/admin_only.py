@@ -301,8 +301,7 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, user_id, content):
-        user = self.bot.get_user(user_id)
-        await user.send(content)
+        await self.bot.dm_send(user_id, content)
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
