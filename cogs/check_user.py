@@ -16,10 +16,10 @@ cur = db.cursor()  # なんか操作する時に使うやつ
 class CheckUser(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.check_time.start()
+        self.check_user.start()
 
     @tasks.loop(minutes=1)
-    async def check_time(self):
+    async def check_user(self):
         try:
             await self.bot.wait_until_ready()
             kgx = self.bot.get_guild(558125111081697300)
@@ -42,7 +42,10 @@ class CheckUser(commands.Cog):
                     await ch.send(embed=embed)
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
-                    await ch.edit(name=f"{ch.name}☆")
+                    try:
+                        await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
+                    except asyncio.TimeoutError:
+                        continue
 
             # 取引について
             cur.execute("SELECT * from deal;")
@@ -63,7 +66,10 @@ class CheckUser(commands.Cog):
                     await ch.send(embed=embed)
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
-                    await ch.edit(name=f"{ch.name}☆")
+                    try:
+                        await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
+                    except asyncio.TimeoutError:
+                        continue
 
         except Exception as e:
             orig_error = getattr(e, "original", e)

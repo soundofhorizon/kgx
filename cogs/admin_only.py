@@ -152,7 +152,10 @@ class AdminOnly(commands.Cog):
             color=0xf04747
         )
         await ctx.channel.send(embed=embed)
-        await ctx.channel.edit(name=ctx.channel.name + '☆')
+        try:
+            await asyncio.wait_for(ctx.channel.edit(name=f"{ctx.channel.name}☆"), timeout=3.0)
+        except asyncio.TimeoutError:
+            pass
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
 
     @commands.command()
@@ -162,7 +165,10 @@ class AdminOnly(commands.Cog):
             color=0xf04747
         )
         await ctx.channel.send(embed=embed)
-        await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
+        try:
+            await asyncio.wait_for(ctx.channel.edit(name=ctx.channel.name.split('☆')[0]), timeout=3.0)
+        except asyncio.TimeoutError:
+            pass
 
     @commands.command()
     async def execute_sql(self, ctx, *, content):

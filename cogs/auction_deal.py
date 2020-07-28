@@ -228,7 +228,10 @@ class AuctionDael(commands.Cog):
                 embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
                 await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
                 auction_embed = await ctx.channel.send(embed=embed)
-                await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
+                try:
+                    await asyncio.wait_for(ctx.channel.edit(name=ctx.channel.name.split('☆')[0]), timeout=3.0)
+                except asyncio.TimeoutError:
+                    pass
 
                 # 椎名の部分を数字に変換(開始と即決)
                 user_input_2 = self.bot.stack_check(user_input_2)
@@ -379,7 +382,10 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send(
                     "<:shiina_balance:558175954686705664>取引を開始します<:shiina_balance:558175954686705664>")
                 deal_embed = await ctx.channel.send(embed=embed)
-                await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
+                try:
+                    await asyncio.wait_for(ctx.channel.edit(name=ctx.channel.name.split('☆')[0]), timeout=3.0)
+                except asyncio.TimeoutError:
+                    pass
 
                 user_input_2 = self.bot.stack_check(user_input_2)
                 cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
@@ -491,7 +497,10 @@ class AuctionDael(commands.Cog):
                         self.bot.reset_ch_db(ctx.channel.id, "a")
                         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
                         await asyncio.sleep(0.3)
-                        await ctx.channel.edit(name=f"{ctx.channel.name}☆")
+                        try:
+                            await asyncio.wait_for(ctx.channel.edit(name=f"{ctx.channel.name}☆"), timeout=3.0)
+                        except asyncio.TimeoutError:
+                            pass
                         return
 
                 elif self.bot.stack_check(price) == 0:
@@ -582,7 +591,10 @@ class AuctionDael(commands.Cog):
         self.bot.reset_ch_db(ctx.channel.id, "d")
 
         await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
-        await ctx.channel.edit(name=ctx.channel.name + '☆')
+        try:
+            await asyncio.wait_for(ctx.channel.edit(name=f"{ctx.channel.name}☆"), timeout=3.0)
+        except asyncio.TimeoutError:
+            pass
 
 
 def setup(bot):

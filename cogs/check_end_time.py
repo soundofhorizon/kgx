@@ -51,7 +51,10 @@ class CheckEndTime(commands.Cog):
                         self.bot.reset_ch_db(ch.id, "a")
                         await ch.send('--------ｷﾘﾄﾘ線--------')
                         await asyncio.sleep(0.3)
-                        await ch.edit(name=f"{ch.name}☆")
+                        try:
+                            await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
+                        except asyncio.TimeoutError:
+                            continue
                         continue
 
                     tend_price = f"{row[7]}{price}"
@@ -92,7 +95,10 @@ class CheckEndTime(commands.Cog):
                     self.bot.reset_ch_db(ch.id, "a")
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
-                    await ch.edit(name=f"{ch.name}☆")
+                    try:
+                        await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
+                    except asyncio.TimeoutError:
+                        continue
                 await asyncio.sleep(1)
 
             # 取引について
@@ -113,7 +119,10 @@ class CheckEndTime(commands.Cog):
                     self.bot.reset_ch_db(row[0], "d")
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
-                    await ch.edit(name=f"{ch.name}☆")
+                    try:
+                        await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
+                    except asyncio.TimeoutError:
+                        continue
 
         except Exception as e:
             orig_error = getattr(e, "original", e)

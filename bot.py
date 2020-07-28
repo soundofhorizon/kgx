@@ -1,4 +1,5 @@
 # coding=utf-8
+import asyncio
 import json
 import random
 import os
@@ -96,7 +97,10 @@ class KGX(commands.Bot):
             return
         if "☆" in channel.name:
             return
-        await channel.edit(name=f"{channel.name}☆")
+        try:
+            await asyncio.wait_for(channel.edit(name=f"{channel.name}☆"), timeout=3.0)
+        except asyncio.TimeoutError:
+            return
 
     async def on_command_error(self, ctx, error):  # すべてのコマンドで発生したエラーを拾う
         if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
