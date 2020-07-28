@@ -44,7 +44,7 @@ class CheckEndTime(commands.Cog):
                         embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
                         time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                         embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                        self.bot.dm_send(row[1], embed)
+                        await self.bot.dm_send(row[1], embed)
                         embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                         await ch.send(embed=embed)
                         # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
@@ -74,8 +74,8 @@ class CheckEndTime(commands.Cog):
                     embed = discord.Embed(description=description, color=0xffaf60)
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                    self.bot.dm_send(row[1], embed)
-                    self.bot.dm_send(tend_data[1], embed)
+                    await self.bot.dm_send(row[1], embed)
+                    await self.bot.dm_send(tend_data[1], embed)
 
                     # ランキング送信
                     if "椎名" in ch.name:
@@ -112,7 +112,7 @@ class CheckEndTime(commands.Cog):
                     embed = discord.Embed(description=f"{ch.name}の取引は不成立でしたので終了します")
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                    self.bot.dm_send(row[1], embed)
+                    await self.bot.dm_send(row[1], embed)
                     embed = discord.Embed(description="取引が終了しました", color=0xffaf60)
                     await ch.send(embed=embed)
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる

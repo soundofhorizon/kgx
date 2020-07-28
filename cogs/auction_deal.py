@@ -476,8 +476,8 @@ class AuctionDael(commands.Cog):
                         embed = discord.Embed(description=description, color=0xffaf60)
                         time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                         embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
-                        self.bot.dm_send(auction[1], embed)
-                        self.bot.dm_send(tend[1], embed)
+                        await self.bot.dm_send(auction[1], embed)
+                        await self.bot.dm_send(tend[1], embed)
 
                         # ランキング送信
                         if "椎名" in ctx.channel.name:
@@ -551,7 +551,7 @@ class AuctionDael(commands.Cog):
                     embed = discord.Embed(description=text, color=0x4259fb)
                     time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
-                    self.bot.dm_send(auction[1], embed)
+                    await self.bot.dm_send(auction[1], embed)
 
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 avatar_url = ctx.author.avatar_url_as(format="png")
