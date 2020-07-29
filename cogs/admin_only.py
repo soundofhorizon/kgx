@@ -310,9 +310,8 @@ class AdminOnly(commands.Cog):
         cur.execute("SELECT * FROM test")
         a = cur.fetchall()
         await ctx.channel.send(f"{a}")
-        if a[0][1].append(111111):
-            a[0][1].append(111111)
-            await ctx.channel.send(f"{a}")
+        a[0][1].append(111111)
+        await ctx.channel.send(f"{a}")
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
