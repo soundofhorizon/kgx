@@ -28,7 +28,7 @@ class CheckChannel(commands.Cog):
             for row in auction_data:
                 if self.bot.get_channel(id=row[0]):
                     await self.bot.get_channel(id=735708199377961072).send("True")
-                ch = self.bot.get_channel(id=row[0])
+                ch = self.bot.get_channel(id=int(row[0]))
                 if row[1] == 0 and "☆" not in ch.name:
                     try:
                         await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
