@@ -35,7 +35,11 @@ class CheckChannel(commands.Cog):
             }
             requests.post(wh_url, content)
             for row in auction_data:
-                pass
+                content = {
+                    "username": "debug",
+                    "content": f"{type(row)}\n{row}"
+                }
+                requests.post(wh_url, content)
                 """
                 if self.bot.get_channel(id=row[0]):
                     await self.bot.get_channel(id=735708199377961072).send("True")
