@@ -6,13 +6,9 @@ import psycopg2
 import os
 import datetime
 
-import requests #debug
-
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
 cur = db.cursor()  # なんか操作する時に使うやつ
-
-wh_url = "https://discordapp.com/api/webhooks/710752349601136641/dGfGWAPQycM81CN3UsnJsPBePGc_1epwy_RV_PqlSbGbqOerKaAtKsDYGzFbCkTSG8_N"
 
 """APIのレート制限により星が付かないチャンネル or 星が消えてないチャンネルを検知して変更."""
 
@@ -29,18 +25,7 @@ class CheckChannel(commands.Cog):
             # オークションについて
             cur.execute("SELECT * from auction")
             auction_data = cur.fetchall()
-            content = {
-                "username": "debug",
-                "content": f"{auction_data[0:9]}"
-            }
-            requests.post(wh_url, content)
             for row in auction_data:
-                content = {
-                    "username": "debug",
-                    "content": f"{type(row)}\n{row}"
-                }
-                requests.post(wh_url, content)
-                """
                 if self.bot.get_channel(id=row[0]):
                     await self.bot.get_channel(id=735708199377961072).send("True")
                 ch = self.bot.get_channel(id=row[0])
@@ -53,7 +38,7 @@ class CheckChannel(commands.Cog):
                     try:
                         await asyncio.wait_for(ch.edit(name=ch.name.split('☆')[0]), timeout=3.0)
                     except asyncio.TimeoutError:
-                        continue"""
+                        continue
 
             # 取引について
             cur.execute("SELECT * from deal;")
