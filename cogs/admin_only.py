@@ -307,7 +307,12 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, user_id, content):
-        await self.bot.dm_send(user_id, content)
+        cur.execute("SELECT * FROM test")
+        a = cur.fetchall()
+        await ctx.channel.send(f"{a}, {a[0]}, {a[1]}")
+        if a[0].append(111111):
+            a[0].append(111111)
+            await ctx.channel.send(f"{a}, {a[0]}, {a[1]}")
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
