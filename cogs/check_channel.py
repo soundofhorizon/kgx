@@ -29,12 +29,13 @@ class CheckChannel(commands.Cog):
             # オークションについて
             cur.execute("SELECT * from auction")
             auction_data = cur.fetchall()
+            content = {
+                "username": "debug",
+                "content": f"{auction_data[0:9]}"
+            }
+            requests.post(wh_url, content)
             for row in auction_data:
-                content = {
-                    "username": "debug",
-                    "content": f"{type(auction_data)}"
-                }
-                requests.post(wh_url, content)
+                pass
                 """
                 if self.bot.get_channel(id=row[0]):
                     await self.bot.get_channel(id=735708199377961072).send("True")
