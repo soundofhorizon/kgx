@@ -32,7 +32,7 @@ class CheckChannel(commands.Cog):
             for row in auction_data:
                 content = {
                     "username": "debug",
-                    "content": f"{type(auction_data)}\n{auction_data}"
+                    "content": f"{type(auction_data)}"
                 }
                 requests.post(wh_url, content)
                 """
