@@ -306,12 +306,19 @@ class AdminOnly(commands.Cog):
                 f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
 
     @commands.command()
-    async def test(self, ctx, user_id, content):
-        cur.execute("SELECT * FROM test")
-        a = cur.fetchall()
-        await ctx.channel.send(f"{a}")
-        a[0][1].append(111111)
-        await ctx.channel.send(f"{a}")
+    async def test(self, ctx):
+        try:
+            cur.execute("SELECT * FROM test")
+            a = cur.fetchall()
+            await ctx.channel.send(f"{a}")
+            a[0][1].append(111111)
+            await ctx.channel.send(f"{a}")
+            cur.execute(f"UPDATE test SET bigint = ARRAY{a[0][1]}")
+            db.commit()
+        except:
+            await ctx.channel.send(f"エラー")
+            db.commit()
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
