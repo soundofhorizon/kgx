@@ -26,8 +26,6 @@ class CheckChannel(commands.Cog):
             cur.execute("SELECT * from auction")
             auction_data = cur.fetchall()
             for row in auction_data:
-                if self.bot.get_channel(id=row[0]):
-                    await self.bot.get_channel(id=735708199377961072).send("True")
                 ch = self.bot.get_channel(id=int(row[0]))
                 if ch is None:
                     return
