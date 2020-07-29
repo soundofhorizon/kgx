@@ -29,6 +29,9 @@ class CheckChannel(commands.Cog):
                 if self.bot.get_channel(id=row[0]):
                     await self.bot.get_channel(id=735708199377961072).send("True")
                 ch = self.bot.get_channel(id=int(row[0]))
+                if ch is None:
+                    await self.bot.get_channel(id=735708199377961072).send(row[0])
+                    return
                 if row[1] == 0 and "☆" not in ch.name:
                     try:
                         await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
