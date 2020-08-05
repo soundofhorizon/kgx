@@ -319,6 +319,19 @@ class AdminOnly(commands.Cog):
             await ctx.channel.send(f"エラー")
             db.commit()
 
+    @commands.command()
+    async def dbsetup(self, ctx, set_type):
+        if set_type == "a":
+            cur.execute("INSERT INTO auction (ch_id) values (%s)", (ctx.channel.id,))
+            await self.bot.reset_ch_db(ctx.channel.id, set_type)
+        elif set_type == "d":
+            cur.execute("INSERT INTO deal (ch_id) values (%s)", (ctx.channel.id,))
+            await self.bot.reset_ch_db(ctx.channel.id, set_type)
+        else:
+            await ctx.send(f"{ctx.prefix}dbsetup [a, d]")
+
+
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
