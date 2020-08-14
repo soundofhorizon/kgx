@@ -434,10 +434,12 @@ class AuctionDael(commands.Cog):
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
                 cur.execute("SELECT * FROM tend where ch_id = %s", (ctx.channel.id,))
-                tend = cur.fetchone()
+                tend_data = cur.fetchone()
+
+                # ARRAYから最新の入札状況を引き抜く
+                tend = [tend_data[0], tend_data[1][-1], tend_data[2][-1]]
 
                 # 条件に1つでも合致していたらreturn
-
                 # 入札人物の判定
                 if ctx.author.id == auction[1]:
                     embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
@@ -538,9 +540,10 @@ class AuctionDael(commands.Cog):
                     # 延長をオークション主催者に伝える
                     text = f"チャンネル名: {self.bot.get_channel(id=auction[0]).name}において終了1時間前に入札があったため終了時刻を1日延長します。"
 
-                # オークションが変わってる可能性があるのでここで再度auctionのデータを取る
+                # オークション情報が変わってる可能性があるのでここで再度auctionのデータを取る
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
+                # todo ここも配列の最後尾に最新情報を入れ込む形に変更。
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()
