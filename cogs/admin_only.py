@@ -307,7 +307,7 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        cur.execute("select * from auctipn")
+        cur.execute("select * from auction")
         db_data = cur.fetchall()
         string = ""
         for i in range(len(db_data)):
