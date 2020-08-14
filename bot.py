@@ -341,7 +341,7 @@ class KGX(commands.Bot):
         db.commit()
         # tendもリセット
         if mode == "a":
-            cur.execute("UPDATE tend SET tender_id = 0, tend_price = 0 WHERE ch_id = %s", (channel_id,))
+            cur.execute("UPDATE tend SET tender_id = ARRAY[0], tend_price = ARRAY[0] WHERE ch_id = %s", (channel_id,))
             db.commit()
 
     @staticmethod
