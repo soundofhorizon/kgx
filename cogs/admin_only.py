@@ -307,17 +307,15 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        try:
-            cur.execute("SELECT * FROM test")
-            a = cur.fetchall()
-            await ctx.channel.send(f"{a}")
-            a[0][1].append(111111)
-            await ctx.channel.send(f"{a}")
-            cur.execute(f"UPDATE test SET bigint = ARRAY{a[0][1]}")
-            db.commit()
-        except:
-            await ctx.channel.send(f"エラー")
-            db.commit()
+        cur.execute("select * from auctipn")
+        db_data = cur.fetchall()
+        string = ""
+        for i in range(len(db_data)):
+            string += f"INSERT INTO tend values ({db_data[i][0]}, ARRAY[0], ARRAY[0]);\n"
+            if len(string) >= 1800:
+                await ctx.channel.send(string)
+                string = ""
+        await ctx.channel.send(string)
 
     @commands.command()
     async def dbsetup(self, ctx, set_type):

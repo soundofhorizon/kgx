@@ -573,7 +573,32 @@ class AuctionDael(commands.Cog):
                 embed = discord.Embed(description=f"{ctx.author.display_name}さん。入力した値が不正です。もう一度正しく入力を行ってください。",
                                       color=0x4259fb)
                 await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
+            await ctx.send(embed=embed)
 
+    @commands.command()
+    async def remand(self, ctx):
+        if not self.bot.is_normal_category(ctx):
+            return
+        if self.bot.is_auction_category(ctx):
+
+            cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
+            auction_data = cur.fetchone()
+
+            # オークションが行われていなければ警告して終了
+            if "☆" in ctx.channel.name:
+                embed = discord.Embed(description="このコマンドはオークション開催中のみ使用可能です。", color=0x4259fb)
+                await ctx.send(embed=embed)
+                return
+            # オークション主催者じゃなければ警告して終了
+            elif ctx.author.id != auction_data[1]:
+                embed = discord.Embed(description="このコマンドはオークション主催者のみ使用可能です。", color=0x4259fb)
+                await ctx.send(embed=embed)
+                return
+            else:
+                # todo ここに差し戻し処理を…
+                pass
         else:
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)

@@ -41,8 +41,8 @@
 > tend
 >
 >> ch_id: チャンネルID格納. bigint. unique key<br>
->> tender_id: 入札した人のidを格納 bigint. <br>
->> tend_price: 入札額を格納。stack_check関数を通すこと。 int. <br>
+>> tender_id: 入札した人のidを格納。時系列で配列になっている。 bigint[]. <br>
+>> tend_price: 入札額を格納。stack_check関数を通すこと。時系列で配列になっている。 integer[]. <br>
 
 # コミットルール
 始めに英単語1字を付与すること。[ADD] [CHANGE] [DELETE] [Refactor] ここら辺をよく使うかな
