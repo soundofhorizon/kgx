@@ -543,7 +543,6 @@ class AuctionDael(commands.Cog):
                 # オークション情報が変わってる可能性があるのでここで再度auctionのデータを取る
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
-                await ctx.channel.send(list(tend_data[1]).append(ctx.author.id))
 
                 tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
 
