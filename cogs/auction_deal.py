@@ -543,7 +543,9 @@ class AuctionDael(commands.Cog):
                 # オークション情報が変わってる可能性があるのでここで再度auctionのデータを取る
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
-                # todo ここも配列の最後尾に最新情報を入れ込む形に変更。
+
+                tend_data[1] = list(tend_data[1]).append(ctx.author.id)
+                tend_data[2] = list(tend_data[2]).append(self.bot.stack_check(price))
                 cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
                             (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
                 db.commit()

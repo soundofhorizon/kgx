@@ -307,9 +307,8 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        tuple_test = '{1, 2, 3, 4}'
-        cur.execute(f"UPDATE test SET col1 = '{tuple_test}'")
-        db.commit()
+        tuple_test = [1, 2, 3, 4]
+        await ctx.channel.send(str(tuple(tuple_test)))
 
     @commands.command()
     async def dbsetup(self, ctx, set_type):
