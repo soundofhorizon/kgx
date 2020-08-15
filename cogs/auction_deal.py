@@ -597,6 +597,11 @@ class AuctionDael(commands.Cog):
             cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
             auction_data = cur.fetchone()
 
+            async def delete_to(ctx, ch_id):
+                delete_ch = ctx.channel
+                msg = await delete_ch.fetch_message(ch_id)
+                await delete_ch.purge(limit=None, after=msg)
+
             # オークションが行われていなければ警告して終了
             if "☆" in ctx.channel.name:
                 embed = discord.Embed(description="このコマンドはオークション開催中のみ使用可能です。", color=0x4259fb)
@@ -622,6 +627,8 @@ class AuctionDael(commands.Cog):
                             (ctx.channel.id,))
                 db.commit()
                 # 1つ戻した状態で入札状態を出力
+                await delete_to(ctx, auction_data[2])
+
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 avatar_url = self.bot.get_user(id=int(tend_data[1][-1])).avatar_url_as(format="png")
                 image = requests.get(avatar_url)
