@@ -611,7 +611,7 @@ class AuctionDael(commands.Cog):
                 await ctx.send(embed=embed)
                 return
             else:
-                cur.execute("select * from tend where ch_id = %s", ctx.channel.id)
+                cur.execute("select * from tend where ch_id = %s", (ctx.channel.id,))
                 tend_data = cur.fetchone()
                 tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
 
