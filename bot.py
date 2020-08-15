@@ -421,8 +421,8 @@ class KGX(commands.Bot):
     def list_to_tuple_string(list_1):
         """リストの状態からARRAY型のsqlに代入できる文字列を生成する"""
         tuple_string = str(tuple(list_1))
-        tuple_string.replace("(", "{").replace(")", "}")
-        return tuple_string
+        tuple_string_format = tuple_string.replace("(", "{").replace(")", "}")
+        return tuple_string_format
 
 
 if __name__ == '__main__':
