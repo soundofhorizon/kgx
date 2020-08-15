@@ -436,8 +436,11 @@ class AuctionDael(commands.Cog):
                 cur.execute("SELECT * FROM tend where ch_id = %s", (ctx.channel.id,))
                 tend_data = cur.fetchone()
 
-                # ARRAYから最新の入札状況を引き抜く
-                tend = [tend_data[0], tend_data[1][-1], tend_data[2][-1]]
+                # ARRAYから最新の入札状況を引き抜く。初期状態は0とする
+                if not tend_data[1][-1]:
+                    tend = [tend_data[0], 0, 0]
+                else:
+                    tend = [tend_data[0], tend_data[1][-1], tend_data[2][-1]]
 
                 # 条件に1つでも合致していたらreturn
                 # 入札人物の判定
