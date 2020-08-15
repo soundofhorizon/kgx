@@ -436,11 +436,8 @@ class AuctionDael(commands.Cog):
                 cur.execute("SELECT * FROM tend where ch_id = %s", (ctx.channel.id,))
                 tend_data = cur.fetchone()
 
-                # ARRAYから最新の入札状況を引き抜く。初期状態は0とする
-                if not tend_data[1][-1]:
-                    tend = [tend_data[0], 0, 0]
-                else:
-                    tend = [tend_data[0], tend_data[1][-1], tend_data[2][-1]]
+                # ARRAYから最新の入札状況を引き抜く。初期状態は0
+                tend = [tend_data[0], tend_data[1][-1], tend_data[2][-1]]
 
                 # 条件に1つでも合致していたらreturn
                 # 入札人物の判定
@@ -546,10 +543,15 @@ class AuctionDael(commands.Cog):
                 # オークション情報が変わってる可能性があるのでここで再度auctionのデータを取る
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
-
                 await ctx.channel.send(list(tend_data[1]).append(ctx.author.id))
-                tend_data[1] = self.bot.list_to_tuple_string(list(tend_data[1]).append(ctx.author.id))
-                tend_data[2] = self.bot.list_to_tuple_string(list(tend_data[2]).append(self.bot.stack_check(price)))
+
+                tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
+
+                tend_data[1].append(ctx.author.id)
+                tend_data[2].append(self.bot.stack_check(price))
+
+                tend_data[1] = self.bot.list_to_tuple_string(tend_data[1])
+                tend_data[2] = self.bot.list_to_tuple_string(tend_data[2])
 
                 cur.execute(f"UPDATE tend SET tender_id = '{tend_data[1]}', tend_price = '{tend_data[2]}' WHERE ch_id = %s",
                             (ctx.channel.id,))
