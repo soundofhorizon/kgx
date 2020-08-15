@@ -608,8 +608,37 @@ class AuctionDael(commands.Cog):
                 await ctx.send(embed=embed)
                 return
             else:
-                # todo ここに差し戻し処理を…
-                pass
+                cur.execute("select * from tend where ch_id = %s", ctx.channel.id)
+                tend_data = cur.fetchone()
+                tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
+
+                tend_data[1].pop(-1)
+                tend_data[2].pop(-1)
+
+                tend_data_str_1 = self.bot.list_to_tuple_string(tend_data[1])
+                tend_data_str_2 = self.bot.list_to_tuple_string(tend_data[2])
+
+                cur.execute(f"UPDATE tend SET tender_id = '{tend_data_str_1}', tend_price = '{tend_data_str_2}' WHERE ch_id = %s",
+                            (ctx.channel.id,))
+                db.commit()
+                # 1つ戻した状態で入札状態を出力
+                time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+                avatar_url = self.bot.get_user(id=int(tend_data[1][-1])).avatar_url_as(format="png")
+                image = requests.get(avatar_url)
+                image = io.BytesIO(image.content)
+                image.seek(0)
+                image = Image.open(image)
+                image = image.resize((100, 100))
+                image.save("./icon.png")
+                image = discord.File("./icon.png", filename="icon.png")
+                embed = discord.Embed(description=f"入札者: **{self.bot.get_user(id=int(tend_data[1][-1])).display_name}**, \n"
+                                                  f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
+                                      color=0x4259fb
+                                      )
+                embed.set_image(url="attachment://icon.png")
+                embed.set_footer(text=f"入札時刻: {time}")
+                await ctx.channel.send(file=image, embed=embed)
+
         else:
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
