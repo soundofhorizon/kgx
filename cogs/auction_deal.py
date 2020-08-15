@@ -590,8 +590,6 @@ class AuctionDael(commands.Cog):
 
     @commands.command()
     async def remand(self, ctx):
-        if not self.bot.is_normal_category(ctx):
-            return
         if self.bot.is_auction_category(ctx):
 
             cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
