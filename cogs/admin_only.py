@@ -307,15 +307,9 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        cur.execute("select * from auction")
-        db_data = cur.fetchall()
-        string = ""
-        for i in range(len(db_data)):
-            string += f"INSERT INTO tend values ({db_data[i][0]}, ARRAY[0], ARRAY[0]);\n"
-            if len(string) >= 1800:
-                await ctx.channel.send(string)
-                string = ""
-        await ctx.channel.send(string)
+        tuple_test = {1, 2, 3, 4}
+        cur.execute("UPDATE test SET col1 = %s", tuple_test)
+        db.commit()
 
     @commands.command()
     async def dbsetup(self, ctx, set_type):
@@ -327,8 +321,6 @@ class AdminOnly(commands.Cog):
             await self.bot.reset_ch_db(ctx.channel.id, set_type)
         else:
             await ctx.send(f"{ctx.prefix}dbsetup [a, d]")
-
-
 
 
 def setup(bot):
