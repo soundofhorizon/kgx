@@ -418,9 +418,9 @@ class KGX(commands.Bot):
             return True
 
     @staticmethod
-    def list_to_tuple_string(list):
+    def list_to_tuple_string(list_1):
         """リストの状態からARRAY型のsqlに代入できる文字列を生成する"""
-        tuple_string = str(tuple(list))
+        tuple_string = str(tuple(list_1))
         tuple_string.replace("(", "{").replace(")", "}")
         return tuple_string
 

@@ -547,6 +547,7 @@ class AuctionDael(commands.Cog):
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
 
+                await ctx.channel.send(list(tend_data[1]).append(ctx.author.id))
                 tend_data[1] = self.bot.list_to_tuple_string(list(tend_data[1]).append(ctx.author.id))
                 tend_data[2] = self.bot.list_to_tuple_string(list(tend_data[2]).append(self.bot.stack_check(price)))
 
