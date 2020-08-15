@@ -544,10 +544,11 @@ class AuctionDael(commands.Cog):
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
                 auction = cur.fetchone()
 
-                tend_data[1] = list(tend_data[1]).append(ctx.author.id)
-                tend_data[2] = list(tend_data[2]).append(self.bot.stack_check(price))
-                cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
-                            (ctx.author.id, self.bot.stack_check(price), ctx.channel.id))
+                tend_data[1] = self.bot.list_to_tuple_string(list(tend_data[1]).append(ctx.author.id))
+                tend_data[2] = self.bot.list_to_tuple_string(list(tend_data[2]).append(self.bot.stack_check(price)))
+
+                cur.execute(f"UPDATE tend SET tender_id = '{tend_data[1]}', tend_price = '{tend_data[2]}' WHERE ch_id = %s",
+                            (ctx.channel.id,))
                 db.commit()
                 await asyncio.sleep(0.1)
                 await delete_to(ctx, auction[2])
