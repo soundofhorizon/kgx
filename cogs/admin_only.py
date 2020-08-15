@@ -308,7 +308,7 @@ class AdminOnly(commands.Cog):
     @commands.command()
     async def test(self, ctx):
         tuple_test = '{1, 2, 3, 4}'
-        cur.execute("UPDATE test SET col1 = %s", tuple_test)
+        cur.execute(f"UPDATE test SET col1 = '{tuple_test}'")
         db.commit()
 
     @commands.command()
