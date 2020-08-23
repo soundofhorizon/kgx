@@ -694,7 +694,7 @@ class AuctionDael(commands.Cog):
             return
         else:
             cur.execute("select * from tend where ch_id = %s", (ctx.channel.id,))
-            tend_data = cur.fetchall()
+            tend_data = cur.fetchone()
 
             tendrs_data = tend_data[1]
             tend_prices = tend_data[2]
