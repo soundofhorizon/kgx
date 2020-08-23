@@ -313,8 +313,8 @@ class AdminOnly(commands.Cog):
         chartA = pd.DataFrame(listA, columns=["入札者"])
         chartB = pd.DataFrame(listB, columns=["入札額"])
         chartA[1] = chartB
-
-        await ctx.channel.send(chartA)
+        embed = discord.Embed(discription=chartA)
+        await ctx.channel.send(embed=embed)
 
 
     @commands.command()
