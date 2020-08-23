@@ -673,7 +673,7 @@ class AuctionDael(commands.Cog):
             pass
 
     @commands.command()
-    async def remand(self, ctx):
+    async def tend_history(self, ctx):
         cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
         auction_data = cur.fetchone()
 
@@ -706,7 +706,13 @@ class AuctionDael(commands.Cog):
                 if i == len(tendrs_data):
                     pass
                 else:
-                    discription += f"{i+1}: "
+                    discription += f"{i+1}: {self.bot.get_user(id=tendrs_data[i])}, {self.bot.stack_check_reverse(tend_prices[i])}"
+
+                if len(discription) >= 1800:
+                    await ctx.channel.send(embed=discord.Embed(discription=discription, color=0xffaf60))
+                    discription=""
+
+            await ctx.channel.send(embed=discord.Embed(discription=discription, color=0xffaf60))
 
 
 def setup(bot):
