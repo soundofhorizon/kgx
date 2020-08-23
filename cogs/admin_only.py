@@ -323,7 +323,7 @@ class AdminOnly(commands.Cog):
         fig.layout.title.font.size = 24  # タイトルフォントサイズの変更
         fig.write_image("./chart.jpg")
         await ctx.channel.send("3")
-        image = discord.File("./icon.png", filename="chart.png")
+        image = discord.File("./chart.png", filename="chart.png")
         embed = discord.Embed(discription = "現在の入札履歴")
         embed.set_image(url="attachment://chart.png")
         await ctx.channel.send("4")
