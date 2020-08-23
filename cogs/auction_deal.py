@@ -701,6 +701,8 @@ class AuctionDael(commands.Cog):
 
             discription = ""
 
+            await ctx.channel.send(range(len(tendrs_data)))
+
             for i in range(len(tendrs_data)):
                 if i == 0:
                     continue
@@ -709,7 +711,7 @@ class AuctionDael(commands.Cog):
 
                 if len(discription) >= 1800:
                     await ctx.channel.send(embed=discord.Embed(discription=discription, color=0xffaf60))
-                    discription=""
+                    discription = ""
 
             await ctx.channel.send(embed=discord.Embed(discription=discription, color=0xffaf60))
 
