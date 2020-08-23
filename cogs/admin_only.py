@@ -3,6 +3,7 @@ import datetime
 import os
 import re
 import pandas as pd
+import plotly.graph_objects as go
 
 import discord
 import psycopg2
@@ -310,12 +311,19 @@ class AdminOnly(commands.Cog):
     async def test(self, ctx):
         listA = ["ユーザー１", "ユーザー2"]
         listB = ["11", "63"]
-        chartA = pd.DataFrame(listA, columns=["入札者"])
-        chartB = pd.DataFrame(listB, columns=["入札額"])
-        chartA[1] = chartB
-        embed = discord.Embed(discription=chartA)
-        await ctx.channel.send(embed=embed)
-
+        chart = pd.DataFrame({"X1": listA, "Y2": listB})
+        fig = go.Figure(data=[go.Table(
+            columnwidth=[10, 20],  # カラム幅の変更
+            header=dict(values=chart.columns, align='center', font_size=20),
+            cells=dict(values=chart.values.T, align='center', font_size=10)
+        )])
+        fig.update_layout(title={'text': "入札者履歴", 'y': 0.85, 'x': 0.5, 'xanchor': 'center'})  # タイトル位置の調整
+        fig.layout.title.font.size = 24  # タイトルフォントサイズの変更
+        fig.write_image("./chart.jpg")
+        image = discord.File("./icon.png", filename="chart.png")
+        embed = discord.Embed(discription = "現在の入札履歴")
+        embed.set_image(url="attachment://chart.png")
+        await ctx.channel.send(file=image, embed=embed)
 
     @commands.command()
     async def dbsetup(self, ctx, set_type):
