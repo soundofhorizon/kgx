@@ -317,7 +317,6 @@ class AdminOnly(commands.Cog):
         await ctx.channel.send(chartA)
 
 
-
     @commands.command()
     async def dbsetup(self, ctx, set_type):
         if set_type == "a":
