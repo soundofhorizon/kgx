@@ -702,11 +702,10 @@ class AuctionDael(commands.Cog):
             discription = ""
 
             for i in range(len(tendrs_data)):
-                # 汚いけど許して
-                if i == len(tendrs_data):
-                    pass
+                if i == 0:
+                    continue
                 else:
-                    discription += f"{i+1}: {self.bot.get_user(id=tendrs_data[i])}, {self.bot.stack_check_reverse(tend_prices[i])}"
+                    discription += f"{i}: {self.bot.get_user(id=tendrs_data[i])}, {self.bot.stack_check_reverse(tend_prices[i])}"
 
                 if len(discription) >= 1800:
                     await ctx.channel.send(embed=discord.Embed(discription=discription, color=0xffaf60))
