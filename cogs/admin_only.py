@@ -2,8 +2,6 @@ import asyncio
 import datetime
 import os
 import re
-import pandas as pd
-import plotly.graph_objects as go
 
 import discord
 import psycopg2
@@ -306,29 +304,6 @@ class AdminOnly(commands.Cog):
         for i in range(len(ch_list_2)):
             await ctx.send(
                 f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
-
-    @commands.command()
-    async def test(self, ctx):
-        await ctx.channel.send("1")
-        listA = ["ユーザー１", "ユーザー2"]
-        listB = ["11", "63"]
-        chart = pd.DataFrame({"X1": listA, "Y2": listB})
-        await ctx.channel.send("2")
-        fig = go.Figure(data=[go.Table(
-            columnwidth=[10, 20],  # カラム幅の変更
-            header=dict(values=chart.columns, align='center', font_size=20),
-            cells=dict(values=chart.values.T, align='center', font_size=10)
-        )])
-        fig.update_layout(title={'text': "入札者履歴", 'y': 0.85, 'x': 0.5, 'xanchor': 'center'})  # タイトル位置の調整
-        fig.layout.title.font.size = 24  # タイトルフォントサイズの変更
-        fig.write_image("./chart.jpg")
-        await ctx.channel.send("3")
-        image = discord.File("./chart.png", filename="chart.png")
-        embed = discord.Embed(discription = "現在の入札履歴")
-        embed.set_image(url="attachment://chart.png")
-        await ctx.channel.send("4")
-        await ctx.channel.send(file=image, embed=embed)
-        await ctx.channel.send("5")
 
     @commands.command()
     async def dbsetup(self, ctx, set_type):
