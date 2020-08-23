@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import os
 import re
+import pandas as pd
 
 import discord
 import psycopg2
@@ -299,7 +300,7 @@ class AdminOnly(commands.Cog):
         await ctx.send("auction\n------")
         for i in range(len(ch_list_1)):
             await ctx.send(
-                f"INSERT INTO tend VALUES ({ch_list_1[i]}, 0, 0);")
+                f"INSERT INTO tend VALUES ({ch_list_1[i]}, ARRAY[0], ARRAY[0]);")
         await ctx.send("deal\n------")
         for i in range(len(ch_list_2)):
             await ctx.send(
@@ -307,8 +308,15 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        tuple_test = [1, 2, 3, 4]
-        await ctx.channel.send(str(tuple(tuple_test)))
+        listA = ["ユーザー１", "ユーザー2"]
+        listB = ["11", "63"]
+        chartA = pd.DataFrame(listA, columns=["入札者"])
+        chartB = pd.DataFrame(listB, columns=["入札額"])
+        chartA[1] = chartB
+
+        await ctx.channel.send(chartA)
+
+
 
     @commands.command()
     async def dbsetup(self, ctx, set_type):

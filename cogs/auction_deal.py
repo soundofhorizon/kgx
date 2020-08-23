@@ -672,6 +672,42 @@ class AuctionDael(commands.Cog):
         except asyncio.TimeoutError:
             pass
 
+    @commands.command()
+    async def remand(self, ctx):
+        cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
+        auction_data = cur.fetchone()
+
+        async def delete_to(ctx, ch_id):
+            delete_ch = ctx.channel
+            msg = await delete_ch.fetch_message(ch_id)
+            await delete_ch.purge(limit=None, after=msg)
+
+        # オークションが行われていなければ警告して終了
+        if "☆" in ctx.channel.name:
+            embed = discord.Embed(description="このコマンドはオークション開催中のみ使用可能です。", color=0x4259fb)
+            await ctx.send(embed=embed)
+            return
+        # オークション主催者じゃなければ警告して終了
+        elif ctx.author.id != auction_data[1]:
+            embed = discord.Embed(description="このコマンドはオークション主催者のみ使用可能です。", color=0x4259fb)
+            await ctx.send(embed=embed)
+            return
+        else:
+            cur.execute("select * from tend where ch_id = %s", (ctx.channel.id,))
+            tend_data = cur.fetchall()
+
+            tendrs_data = tend_data[1]
+            tend_prices = tend_data[2]
+
+            discription = ""
+
+            for i in range(len(tendrs_data)):
+                # 汚いけど許して
+                if i == len(tendrs_data):
+                    pass
+                else:
+                    discription += f"{i+1}: "
+
 
 def setup(bot):
     bot.add_cog(AuctionDael(bot))
