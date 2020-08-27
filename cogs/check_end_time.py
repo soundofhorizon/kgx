@@ -37,8 +37,8 @@ class CheckEndTime(commands.Cog):
 
                     cur.execute("SELECT * from tend WHERE ch_id=%s;", (ch.id,))
                     tend_data = cur.fetchone()
-                    tender = kgx.get_member(int(tend_data[1]))
-                    price = self.bot.stack_check_reverse(int(tend_data[2]))
+                    tender = kgx.get_member(int(tend_data[1][-1]))
+                    price = self.bot.stack_check_reverse(int(tend_data[2][-1]))
                     if int(self.bot.stack_check(price)) == 0:
                         # 入札者なしという事
                         embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
@@ -75,13 +75,13 @@ class CheckEndTime(commands.Cog):
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
                     await self.bot.dm_send(row[1], embed)
-                    await self.bot.dm_send(tend_data[1], embed)
+                    await self.bot.dm_send(tend_data[1][-1], embed)
 
                     # ランキング送信
                     if "椎名" in ch.name:
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                                    (tender.display_name, item, tend_data[2], owner.display_name))
+                                    (tender.display_name, item, tend_data[2][-1], owner.display_name))
                         db.commit()
                         await self.bot.get_channel(705040893593387039).purge(limit=10)
                         await asyncio.sleep(0.1)
