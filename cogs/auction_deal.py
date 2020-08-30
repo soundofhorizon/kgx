@@ -696,7 +696,6 @@ class AuctionDael(commands.Cog):
             cur.execute("select * from tend where ch_id = %s", (ctx.channel.id,))
             tend_data = cur.fetchone()
 
-
             tendrs_data = []
             tend_prices = []
             for i in range(len(tend_data)):
