@@ -706,7 +706,7 @@ class AuctionDael(commands.Cog):
                     continue
                 else:
                     discription += f"{i}: {self.bot.get_user(id=tendrs_data[i]).display_name}, {self.bot.stack_check_reverse(tend_prices[i])}\n\n"
-
+            await ctx.channel.send(discription)
             await ctx.channel.send(embed=discord.Embed(discription=discription, color=0xffaf60))
 
 
