@@ -705,12 +705,7 @@ class AuctionDael(commands.Cog):
                 if i == 0:
                     continue
                 else:
-                    await ctx.channel.send(f"{i}: {self.bot.get_user(id=tendrs_data[i]).display_name}, {self.bot.stack_check_reverse(tend_prices[i])}\n\n")
                     discription += f"{i}: {self.bot.get_user(id=tendrs_data[i]).display_name}, {self.bot.stack_check_reverse(tend_prices[i])}\n\n"
-
-                if len(discription) >= 1800:
-                    await ctx.channel.send(embed=discord.Embed(discription=discription, color=0xffaf60))
-                    discription = ""
 
             await ctx.channel.send(embed=discord.Embed(discription=discription, color=0xffaf60))
 
