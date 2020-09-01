@@ -405,7 +405,7 @@ class KGX(commands.Bot):
         gacha_channel_ids = {gacha.id for gacha in ctx.guild.text_channels if "ガチャ券" in gacha.name}
         return ctx.channel.id in gacha_channel_ids
 
-    async def dm_send(self, user_id: int, content):
+    async def dm_send(self, user_id: int, content) -> bool:
         user = self.get_user(int(user_id))
         try:
             if isinstance(content, discord.Embed):
@@ -418,11 +418,22 @@ class KGX(commands.Bot):
             return True
 
     @staticmethod
-    def list_to_tuple_string(list_1):
+    def list_to_tuple_string(list_1: list) -> str:
         """リストの状態からARRAY型のsqlに代入できる文字列を生成する"""
         tuple_string = str(tuple(list_1))
         tuple_string_format = tuple_string.replace("(", "{").replace(")", "}")
         return tuple_string_format
+
+    async def change_message(self, ch_id: int, msg_id: int, **kwargs) -> discord.Message:
+        """メッセージを取得して編集する"""
+        ch = self.get_channel(ch_id)
+        msg = await ch.fetch_message(msg_id)
+        content = kwargs.pop("content", msg.id)
+        embed = kwargs.pop("embed", msg.embeds[0] if msg.embeds else None)
+        if embed is None:
+            return await msg.edit(content=content)
+        else:
+            return await msg.edit(content=content, embed=embed)
 
 
 if __name__ == '__main__':
