@@ -93,6 +93,7 @@ class KGX(commands.Bot):
             embed=discord.Embed(description="起動しました。", color=color[random.randint(0, 6)]))
 
     async def on_guild_channel_create(self, channel):
+        """チャンネルが出来た際に自動で星をつける"""
         if ">" not in channel.category.name and "*" not in channel.category.name:
             return
         if "☆" in channel.name:
@@ -102,7 +103,8 @@ class KGX(commands.Bot):
         except asyncio.TimeoutError:
             return
 
-    async def on_command_error(self, ctx, error):  # すべてのコマンドで発生したエラーを拾う
+    async def on_command_error(self, ctx, error):
+        """すべてのコマンドで発生したエラーを拾う"""
         if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
             orig_error = getattr(error, "original", error)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
@@ -116,6 +118,7 @@ class KGX(commands.Bot):
 
     @staticmethod
     def check_role(new_score, user, ctx):
+        """ポイントに与えてroleを付与する"""
         role1 = discord.utils.get(ctx.guild.roles, name="新星")
         role2 = discord.utils.get(ctx.guild.roles, name="常連")
         role3 = discord.utils.get(ctx.guild.roles, name="金持ち")
@@ -189,7 +192,8 @@ class KGX(commands.Bot):
                 embed = None
             return before, after, embed
 
-    def create_ranking_embed(self):
+    def create_ranking_embed(self) -> discord.Embed:
+        """落札ランキングのemebedを作成"""
         # user_dataテーブルには「0:ユーザーID bigint, 1:落札ポイント smallint, 2:警告レベル smallint」で格納されているのでこれを全部、落札ポイント降順になるように出す
         cur.execute("SELECT * FROM user_data ORDER BY bid_score desc;")
         data = cur.fetchall()
@@ -204,8 +208,6 @@ class KGX(commands.Bot):
             elif self.get_user(data[i][0]):
                 description += f"{rank}位: {str(self.get_user(data[i][0]).display_name)} - 落札ポイント -> {str(data[i][1])}\n"
                 rank += 1
-            else:
-                continue
 
         # 表示する
         d = datetime.now()  # 現在時刻の取得
@@ -217,9 +219,9 @@ class KGX(commands.Bot):
         embed.set_footer(text=f'UpdateTime：{time}')  # チャンネル名,時刻,鯖のアイコンをセット
         return embed
 
-    # 落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す
     @staticmethod
-    def create_high_bid_ranking():
+    def create_high_bid_ranking() -> discord.Embed:
+        """落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す"""
         # bid_rankingテーブルには「0:落札者の名前 text, 1:落札物 text, 2:落札額 bigint, 3:出品者の名前 text」で格納されているのでこれを全部、落札額降順になるように出す
         cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
         data = cur.fetchall()
@@ -258,10 +260,14 @@ class KGX(commands.Bot):
         embed_list.append(embed)
         return embed_list
 
-    # [a lc + b st + c]がvalueで来ることを想定する(関数使用前に文の構造確認を取る)
-    # 少数出来た場合、少数で計算して最後にintぐるみをして値を返す
     @staticmethod
     def stack_check(value) -> int:
+        """
+        [a lc + b st + c]がvalueで来ることを想定する(関数使用前に文の構造確認を取る)
+        少数出来た場合、少数で計算して最後にintぐるみをして値を返す
+        :param value: [a lc + b st + c]の形の価格
+        :return: 価格をn個にしたもの(少数は丸め込む)
+        """
         value = str(value).replace("椎名", "").lower()
         stack_frag = False
         lc_frag = False
@@ -293,9 +299,12 @@ class KGX(commands.Bot):
         except ValueError:
             return 0
 
-    # intがvalueで来ることを想定する
     @staticmethod
     def stack_check_reverse(value: int):
+        """
+        :param value: int型の価格
+        :return:　valueをストックされた形に直す
+        """
         try:
             value2 = int(value)
             if value2 <= 63:
@@ -317,7 +326,8 @@ class KGX(commands.Bot):
             return 0
 
     @staticmethod
-    def get_user_auction_count(user_id):
+    def get_user_auction_count(user_id) -> int:
+        """ユーザーが開催しているオークションの数を取得"""
         cur.execute("SELECT count(*) from auction where auction_owner_id = %s", (user_id,))
         a = tuple(cur.fetchone())
         cur.execute("SELECT count(*) from deal where deal_owner_id = %s", (user_id,))
@@ -325,7 +335,8 @@ class KGX(commands.Bot):
         return int(a[0]) + int(b[0])
 
     @staticmethod
-    def reset_ch_db(channel_id, mode):
+    def reset_ch_db(channel_id, mode) -> None:
+        """SQLに登録されているチャンネルのデータを初期化"""
         # SQLにデータ登録
         if mode == "a":
             cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, "
@@ -345,11 +356,11 @@ class KGX(commands.Bot):
             db.commit()
 
     @staticmethod
-    def mcid_to_uuid(mcid):
+    def mcid_to_uuid(mcid) -> str:
         """
         MCIDをUUIDに変換する関数
-        uuidを返す"""
-
+        uuidを返す
+        """
         url = f"https://api.mojang.com/users/profiles/minecraft/{mcid}"
         try:
             res = requests.get(url)
@@ -365,11 +376,11 @@ class KGX(commands.Bot):
             return False
 
     @staticmethod
-    def uuid_to_mcid(uuid):
+    def uuid_to_mcid(uuid) -> str:
         """
         UUIDをMCIDに変換する関数
-        mcid(\なし)を返す"""
-
+        mcid(\なし)を返す
+        """
         url = f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
         try:
             res = requests.get(url)
@@ -382,25 +393,25 @@ class KGX(commands.Bot):
             return False
 
     @staticmethod
-    def is_auction_category(ctx):
+    def is_auction_category(ctx: commands.Context) -> bool:
         """チャンネルがオークションカテゴリに入っているかの真偽値を返す関数"""
         auction_category_ids = {c.id for c in ctx.guild.categories if c.name.startswith('>')}
         return ctx.channel.category_id in auction_category_ids
 
     @staticmethod
-    def is_normal_category(ctx):
+    def is_normal_category(ctx: commands.Context) -> bool:
         """チャンネルがノーマルカテゴリに入っているかの真偽値を返す関数"""
         normal_category_ids = {this.id for this in ctx.guild.categories if this.name.startswith('*')}
         return ctx.channel.category_id in normal_category_ids
 
     @staticmethod
-    def is_siina_category(ctx):
+    def is_siina_category(ctx: commands.Context) -> bool:
         """チャンネルが椎名カテゴリに入っているかの真偽値を返す関数"""
         siina_channel_ids = {siina.id for siina in ctx.guild.text_channels if "椎名" in siina.name}
         return ctx.channel.id in siina_channel_ids
 
     @staticmethod
-    def is_gacha_category(ctx):
+    def is_gacha_category(ctx: commands.Context) -> bool:
         """チャンネルがガチャ券カテゴリに入っているかの真偽値を返す関数"""
         gacha_channel_ids = {gacha.id for gacha in ctx.guild.text_channels if "ガチャ券" in gacha.name}
         return ctx.channel.id in gacha_channel_ids

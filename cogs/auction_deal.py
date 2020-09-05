@@ -18,12 +18,13 @@ auction_notice_ch_id = 727333695450775613
 
 
 class AuctionDael(commands.Cog):
+    """オークション、取引に関するcog"""
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command()
-    async def bidscore(self, ctx, pt):  # カウントしてその数字に対応する役職を付与する
-        if not ctx.channel.id == 558265536430211083:
+    async def bidscore(self, ctx, pt: int):  # カウントしてその数字に対応する役職を付与する
+        if ctx.channel.id != 558265536430211083:
             return
 
         channel = self.bot.get_channel(602197766218973185)
@@ -41,8 +42,11 @@ class AuctionDael(commands.Cog):
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, )  # ユーザー名+ID,アバターをセット
             await channel.send(embed=embed)
             before, after, embed = self.bot.check_role(new_score, ctx.author, ctx)
-            await ctx.author.remove_roles(before)
-            await ctx.author.add_roles(after)
+            if before.id != after.id:
+                await asyncio.gather(
+                    ctx.author.remove_roles(before),
+                    ctx.author.add_roles(after)
+                )
             if embed is not None:
                 await ctx.channel.send(embed=embed)
             embed = discord.Embed(description=f'**{ctx.author.display_name}**に落札ポイントを付与しました。', color=0x9d9d9d)
@@ -72,19 +76,19 @@ class AuctionDael(commands.Cog):
             # 既にオークションが行われていたらreturn
             if "☆" not in ctx.channel.name:
                 description = "このチャンネルでは既にオークションが行われています。\n☆がついているチャンネルでオークションを始めてください。"
-                await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
+                await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747), delete_after=3)
                 await asyncio.sleep(3)
-                await ctx.channel.purge(limit=2)
+                await ctx.message.delete()
                 return
 
-            # メッセージを待つだけの変数。ほかの人からの入力は受け付けないようにしている
             def check(m):
+                """ユーザーの次のメッセージを待つ"""
                 if m.author.bot:
                     return
                 return m.channel == ctx.channel and m.author == ctx.author
 
-            # 日付型になってるかを確かめる
             def check2(m):
+                """日付型になってるかを確かめる"""
                 if m.author.bot:
                     return
                     # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
@@ -95,8 +99,8 @@ class AuctionDael(commands.Cog):
                 except ValueError:
                     return False
 
-            # 価格フォーマットチェック
             def check3(m):
+                """価格フォーマットチェック"""
                 if m.author.bot:
                     return
                 if m.channel != ctx.channel:
@@ -107,8 +111,8 @@ class AuctionDael(commands.Cog):
                         r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
                             ) and m.author == ctx.author
 
-            # 価格フォーマットチェック(なしを含む)
             def check4(m):
+                """価格フォーマットチェック(なしを含む)"""
                 if m.author.bot:
                     return
                 elif m.author == ctx.author:
@@ -264,14 +268,14 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 return
 
-            # メッセージを待つだけの変数。ほかの人からの入力は受け付けないようにしている
             def check(m):
+                """ユーザーの次のメッセージを待つ"""
                 if m.author.bot:
                     return
                 return m.channel == ctx.channel and m.author == ctx.author
 
-            # 日付型になってるかを確かめる
             def check2(m):
+                """日付型になってるかを確かめる"""
                 if m.author.bot:
                     return
                     # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
@@ -282,8 +286,8 @@ class AuctionDael(commands.Cog):
                 except ValueError:
                     return False
 
-            # 価格フォーマットチェック
             def check3(m):
+                """価格フォーマットチェック"""
                 if m.author.bot:
                     return
                 if m.channel != ctx.channel:
@@ -295,7 +299,6 @@ class AuctionDael(commands.Cog):
                             ) and m.author == ctx.author
 
             # 単位の設定
-            unit = ""
             if self.bot.is_siina_category(ctx):
                 unit = "椎名"
             elif self.bot.is_gacha_category(ctx):
@@ -677,11 +680,6 @@ class AuctionDael(commands.Cog):
         cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
         auction_data = cur.fetchone()
 
-        async def delete_to(ctx, ch_id):
-            delete_ch = ctx.channel
-            msg = await delete_ch.fetch_message(ch_id)
-            await delete_ch.purge(limit=None, after=msg)
-
         # オークションが行われていなければ警告して終了
         if "☆" in ctx.channel.name:
             embed = discord.Embed(description="このコマンドはオークション開催中のみ使用可能です。", color=0x4259fb)
@@ -701,11 +699,8 @@ class AuctionDael(commands.Cog):
 
             discription = ""
 
-            for i in range(len(tend_data[1])):
-                if i == 0:
-                    continue
-                else:
-                    discription += f"{i}: {self.bot.get_user(id=tendrs_data[i]).display_name}, {auction_data[7]}{self.bot.stack_check_reverse(tend_prices[i])}\n\n"
+            for i in range(1, len(tend_data[1])):
+                discription += f"{i}: {self.bot.get_user(id=tendrs_data[i]).display_name}, {auction_data[7]}{self.bot.stack_check_reverse(tend_prices[i])}\n\n"
 
                 if len(discription) >= 1800:
                     await ctx.channel.send(embed=discord.Embed(description=discription, color=0xffaf60))
