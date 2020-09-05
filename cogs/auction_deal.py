@@ -29,7 +29,7 @@ class AuctionDael(commands.Cog):
 
         channel = self.bot.get_channel(602197766218973185)
         p = re.compile(r'^[0-9]+$')
-        if p.fullmatch(pt):
+        if p.fullmatch(str(pt)):
             kazu = int(pt)
             cur.execute("SELECT bid_score FROM user_data where user_id = %s", (ctx.author.id,))
             oldscore = list(cur.fetchone())
