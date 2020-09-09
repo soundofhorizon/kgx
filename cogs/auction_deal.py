@@ -30,27 +30,37 @@ class AuctionDael(commands.Cog):
         channel = self.bot.get_channel(602197766218973185)
         p = re.compile(r'^[0-9]+$')
         if p.fullmatch(str(pt)):
-            kazu = int(pt)
             cur.execute("SELECT bid_score FROM user_data where user_id = %s", (ctx.author.id,))
             oldscore = list(cur.fetchone())
-            new_score = oldscore[0] + kazu
+            new_score = oldscore[0] + pt
             cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (new_score, ctx.author.id))
             db.commit()
 
             embed = discord.Embed(description=f'**{ctx.author.display_name}**の現在の落札ポイントは**{new_score}**です。',
                                   color=0x9d9d9d)
-            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, )  # ユーザー名+ID,アバターをセット
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
             await channel.send(embed=embed)
-            before, after, embed = self.bot.check_role(new_score, ctx.author, ctx)
-            if before.id != after.id:
-                await asyncio.gather(
-                    ctx.author.remove_roles(before),
-                    ctx.author.add_roles(after)
-                )
-            if embed is not None:
+
+            if new_score in [1, 3, 5, 10, 30, 60, 100]:  # ランクアップのときのポイントだったら
+                before, after = self.bot.check_role(new_score, ctx)
+                if before is None:
+                    await ctx.author.add_roles(after)
+                    before_name = "落札初心者"
+                else:
+                    await asyncio.gather(
+                        ctx.author.remove_roles(before),
+                        ctx.author.add_roles(after)
+                    )
+                    before_name = before.name
+
+                embed = discord.Embed(
+                    description=f'**{ctx.author.display_name}**がランクアップ！``{before_name}⇒{after.name}``',
+                    color=0xfb407c)
+                embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
                 await ctx.channel.send(embed=embed)
+
             embed = discord.Embed(description=f'**{ctx.author.display_name}**に落札ポイントを付与しました。', color=0x9d9d9d)
-            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url, )  # ユーザー名+ID,アバターをセット
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
             await ctx.channel.send(embed=embed)
             await asyncio.sleep(0.5)
             # ランキングを出力する
