@@ -117,8 +117,8 @@ class KGX(commands.Bot):
             await ch.send(embed=embed)
 
     @staticmethod
-    def check_role(new_score, user, ctx):
-        """ポイントに与えてroleを付与する"""
+    def check_role(score, ctx):
+        """ポイントに応じたroleを判定する"""
         role1 = discord.utils.get(ctx.guild.roles, name="新星")
         role2 = discord.utils.get(ctx.guild.roles, name="常連")
         role3 = discord.utils.get(ctx.guild.roles, name="金持ち")
@@ -126,36 +126,31 @@ class KGX(commands.Bot):
         role5 = discord.utils.get(ctx.guild.roles, name="登頂者")
         role6 = discord.utils.get(ctx.guild.roles, name="落札王")
         role7 = discord.utils.get(ctx.guild.roles, name="落札神")
-        if new_score >= 100:
+        if score >= 100:
             before = role6
             after = role7
-        elif new_score >= 60:
+        elif score >= 60:
             before = role5
             after = role6
-        elif new_score >= 30:
+        elif score >= 30:
             before = role4
             after = role5
-        elif new_score >= 10:
+        elif score >= 10:
             before = role3
             after = role4
-        elif new_score >= 5:
+        elif score >= 5:
             before = role2
             after = role3
-        elif new_score >= 3:
+        elif score >= 3:
             before = role1
             after = role2
-        elif new_score >= 1:
-            before = role1
+        elif score >= 1:
+            before = None
             after = role1
         else:
-            raise TypeError("called before add point")
-        before_name = before.name if after.role.id != role1.id else "落札初心者"
-        embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``{before_name}⇒{after.name}``',
-                              color=0xfb407c)
-        embed.set_author(name=user, icon_url=user.avatar_url)  # ユーザー名+ID,アバターをセット
-        if after in user.roles:
-            embed = None
-        return before, after, embed
+            raise TypeError("wrong value has passed")
+
+        return before, after
 
     def create_ranking_embed(self) -> discord.Embed:
         """落札ランキングのemebedを作成"""
