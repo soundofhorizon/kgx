@@ -129,68 +129,33 @@ class KGX(commands.Bot):
         if new_score >= 100:
             before = role6
             after = role7
-            embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``落札王⇒落札神``',
-                                  color=0x3efd73)
-            embed.set_author(name=user, icon_url=user.avatar_url, )  # ユーザー名+ID,アバターをセット
-            if role7 in user.roles:
-                embed = None
-            return before, after, embed
         elif new_score >= 60:
             before = role5
             after = role6
-            embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``登頂者⇒落札王``',
-                                  color=0xfb407c)
-            embed.set_author(name=user, icon_url=user.avatar_url, )  # ユーザー名+ID,アバターをセット
-            if role6 in user.roles:
-                embed = None
-            return before, after, embed
         elif new_score >= 30:
             before = role4
             after = role5
-            embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``覚醒者⇒登頂者``',
-                                  color=0xf3f915)
-            embed.set_author(name=user, icon_url=user.avatar_url, )  # ユーザー名+ID,アバターをセット
-            if role5 in user.roles:
-                embed = None
-            return before, after, embed
         elif new_score >= 10:
             before = role3
             after = role4
-            embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``金持ち⇒覚醒者``',
-                                  color=0xe15555)
-            embed.set_author(name=user, icon_url=user.avatar_url, )  # ユーザー名+ID,アバターをセット
-            if role4 in user.roles:
-                embed = None
-            return before, after, embed
         elif new_score >= 5:
-            if role3 in user.roles:
-                pass
             before = role2
             after = role3
-            embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``常連⇒金持ち``',
-                                  color=0xc60000)
-            embed.set_author(name=user, icon_url=user.avatar_url, )  # ユーザー名+ID,アバターをセット
-            if role3 in user.roles:
-                embed = None
-            return before, after, embed
         elif new_score >= 3:
             before = role1
             after = role2
-            embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``新星⇒常連``',
-                                  color=0xed8f10)
-            embed.set_author(name=user, icon_url=user.avatar_url, )  # ユーザー名+ID,アバターをセット
-            if role2 in user.roles:
-                embed = None
-            return before, after, embed
         elif new_score >= 1:
             before = role1
             after = role1
-            embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``落札初心者⇒新星``',
-                                  color=0xeacf13)
-            embed.set_author(name=user, icon_url=user.avatar_url, )  # ユーザー名+ID,アバターをセット
-            if role1 in user.roles:
-                embed = None
-            return before, after, embed
+        else:
+            raise TypeError("called before add point")
+        before_name = before.name if after.role.id != role1.id else "落札初心者"
+        embed = discord.Embed(description=f'**{user.display_name}**がランクアップ！``{before_name}⇒{after.name}``',
+                              color=0xfb407c)
+        embed.set_author(name=user, icon_url=user.avatar_url)  # ユーザー名+ID,アバターをセット
+        if after in user.roles:
+            embed = None
+        return before, after, embed
 
     def create_ranking_embed(self) -> discord.Embed:
         """落札ランキングのemebedを作成"""
