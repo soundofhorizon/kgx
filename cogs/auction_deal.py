@@ -55,7 +55,7 @@ class AuctionDael(commands.Cog):
 
                 embed = discord.Embed(
                     description=f'**{ctx.author.display_name}**がランクアップ！``{before_name}⇒{after.name}``',
-                    color=after.role.color)
+                    color=after.color)
                 embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
                 await ctx.channel.send(embed=embed)
 
