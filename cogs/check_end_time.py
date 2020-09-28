@@ -89,7 +89,7 @@ class CheckEndTime(commands.Cog):
                         for i in range(len(embed)):
                             await self.bot.get_channel(705040893593387039).send(embed=embed[i])
 
-                    embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
+                    embed = discord.Embed(description=f"{owner.display_name}が出品した{item}を{tender.display_name}が{tend_price}で落札しました！", color=0xffaf60)
                     await ch.send(embed=embed)
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
                     self.bot.reset_ch_db(ch.id, "a")
