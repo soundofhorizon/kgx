@@ -48,6 +48,10 @@ class Message(commands.Cog):
                             emoji = ['👍', '🙆']
                             await message.author.remove_roles(role1)
                             await message.author.add_roles(role2)
+                            try:
+                                await message.author.edit(nick=mcid)
+                            except discord.errors.Forbidden:
+                                await message.channel.send(f"{message.author.mention}権限エラー\nニックネームを申請したMCIDに変更してください。")
                             await message.add_reaction(random.choice(emoji))
                             # uuidを確かめる
                             uuid = self.bot.mcid_to_uuid(mcid)
