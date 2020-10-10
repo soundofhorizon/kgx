@@ -66,7 +66,8 @@ class Message(commands.Cog):
                             await channel.send(embed=embed)
 
                             # SQLのuser_dataに新規登録
-                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);", (message.author.id, 0, 0, uuid))
+                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);",
+                                        (message.author.id, 0, 0, uuid))
                             db.commit()
                         else:
                             embed = discord.Embed(
@@ -153,18 +154,15 @@ class Message(commands.Cog):
     @commands.command()
     async def stack_check(self, ctx, amount):
         # 数値かどうかで渡す関数を変更する
-        if int(amount):
+        if self.bot.stack_check(amount) == 0:
             if self.bot.stack_check_reverse(amount) == 0:
                 await ctx.channel.send(f"入力した値が0または不正な値です。")
                 return
             else:
                 await ctx.channel.send(f"{amount}はスタック表記で{self.bot.stack_check_reverse(amount)}です。")
         else:
-            if self.bot.stack_check(amount) == 0:
-                await ctx.channel.send(f"入力した値が0または不正な値です。")
-                return
-            else:
-                await ctx.channel.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
+            await ctx.channel.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
+
 
 def setup(bot):
     bot.add_cog(Message(bot))
