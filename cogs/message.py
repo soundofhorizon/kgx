@@ -161,7 +161,7 @@ class Message(commands.Cog):
                 else:
                     await ctx.channel.send(f"{amount}はスタック表記で{self.bot.stack_check_reverse(amount)}です。")
         except ValueError:
-            if self.bot.stack_check_reverse(amount) == 0:
+            if self.bot.stack_check(amount) == 0:
                 await ctx.channel.send(f"入力した値が0または不正な値です。")
                 return
             else:
