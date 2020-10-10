@@ -153,9 +153,8 @@ class Message(commands.Cog):
 
     @commands.command()
     async def stack_check(self, ctx, amount):
-        # 数値かどうかで渡す関数を変更する
-        if self.bot.stack_check(amount) == 0:
-            if self.bot.stack_check_reverse(amount) == 0:
+        if self.bot.stack_check_reverse(amount) == 00:
+            if self.bot.stack_check(amount) == 0:
                 await ctx.channel.send(f"入力した値が0または不正な値です。")
                 return
             else:
