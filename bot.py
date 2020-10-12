@@ -209,7 +209,7 @@ class KGX(commands.Bot):
             else:
                 pass
             # 何位まで出力するか.
-            if i >= 69:
+            if i >= 99:
                 break
 
         # 表示する
