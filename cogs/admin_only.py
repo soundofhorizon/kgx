@@ -19,7 +19,10 @@ class AdminOnly(commands.Cog):
     async def cog_check(self, ctx):  # cog内のコマンド全てに適用されるcheck
         if discord.utils.get(ctx.author.roles, name="Administrator"):
             return True
+        if discord.utils.get(ctx.author.roles, id=558138575225356308):  # developer
+            return True
         await ctx.send('運営以外のコマンド使用は禁止です')
+        return False
 
     @commands.command(name='del')
     async def _del(self, ctx, n):  # メッセージ削除用
