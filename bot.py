@@ -5,6 +5,7 @@ import random
 import os
 import traceback
 from datetime import datetime
+from typing import Union, List
 
 import bs4
 import discord
@@ -20,7 +21,7 @@ cur = db.cursor()  # なんか操作する時に使うやつ
 
 class KGX(commands.Bot):
     def __init__(self, prefix):
-        super().__init__(command_prefix=prefix)
+        super().__init__(command_prefix=prefix, help_command=None)
 
         description = "<:shiina_balance:558175954686705664>!start\n\n" \
                       "オークションを始めるためのコマンドです。オークションチャンネルでのみ使用可能です。\n\n" \
@@ -77,7 +78,6 @@ class KGX(commands.Bot):
 
         self.cur = cur
 
-        self.remove_command('help')  # デフォルトのヘルプコマンドを除外
         for cog in os.listdir(f"./cogs"):  # cogの読み込み
             if cog.endswith(".py"):
                 try:
@@ -90,7 +90,7 @@ class KGX(commands.Bot):
         await self.get_channel(678083611697872910).purge(limit=1)
         await self.get_channel(678083611697872910).send(embed=self.embed)
         await self.get_channel(722092542249795679).send(
-            embed=discord.Embed(description="起動しました。", color=color[random.randint(0, 6)]))
+            embed=discord.Embed(description="起動しました。", color=random.choice(color)))
 
     async def on_guild_channel_create(self, channel):
         """チャンネルが出来た際に自動で星をつける"""
@@ -116,8 +116,9 @@ class KGX(commands.Bot):
             embed.set_footer(text=f'channel:{ctx.channel}\ntime:{time}\nuser:{ctx.author.display_name}')
             await ch.send(embed=embed)
 
+    # これより自作メソッド
     @staticmethod
-    def check_role(score, ctx):
+    def check_role(score: int, ctx):
         """ポイントに応じたroleを判定する"""
         role1 = discord.utils.get(ctx.guild.roles, name="新星")
         role2 = discord.utils.get(ctx.guild.roles, name="常連")
@@ -180,7 +181,7 @@ class KGX(commands.Bot):
         return embed
 
     @staticmethod
-    def create_high_bid_ranking() -> discord.Embed:
+    def create_high_bid_ranking() -> List[discord.Embed]:
         """落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す"""
         # bid_rankingテーブルには「0:落札者の名前 text, 1:落札物 text, 2:落札額 bigint, 3:出品者の名前 text」で格納されているのでこれを全部、落札額降順になるように出す
         cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
@@ -260,7 +261,7 @@ class KGX(commands.Bot):
             return 0
 
     @staticmethod
-    def stack_check_reverse(value: int):
+    def stack_check_reverse(value: int) -> Union[int, str]:
         """
         :param value: int型の価格
         :return:　valueをストックされた形に直す
@@ -286,7 +287,7 @@ class KGX(commands.Bot):
             return 0
 
     @staticmethod
-    def get_user_auction_count(user_id) -> int:
+    def get_user_auction_count(user_id: int) -> int:
         """ユーザーが開催しているオークションの数を取得"""
         cur.execute("SELECT count(*) from auction where auction_owner_id = %s", (user_id,))
         a = tuple(cur.fetchone())
@@ -295,7 +296,7 @@ class KGX(commands.Bot):
         return int(a[0]) + int(b[0])
 
     @staticmethod
-    def reset_ch_db(channel_id, mode) -> None:
+    def reset_ch_db(channel_id: int, mode: str) -> None:
         """SQLに登録されているチャンネルのデータを初期化"""
         # SQLにデータ登録
         if mode == "a":
@@ -377,13 +378,19 @@ class KGX(commands.Bot):
         return ctx.channel.id in gacha_channel_ids
 
     async def dm_send(self, user_id: int, content) -> bool:
+        """
+        指定した対象にdmを送るメソッド
+        :param user_id: dmを送る対象のid
+        :param content: dmの内容
+        :return: dmを送信できたかのbool値
+        """
         user = self.get_user(int(user_id))
         try:
             if isinstance(content, discord.Embed):
                 await user.send(embed=content)
             else:
                 await user.send(content)
-        except Exception as e:
+        except Exception:
             return False
         else:
             return True

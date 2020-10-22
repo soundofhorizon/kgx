@@ -40,7 +40,7 @@ class MessageEditDelete(commands.Cog):
                         f'**after**\n{after.content}\n\n',
             color=0x1e90ff
         )
-        embed.set_author(name=before.author, icon_url=before.author.avatar_url, )  # ユーザー名+ID,アバターをセット
+        embed.set_author(name=before.author, icon_url=before.author.avatar_url)  # ユーザー名+ID,アバターをセット
         embed.set_footer(text=f'User ID：{before.author.id} Time：{time}',
                          icon_url=before.guild.icon_url, )  # チャンネル名,時刻,鯖のアイコンをセット
         ch = before.guild.get_channel(628807266753183754)

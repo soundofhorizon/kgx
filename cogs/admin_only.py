@@ -25,23 +25,24 @@ class AdminOnly(commands.Cog):
     async def _del(self, ctx, n):  # メッセージ削除用
         p = re.compile(r'^[0-9]+$')
         if p.fullmatch(n):
-            kazu = int(n)
-            await ctx.channel.purge(limit=kazu + 1)
+            count = int(n)
+            await ctx.channel.purge(limit=count + 1)
 
     @commands.command()
     async def check_all_user_ID(self, ctx):
         channel = self.bot.get_channel(642052474672250880)
+        guild = self.bot.get_guild(558125111081697300)
         bot_count = 0
-        for member in range(self.bot.get_guild(558125111081697300).member_count):
-            if self.bot.get_guild(558125111081697300).members[member].bot:
+        for member in guild.members:
+            if member.bot:
                 bot_count += 1
                 continue
             await channel.send(
-                f"{self.bot.get_guild(558125111081697300).members[member].id} : "
-                f"{self.bot.get_guild(558125111081697300).members[member].display_name}")
-            if member == (self.bot.get_guild(558125111081697300).member_count - 1):
+                f"{member.id} : "
+                f"{member.display_name}")
+            if member == guild.members[-1]:
                 embed = discord.Embed(
-                    description=f"このサーバーの全メンバーのユーザーIDの照会が終わりました。 現在人数:{member - bot_count + 1}",
+                    description=f"このサーバーの全メンバーのユーザーIDの照会が終わりました。 現在人数:{len(guild.members) - bot_count}",
                     color=0x1e90ff)
                 await channel.send(embed=embed)
                 await channel.send("--------ｷﾘﾄﾘ線--------")
@@ -52,16 +53,12 @@ class AdminOnly(commands.Cog):
         cur.execute("SELECT * from auction ORDER BY auction_end_time ASC")
         auction_data = cur.fetchone()
         auction_end_time = "null"
-        if auction_data[1] == 0:
-            pass
-        else:
+        if auction_data[1] != 0:
             auction_end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
         cur.execute("SELECT * from deal ORDER BY deal_end_time ASC")
         deal_data = cur.fetchone()
         deal_end_time = "null"
-        if deal_data[1] == 0:
-            pass
-        else:
+        if deal_data[1] != 0:
             deal_end_time = datetime.datetime.strptime(deal_data[5], '%Y/%m/%d-%H:%M')
         # オークション、取引どちらともnullならここで処理終わり
         if auction_end_time == "null" and deal_end_time == "null":
@@ -134,7 +131,6 @@ class AdminOnly(commands.Cog):
     @commands.command()
     async def show_bid_ranking(self, ctx):
         await self.bot.get_channel(705040893593387039).purge(limit=10)
-        await asyncio.sleep(0.1)
         embed = self.bot.create_high_bid_ranking()
         for i in range(len(embed)):
             await self.bot.get_channel(705040893593387039).send(embed=embed[i])
@@ -297,13 +293,13 @@ class AdminOnly(commands.Cog):
         ch_category_2 = list({this.id for this in ctx.guild.categories if this.name.startswith('*')})
         ch_list_2 = list({b.id for b in ctx.guild.text_channels if b.category_id in ch_category_2})
         await ctx.send("auction\n------")
-        for i in range(len(ch_list_1)):
+        for ch in ch_list_1:
             await ctx.send(
-                f"INSERT INTO tend VALUES ({ch_list_1[i]}, ARRAY[0], ARRAY[0]);")
+                f"INSERT INTO tend VALUES ({ch}, ARRAY[0], ARRAY[0]);")
         await ctx.send("deal\n------")
-        for i in range(len(ch_list_2)):
+        for ch2 in ch_list_2:
             await ctx.send(
-                f"INSERT INTO deal VALUES ({ch_list_2[i]}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
+                f"INSERT INTO deal VALUES ({ch2}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
 
     @commands.command()
     async def dbsetup(self, ctx, set_type):

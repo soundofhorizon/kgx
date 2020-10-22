@@ -147,7 +147,7 @@ class Message(commands.Cog):
                                   )
             embed.set_image(url="attachment://icon.png")
             await ctx.channel.send(file=image, embed=embed)
-        except:
+        except Exception:
             await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
     @commands.command()
@@ -166,6 +166,7 @@ class Message(commands.Cog):
                 return
             else:
                 await ctx.channel.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
+
 
 def setup(bot):
     bot.add_cog(Message(bot))

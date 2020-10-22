@@ -26,11 +26,11 @@ class RawReactionAdd(commands.Cog):
 
                 # ここに付与,剥奪させたい役職のIDを入れる
                 role = message.guild.get_role(678502401707212800)
-                if discord.utils.get( payload.member.roles, id=role.id):
-                    await payload.member.remove_roles( role, reason="役職剥奪のリアクションを押したため" )
+                if discord.utils.get(payload.member.roles, id=role.id):
+                    await payload.member.remove_roles(role, reason="役職剥奪のリアクションを押したため")
                     action = "剥奪"
                 else:
-                    await payload.member.add_roles( role, reason="役職付与のリアクションを押したため" )
+                    await payload.member.add_roles(role, reason="役職付与のリアクションを押したため")
                     action = "付与"
 
                 # DMに結果を報告

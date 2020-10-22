@@ -3,7 +3,6 @@ import discord
 
 
 class SimpleCommand(commands.Cog):
-
     """引数を持たないコマンド"""
     def __init__(self, bot):
         self.bot = bot
