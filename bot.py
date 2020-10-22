@@ -317,7 +317,7 @@ class KGX(commands.Bot):
             db.commit()
 
     @staticmethod
-    def mcid_to_uuid(mcid) -> str:
+    def mcid_to_uuid(mcid) -> Union[str, bool]:
         """
         MCIDをUUIDに変換する関数
         uuidを返す
@@ -326,9 +326,9 @@ class KGX(commands.Bot):
         try:
             res = requests.get(url)
             res.raise_for_status()
-            sorp = bs4.BeautifulSoup(res.text, "html.parser")
+            soup = bs4.BeautifulSoup(res.text, "html.parser")
             try:
-                player_data_dict = json.loads(sorp.decode("utf-8"))
+                player_data_dict = json.loads(soup.decode("utf-8"))
             except json.decoder.JSONDecodeError:  # mcidが存在しないとき
                 return False
             uuid = player_data_dict["id"]
