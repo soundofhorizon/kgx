@@ -3,6 +3,7 @@ import io
 import os
 import re
 from datetime import datetime, timedelta
+from typing import Union
 
 import discord
 import psycopg2
@@ -427,7 +428,7 @@ class AuctionDael(commands.Cog):
                 return
 
             # 少数は可能。
-            def check_style(m):
+            def check_style(m: str) -> Union[bool, float]:
                 style_list = m.lower().replace("st", "").replace("lc", "").split("+")
                 for i in range(len(style_list)):
                     try:
@@ -435,11 +436,6 @@ class AuctionDael(commands.Cog):
                     except ValueError:
                         return False
                 return True
-
-            async def delete_to(ctx, ch_id):
-                delete_ch = ctx.channel
-                msg = await delete_ch.fetch_message(ch_id)
-                await delete_ch.purge(limit=None, after=msg)
 
             if check_style(price):
                 # 開始価格、即決価格、現在の入札額を取り寄せ
@@ -525,14 +521,12 @@ class AuctionDael(commands.Cog):
                 # 入札時間の判定
                 time = datetime.now() + timedelta(hours=1)
                 finish_time = datetime.strptime(auction[6], r"%Y/%m/%d-%H:%M")
-                text = "None"
+                flag = False
                 if time > finish_time:
                     embed = discord.Embed(description="終了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     await asyncio.sleep(2)
 
-                    await delete_to(ctx, auction[2])
-                    await asyncio.sleep(0.1)
                     await ctx.channel.purge(limit=1)
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}', inline=True)
@@ -551,7 +545,7 @@ class AuctionDael(commands.Cog):
                     db.commit()
 
                     # 延長をオークション主催者に伝える
-                    text = f"チャンネル名: {self.bot.get_channel(id=auction[0]).name}において終了1時間前に入札があったため終了時刻を1日延長します。"
+                    flag = True
 
                 # オークション情報が変わってる可能性があるのでここで再度auctionのデータを取る
                 cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
@@ -569,9 +563,9 @@ class AuctionDael(commands.Cog):
                             (ctx.channel.id,))
                 db.commit()
                 await asyncio.sleep(0.1)
-                await delete_to(ctx, auction[2])
 
-                if text != "None":
+                if flag:  # 終了時間が延長される場合は通知する
+                    text = f"チャンネル名: {self.bot.get_channel(id=auction[0]).name}において終了1時間前に入札があったため終了時刻を1日延長します。"
                     embed = discord.Embed(description=text, color=0x4259fb)
                     time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
