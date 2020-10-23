@@ -414,6 +414,7 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
     @commands.command()
+    @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def tend(self, ctx, *, price):
         if self.bot.is_auction_category(ctx):
 
@@ -664,6 +665,7 @@ class AuctionDael(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def consent(self, ctx):
         if not self.bot.is_normal_category(ctx):
             return
