@@ -529,7 +529,8 @@ class AuctionDael(commands.Cog):
                     await asyncio.sleep(2)
                     await ctx.message.delete()
 
-                    await ctx.channel.purge(limit=1)
+                    msg = await ctx.fetch_message(auction[2])
+                    await msg.delete()
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
                     embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}', inline=True)
                     embed.add_field(name="出品物", value=f'\n\n{auction[3]}', inline=True)
