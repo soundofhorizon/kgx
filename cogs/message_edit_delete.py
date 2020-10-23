@@ -12,6 +12,9 @@ class MessageEditDelete(commands.Cog):
         if message.author.bot:
             return
 
+        if message.content.startswith("!tend"):
+            return
+
         d = datetime.now()  # 現在時刻の取得
         time = d.strftime("%Y/%m/%d %H:%M:%S")
         embed = Embed(description=f'**Deleted in <#{message.channel.id}>**\n\n{message.content}\n\n',
