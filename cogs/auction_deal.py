@@ -526,6 +526,7 @@ class AuctionDael(commands.Cog):
                     embed = discord.Embed(description="終了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     await asyncio.sleep(2)
+                    await ctx.message.delete()
 
                     await ctx.channel.purge(limit=1)
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
@@ -562,6 +563,7 @@ class AuctionDael(commands.Cog):
                 cur.execute(f"UPDATE tend SET tender_id = '{tend_data[1]}', tend_price = '{tend_data[2]}' WHERE ch_id = %s",
                             (ctx.channel.id,))
                 db.commit()
+                await ctx.message.delete()
                 await asyncio.sleep(0.1)
 
                 if flag:  # 終了時間が延長される場合は通知する
