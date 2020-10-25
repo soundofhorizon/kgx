@@ -308,10 +308,12 @@ class AdminOnly(commands.Cog):
     async def dbsetup(self, ctx, set_type):
         if set_type == "a":
             cur.execute("INSERT INTO auction (ch_id) values (%s)", (ctx.channel.id,))
+            db.commit()
             await asyncio.sleep(1)
             self.bot.reset_ch_db(ctx.channel.id, set_type)
         elif set_type == "d":
             cur.execute("INSERT INTO deal (ch_id) values (%s)", (ctx.channel.id,))
+            db.commit()
             await asyncio.sleep(1)
             self.bot.reset_ch_db(ctx.channel.id, set_type)
         else:
