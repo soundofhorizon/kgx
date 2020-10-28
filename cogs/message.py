@@ -159,7 +159,7 @@ class Message(commands.Cog):
             role = discord.utils.get(ctx.guild.roles, name="uuid未チェック")
             await ctx.author.remove_roles(role)
         else:
-            await ctx.author.remove_roles("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
+            await ctx.channel.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
 
     @commands.command()
     async def stack_check(self, ctx, amount):
