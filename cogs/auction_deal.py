@@ -20,6 +20,7 @@ auction_notice_ch_id = 727333695450775613
 
 class AuctionDael(commands.Cog):
     """オークション、取引に関するcog"""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -419,8 +420,6 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=kazu)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
-
-
     @commands.command()
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def tend(self, ctx, *, price):
@@ -484,7 +483,8 @@ class AuctionDael(commands.Cog):
 
                         embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
                         embed.add_field(name="落札日", value=f'\n\n{datetime.now().strftime("%Y/%m/%d")}', inline=False)
-                        embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=auction_data[1]).display_name}', inline=False)
+                        embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=auction_data[1]).display_name}',
+                                        inline=False)
                         embed.add_field(name="品物", value=f'\n\n{auction_data[3]}', inline=False)
                         embed.add_field(name="落札者", value=f'\n\n{ctx.author.display_name}', inline=False)
                         embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
@@ -503,7 +503,8 @@ class AuctionDael(commands.Cog):
                         if "椎名" in ctx.channel.name:
                             # INSERTを実行。%sで後ろのタプルがそのまま代入される
                             cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                                        (ctx.author.display_name, auction_data[3], self.bot.stack_check(price), self.bot.get_user(id=auction_data[1]).display_name))
+                                        (ctx.author.display_name, auction_data[3], self.bot.stack_check(price),
+                                         self.bot.get_user(id=auction_data[1]).display_name))
                             db.commit()
                             await self.bot.get_channel(705040893593387039).purge(limit=10)
                             await asyncio.sleep(0.1)
@@ -570,8 +571,9 @@ class AuctionDael(commands.Cog):
                 tend_data[1] = self.bot.list_to_tuple_string(tend_data[1])
                 tend_data[2] = self.bot.list_to_tuple_string(tend_data[2])
 
-                cur.execute(f"UPDATE tend SET tender_id = '{tend_data[1]}', tend_price = '{tend_data[2]}' WHERE ch_id = %s",
-                            (ctx.channel.id,))
+                cur.execute(
+                    f"UPDATE tend SET tender_id = '{tend_data[1]}', tend_price = '{tend_data[2]}' WHERE ch_id = %s",
+                    (ctx.channel.id,))
                 db.commit()
                 await ctx.message.delete()
                 await asyncio.sleep(0.1)
@@ -599,6 +601,21 @@ class AuctionDael(commands.Cog):
                 embed.set_image(url="attachment://icon.png")
                 embed.set_footer(text=f"入札時刻: {time}")
                 await ctx.channel.send(file=image, embed=embed)
+
+                # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before?tender==0), Indexerrorも送信しない
+                try:
+                    before_tender = tend_data[1][-2]
+                    if before_tender == 0:
+                        return
+                    text = f"チャンネル名: {self.bot.get_channel(id=auction[0]).name}において貴方より高い入札がされました。\n" \
+                           f"入札者: {ctx.author.display_name}, 入札額: **{auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}**\n"
+                    embed = discord.Embed(description=text, color=0x4259fb)
+                    time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+                    embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
+                    await self.bot.dm_send(before_tender, embed)
+                except IndexError:
+                    return
+
             else:
                 embed = discord.Embed(description=f"{ctx.author.display_name}さん。入力した値が不正です。もう一度正しく入力を行ってください。",
                                       color=0x4259fb)
@@ -646,8 +663,9 @@ class AuctionDael(commands.Cog):
                 tend_data_str_1 = self.bot.list_to_tuple_string(tend_data[1])
                 tend_data_str_2 = self.bot.list_to_tuple_string(tend_data[2])
 
-                cur.execute(f"UPDATE tend SET tender_id = '{tend_data_str_1}', tend_price = '{tend_data_str_2}' WHERE ch_id = %s",
-                            (ctx.channel.id,))
+                cur.execute(
+                    f"UPDATE tend SET tender_id = '{tend_data_str_1}', tend_price = '{tend_data_str_2}' WHERE ch_id = %s",
+                    (ctx.channel.id,))
                 db.commit()
                 # 1つ戻した状態で入札状態を出力
                 await delete_to(ctx, auction_data[2])
@@ -661,10 +679,11 @@ class AuctionDael(commands.Cog):
                 image = image.resize((100, 100))
                 image.save("./icon.png")
                 image = discord.File("./icon.png", filename="icon.png")
-                embed = discord.Embed(description=f"入札者: **{self.bot.get_user(id=int(tend_data[1][-1])).display_name}**, \n"
-                                                  f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
-                                      color=0x4259fb
-                                      )
+                embed = discord.Embed(
+                    description=f"入札者: **{self.bot.get_user(id=int(tend_data[1][-1])).display_name}**, \n"
+                                f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
+                    color=0x4259fb
+                    )
                 embed.set_image(url="attachment://icon.png")
                 embed.set_footer(text=f"入札時刻: {time}")
                 await ctx.channel.send(file=image, embed=embed)
@@ -728,4 +747,3 @@ class AuctionDael(commands.Cog):
 
 def setup(bot):
     bot.add_cog(AuctionDael(bot))
-
