@@ -333,8 +333,11 @@ class AdminOnly(commands.Cog):
                 description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
                 description += f"   出品者 → {self.bot.get_user(id=data[i][1]).display_name}"
                 description += f"   商品名 → {data[i][2]}"
-                description += f"   最高額入札者 → {self.bot.get_user(id=data[i][3][-1]).display_name}"
-                description += f"   入札額 → {data[i][4]}"
+                if data[i][3][-1] == 0:
+                    description += "    入札者はまだいません！"
+                else:
+                    description += f"   最高額入札者 → {self.bot.get_user(id=data[i][3][-1]).display_name}"
+                    description += f"   入札額 → {data[i][4]}"
             description += "\n\n--------\n\n"
             if len(description) >= 1800:
                 embed = discord.Embed(description=description, color=0x59a5e3)
