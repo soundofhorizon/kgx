@@ -151,6 +151,17 @@ class Message(commands.Cog):
             await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
     @commands.command()
+    async def uuid_report(self, ctx, mcid):
+        if discord.utils.get(ctx.guild.roles, name="uuid未チェック"):
+            uuid = self.bot.mcid_to_uuid(mcid)
+            cur.execute(f"update user_data set uuid = ARRAY['{uuid}'] where user_id = {ctx.author.id}")
+            await ctx.channel.send(f"{mcid}さんのuuid: {uuid}をシステムに登録しました。")
+            role = discord.utils.get(ctx.guild.roles, name="uuid未チェック")
+            await ctx.author.remove_roles(role)
+        else:
+            await ctx.author.remove_roles("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
+
+    @commands.command()
     async def stack_check(self, ctx, amount):
         # 数値かどうかで渡す関数を変更する
         try:
