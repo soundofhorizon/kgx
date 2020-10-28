@@ -154,10 +154,14 @@ class Message(commands.Cog):
     async def uuid_report(self, ctx, mcid):
         if discord.utils.get(ctx.author.roles, name="uuid未チェック"):
             uuid = self.bot.mcid_to_uuid(mcid)
-            cur.execute(f"update user_data set uuid = ARRAY['{uuid}'] where user_id = {ctx.author.id}")
-            await ctx.channel.send(f"{mcid}さんのuuid: {uuid}をシステムに登録しました。")
-            role = discord.utils.get(ctx.guild.roles, name="uuid未チェック")
-            await ctx.author.remove_roles(role)
+            if uuid:
+                cur.execute(f"update  user_data set uuid = ARRAY['{uuid}'] where user_id = {ctx.author.id}")
+                db.commit()
+                await ctx.channel.send(f"{mcid}さんのuuid: {uuid}をシステムに登録しました。")
+                role = discord.utils.get(ctx.guild.roles, name="uuid未チェック")
+                await ctx.author.remove_roles(role)
+            else:
+                await ctx.channel.send(f"MCID:{mcid}は存在しません。もう一度確認してください。")
         else:
             await ctx.channel.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
 
