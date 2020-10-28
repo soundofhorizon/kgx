@@ -319,6 +319,12 @@ class AdminOnly(commands.Cog):
         else:
             await ctx.send(f"{ctx.prefix}dbsetup [a, d]")
 
+    @commands.command()
+    async def test(self, ctx):
+        cur.execute("SELECT * from auction;")
+        data = cur.fetchall()
+        await ctx.send(f"{data}です")
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))

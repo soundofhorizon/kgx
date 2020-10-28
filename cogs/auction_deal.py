@@ -419,6 +419,8 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=kazu)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
+
+
     @commands.command()
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def tend(self, ctx, *, price):
