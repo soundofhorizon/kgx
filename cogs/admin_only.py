@@ -405,5 +405,6 @@ class AdminOnly(commands.Cog):
                 await channel.send(embed=embed)
                 await channel.send("--------ｷﾘﾄﾘ線--------")
 
+
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
