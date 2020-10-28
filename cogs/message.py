@@ -185,7 +185,7 @@ class Message(commands.Cog):
     @commands.command()
     async def dm_setting(self, ctx, dm_boolean):
         # 数値かどうかで渡す関数を変更する
-        if dm_boolean in [True, False]:
+        if dm_boolean in ["True", "False"]:
             cur.execute(f"update user_data set dm_flag = {dm_boolean} where user_id = {ctx.author.id}")
             db.commit()
             if dm_boolean:
