@@ -322,7 +322,7 @@ class AdminOnly(commands.Cog):
     @commands.command()
     async def test(self, ctx):
         cur.execute("SELECT auction.ch_id, auction.auction_owner_id, auction.auction_item, tend.tender_id, "
-                    "auction.unit, tend.tend_price　FROM (auction JOIN tend ON auction.ch_id = tend.ch_id);")
+                    "auction.unit, tend.tend_price FROM (auction JOIN tend ON auction.ch_id = tend.ch_id)")
         data = cur.fetchall()
         description = ""
         for i in range(len(data)):
