@@ -141,7 +141,7 @@ class AuctionDael(commands.Cog):
 
             # 単位の設定
             unit = ""
-            first_message_object = discord.Message
+            first_message_object = None
             if self.bot.is_siina_category(ctx):
                 unit = "椎名"
             elif self.bot.is_gacha_category(ctx):
@@ -163,7 +163,10 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(
                 description="出品するものを入力してください。",
                 color=0xffaf60)
-            first_message_object = await ctx.channel.send(embed=embed)
+            if first_message_object is not None:
+                await ctx.channel.send(embed=embed)
+            else:
+                first_message_object = await ctx.channel.send(embed=embed)
             user_input_1 = await self.bot.wait_for('message', check=check)
 
             embed = discord.Embed(description="開始価格を入力してください。\n**※次のように入力してください。"
