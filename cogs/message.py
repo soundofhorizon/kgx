@@ -185,7 +185,11 @@ class Message(commands.Cog):
     @commands.command()
     async def dm_setting(self, ctx, dm_boolean):
         # 数値かどうかで渡す関数を変更する
-        if dm_boolean in ["True", "False"]:
+        if dm_boolean.lower() in ["true", "false"]:
+            cur.execute(f"select dm_flag from user_data where user_id = {ctx.author.id}")
+            user_data = cur.fetchone()
+            if (dm_boolean.lower() == "true" and user_data[0]) or (dm_boolean.lower() == "false" and (not user_data[0])):
+                await ctx.channel.send("既に設定された値に変更されています。")
             cur.execute(f"update user_data set dm_flag = {dm_boolean} where user_id = {ctx.author.id}")
             db.commit()
             if dm_boolean:
