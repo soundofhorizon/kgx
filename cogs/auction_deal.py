@@ -81,6 +81,7 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
             return
 
+        first_message_object = None
         # オークション系
         if self.bot.is_auction_category(ctx):
 
@@ -134,14 +135,8 @@ class AuctionDael(commands.Cog):
                         r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
                             or m.content == "なし") and m.author == ctx.author
 
-            async def delete_to(ctx, ch_id):
-                delete_ch = ctx.channel
-                msg = await delete_ch.fetch_message(ch_id)
-                await delete_ch.purge(limit=None, after=msg)
-
             # 単位の設定
             unit = ""
-            first_message_object = None
             if self.bot.is_siina_category(ctx):
                 unit = "椎名"
             elif self.bot.is_gacha_category(ctx):
@@ -326,7 +321,7 @@ class AuctionDael(commands.Cog):
             else:
                 embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
                                       color=0xffaf60)
-                await ctx.channel.send(embed=embed)
+                first_message_object = await ctx.channel.send(embed=embed)
                 user_input_0 = await self.bot.wait_for("message", check=check)
                 unit = user_input_0.content
 
@@ -342,7 +337,10 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(
                 description="出品するものを入力してください。",
                 color=0xffaf60)
-            await ctx.channel.send(embed=embed)
+            if first_message_object is not None:
+                await ctx.channel.send(embed=embed)
+            else:
+                first_message_object = await ctx.channel.send(embed=embed)
             user_input_1 = await self.bot.wait_for('message', check=check)
 
             embed = discord.Embed(description="希望価格を入力してください。\n**※次のように入力してください。"
@@ -380,8 +378,7 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             user_input_4 = await self.bot.wait_for('message', check=check)
 
-            kazu = 11
-            await ctx.channel.purge(limit=kazu)
+            await self.bot.delete_to(ctx, first_message_object)
 
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
