@@ -182,6 +182,19 @@ class Message(commands.Cog):
             else:
                 await ctx.channel.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
 
+    @commands.command()
+    async def dm_setting(self, ctx, dm_boolean):
+        # 数値かどうかで渡す関数を変更する
+        if dm_boolean in [True, False]:
+            cur.execute(f"update user_data set dm_flag = {dm_boolean} where user_id = {ctx.author.id}")
+            db.commit()
+            if dm_boolean:
+                await ctx.channel.send("botからのDMを受け取る設定にしました。")
+            else:
+                await ctx.channel.send("botからのDMを拒否する設定にしました。")
+        else:
+            await ctx.channel.send("設定の値が違います。以下のように設定してください。 ``!dm_setting True/False``")
+
 
 def setup(bot):
     bot.add_cog(Message(bot))
