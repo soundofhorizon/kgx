@@ -322,7 +322,7 @@ class AdminOnly(commands.Cog):
     @commands.command()
     async def test(self, ctx):
         cur.execute("SELECT auction.ch_id, auction.auction_owner_id, auction.auction_item, tend.tender_id, "
-                    "tend.tend_price FROM (auction JOIN tend ON auction.ch_id = tend.ch_id);")
+                    "auction.unit, tend.tend_priceFROM (auction JOIN tend ON auction.ch_id = tend.ch_id);")
         data = cur.fetchall()
         description = ""
         for i in range(len(data)):
@@ -337,7 +337,7 @@ class AdminOnly(commands.Cog):
                     description += "    入札者はまだいません！\n"
                 else:
                     description += f"   最高額入札者 → {self.bot.get_user(id=data[i][3][-1]).display_name}\n"
-                    description += f"   入札額 → {data[i][4]}\n"
+                    description += f"   入札額 → {data[i][4]}{self.bot.stack_check_reverse(data[i][5][-1])}\n"
             description += "\n\n--------\n\n"
             if len(description) >= 1800:
                 embed = discord.Embed(description=description, color=0x59a5e3)
