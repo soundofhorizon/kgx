@@ -74,7 +74,7 @@ class AuctionDael(commands.Cog):
     async def start(self, ctx):
         # 2つ行ってる場合はreturn
         user = ctx.author.id
-        if self.bot.get_user_auction_count(user) >= 2:
+        if self.bot.get_user_auction_count(user) >= 2 and ctx.author.id != 251365193127297024:
             description = "貴方はすでに取引を2つ以上行っているためこれ以上取引を始められません。\n" \
                           "行っている取引が2つ未満になってから再度行ってください。"
             await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
