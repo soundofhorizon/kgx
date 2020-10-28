@@ -37,6 +37,7 @@
 >> user_id: 参加時のmcid認証が通ると登録される。 bigint unique key<br>
 >> bid_score: 落札ポイントを格納。 smallint(3万以上とか考慮してない)<br>
 >> warn_level: 警告レベルを格納。 smallint(0-3以外を取らない変数のため要求を満たす)<br>
+>> dm_frag: DMができるかのフラグを格納。 boolean<br>
 >
 > tend
 >
