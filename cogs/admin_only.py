@@ -323,7 +323,8 @@ class AdminOnly(commands.Cog):
     async def test(self, ctx):
         cur.execute("SELECT * from auction;")
         data = cur.fetchall()
-        await ctx.send(f"{data}です")
+        for i in data:
+            await ctx.send(f"{data[i]}")
 
 
 def setup(bot):
