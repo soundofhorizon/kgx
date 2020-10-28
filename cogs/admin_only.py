@@ -326,6 +326,10 @@ class AdminOnly(commands.Cog):
         data = cur.fetchall()
         description = ""
         for i in range(len(data)):
+            description += f"{self.bot.get_channel(id=data[i][0]).name}\n"
+        await ctx.channel.send(description)
+        description = ""
+        for i in range(len(data)):
             if data[i][1] == 0:
                 description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
                 description += f"   現在このチャンネルでオークションは開催していません！\n"
