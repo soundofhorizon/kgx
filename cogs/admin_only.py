@@ -326,11 +326,16 @@ class AdminOnly(commands.Cog):
         data = cur.fetchall()
         description = ""
         for i in range(len(data)):
-            description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
-            description += f"   出品者 → {self.bot.get_user(id=data[i][1]).display_name}"
-            description += f"   商品名 → {data[i][1]}"
-            description += f"   最高額入札者 → {self.bot.get_user(id=data[i][2][-1]).display_name}"
-            description += f"   入札額 → {data[i][3]}"
+            if data[i][1] == 0:
+                description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
+                description += f"   現在このチャンネルでオークションは開催していません！"
+            else:
+                description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
+                description += f"   出品者 → {self.bot.get_user(id=data[i][1]).display_name}"
+                description += f"   商品名 → {data[i][1]}"
+                description += f"   最高額入札者 → {self.bot.get_user(id=data[i][2][-1]).display_name}"
+                description += f"   入札額 → {data[i][3]}"
+            description += "\n\n--------\n\n"
             if len(description) >= 1800:
                 embed = discord.Embed(description=description, color=0x59a5e3)
                 await ctx.channel.send(embed=embed)
