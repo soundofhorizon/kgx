@@ -321,10 +321,22 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        cur.execute("SELECT * from auction;")
+        cur.execute("SELECT auction.auction_owner_id, auction.auction_item, tend.tender_id, tend.tend_price FROM "
+                    "(auction JOIN tend ON auction.ch_id = tend.ch_id);")
         data = cur.fetchall()
-        for i in data:
-            await ctx.send(i)
+        description = ""
+        for i in range(len(data)):
+            description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
+            description += f"   商品名 → {data[i][1]}"
+            description += f"   最高額入札者 → {data[i][2][-1]}"
+            description += f"   入札額 → {data[i][3]}"
+            if len(description) >= 1800:
+                embed = discord.Embed(description=description, color=0x59a5e3)
+                await ctx.channel.send(embed=embed)
+                description = ""
+
+        embed = discord.Embed(description=description, color=0x59a5e3)
+        await ctx.channel.send(embed=embed)
 
 
 def setup(bot):
