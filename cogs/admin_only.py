@@ -387,24 +387,6 @@ class AdminOnly(commands.Cog):
         embed = discord.Embed(description=description, color=0x59a5e3)
         await ctx.channel.send(embed=embed)
 
-    @commands.command()
-    async def add_mem_role(self, ctx):
-        channel = self.bot.get_channel(642052474672250880)
-        guild = self.bot.get_guild(558125111081697300)
-        role = discord.utils.get(ctx.guild.roles, name="uuid未チェック")
-        bot_count = 0
-        for member in guild.members:
-            if member.bot:
-                bot_count += 1
-                continue
-            await member.add_roles(role)
-            if member == guild.members[-1]:
-                embed = discord.Embed(
-                    description=f"このサーバーの全メンバーのユーザーIDの照会が終わりました。 現在人数:{len(guild.members) - bot_count}",
-                    color=0x1e90ff)
-                await channel.send(embed=embed)
-                await channel.send("--------ｷﾘﾄﾘ線--------")
-
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))

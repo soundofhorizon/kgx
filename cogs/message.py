@@ -152,7 +152,7 @@ class Message(commands.Cog):
 
     @commands.command()
     async def uuid_report(self, ctx, mcid):
-        if discord.utils.get(ctx.guild.roles, name="uuid未チェック"):
+        if discord.utils.get(ctx.author.roles, name="uuid未チェック"):
             uuid = self.bot.mcid_to_uuid(mcid)
             cur.execute(f"update user_data set uuid = ARRAY['{uuid}'] where user_id = {ctx.author.id}")
             await ctx.channel.send(f"{mcid}さんのuuid: {uuid}をシステムに登録しました。")
