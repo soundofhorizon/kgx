@@ -462,7 +462,7 @@ class AuctionDael(commands.Cog):
                     embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
-                elif ctx.author.id == tend[1]:
+                elif ctx.author.id == tend[1] and (not self.bot.stack_check(price) >= int(auction[5])):
                     embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
@@ -473,7 +473,7 @@ class AuctionDael(commands.Cog):
                     return
                 elif auction[5] != "なし":
                     if self.bot.stack_check(price) >= int(auction[5]):
-                        embed = discord.Embed(description=f"即決価格より高い価格が入札されました。{ctx.author.display_name}さんの落札です。",
+                        embed = discord.Embed(description=f"即決価格と同額以上の価格が入札されました。{ctx.author.display_name}さんの落札です。",
                                               color=0x4259fb)
                         await ctx.send(embed=embed)
                         # オークション情報を取る
