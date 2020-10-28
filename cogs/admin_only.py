@@ -324,7 +324,7 @@ class AdminOnly(commands.Cog):
         cur.execute("SELECT * from auction;")
         data = cur.fetchall()
         for i in data:
-            await ctx.send(f"{data[i]}")
+            await ctx.send(data[i])
 
 
 def setup(bot):
