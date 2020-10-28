@@ -338,7 +338,7 @@ class AdminOnly(commands.Cog):
                 else:
                     description += f"   最高額入札者 → {self.bot.get_user(id=data[i][3][-1]).display_name}\n"
                     description += f"   入札額 → {data[i][4]}{self.bot.stack_check_reverse(data[i][5][-1])}\n"
-            description += "\n\n--------\n\n"
+            description += "\n--------\n\n"
             if len(description) >= 1800:
                 embed = discord.Embed(description=description, color=0x59a5e3)
                 await ctx.channel.send(embed=embed)
