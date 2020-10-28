@@ -271,7 +271,7 @@ class KGX(commands.Bot):
             if value2 <= 63:
                 if value2 <= 0:
                     return 0
-                return value2
+                return f"{value2}個"
             else:
                 i, j = divmod(value2, 64)
                 k, m = divmod(i, 54)
