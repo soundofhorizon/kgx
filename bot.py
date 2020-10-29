@@ -100,7 +100,7 @@ class KGX(commands.Bot):
 
     async def on_ready(self):
         color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
-        await self.get_channel(678083611697872910).purge(limit=1)
+        await self.get_channel(678083611697872910).purge(limit=10)
         await self.get_channel(678083611697872910).send(embed=self.embed_1)
         await self.get_channel(678083611697872910).send(embed=self.embed_2)
         await self.get_channel(722092542249795679).send(
