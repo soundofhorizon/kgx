@@ -50,72 +50,6 @@ class AdminOnly(commands.Cog):
                 await channel.send(embed=embed)
                 await channel.send("--------ｷﾘﾄﾘ線--------")
 
-    @commands.command()
-    async def bid_task(self, ctx):
-        # 終わるの早いやつ1つ取ってくる
-        cur.execute("SELECT * from auction ORDER BY auction_end_time ASC")
-        auction_data = cur.fetchone()
-        auction_end_time = "null"
-        if auction_data[1] != 0:
-            auction_end_time = datetime.datetime.strptime(auction_data[6], '%Y/%m/%d-%H:%M')
-        cur.execute("SELECT * from deal ORDER BY deal_end_time ASC")
-        deal_data = cur.fetchone()
-        deal_end_time = "null"
-        if deal_data[1] != 0:
-            deal_end_time = datetime.datetime.strptime(deal_data[5], '%Y/%m/%d-%H:%M')
-        # オークション、取引どちらともnullならここで処理終わり
-        if auction_end_time == "null" and deal_end_time == "null":
-            return
-        if auction_end_time <= datetime.datetime.now():
-            cur.execute("SELECT * from tend WHERE ch_id = %s", (auction_data[0],))
-            tend_data = cur.fetchone()
-            if tend_data[0] == 0:
-                await self.bot.get_channel(id=int(auction_data[0])).send(
-                    f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、入札者は…誰一人いませんでした…\nオークションを終了します")
-                await self.bot.get_channel(id=int(auction_data[0])).send("--------ｷﾘﾄﾘ線--------")
-                self.bot.reset_ch_db(auction_data[0], "a")
-                return
-            else:
-                await self.bot.get_channel(id=int(auction_data[0])).send(
-                    f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、{self.bot.get_user(id=int(tend_data[1])).mention}さんの落札で終了です。")
-                await self.bot.get_channel(id=int(auction_data[0])).send("--------ｷﾘﾄﾘ線--------")
-
-            # 椎名カテゴリならランキングを更新
-            if "椎名" in self.bot.get_channel(id=int(auction_data[0])).name:
-                # INSERTを実行。%sで後ろのタプルがそのまま代入される
-                cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                            (self.bot.get_user(id=int(tend_data[1])).display_name, auction_data[3], tend_data[2],
-                             self.bot.get_user(id=int(auction_data[1])).display_name))
-                db.commit()
-                await asyncio.sleep(0.1)
-                embed = self.bot.create_high_bid_ranking()
-                for i in range(len(embed)):
-                    await self.bot.get_channel(705040893593387039).send(embed=embed[i])
-
-            # 記録送信
-            channel = self.bot.get_channel(558132754953273355)
-            d = datetime.datetime.now()  # 現在時刻の取得
-            time = d.strftime("%Y/%m/%d")
-            embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
-            embed.add_field(name="落札日", value=f'\n\n{time}', inline=False)
-            embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=int(auction_data[1])).display_name}',
-                            inline=False)
-            embed.add_field(name="品物", value=f'\n\n{auction_data[3]}', inline=False)
-            embed.add_field(name="落札者", value=f'\n\n{self.bot.get_user(id=int(tend_data[1])).display_name}',
-                            inline=False)
-            embed.add_field(name="落札価格",
-                            value=f'\n\n{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(int(tend_data[2])))}',
-                            inline=False)
-            embed.add_field(name="チャンネル名", value=f'\n\n{self.bot.get_channel(id=auction_data[0]).name}', inline=False)
-            await channel.send(embed=embed)
-
-            # 各種db削除
-            self.bot.reset_ch_db(auction_data[0], "a")
-
-        elif deal_end_time <= datetime.datetime.now():
-            await self.bot.get_channel(id=int(auction_data[0])).send(
-                f"{self.bot.get_user(id=int(auction_data[1])).mention}さん、取引は成立しませんでした…")
-            self.bot.reset_ch_db(deal_data[0], "d")
 
     @commands.command()
     async def bidscore_ranking(self, ctx):
@@ -289,103 +223,17 @@ class AdminOnly(commands.Cog):
         )
         await channel.send(embed=embed)
 
-    @commands.command()
-    async def get_auction_and_deal_ch_id(self, ctx):
-        ch_category_1 = list({c.id for c in ctx.guild.categories if c.name.startswith('>')})
-        ch_list_1 = list({a.id for a in ctx.guild.text_channels if a.category_id in ch_category_1})
-        ch_category_2 = list({this.id for this in ctx.guild.categories if this.name.startswith('*')})
-        ch_list_2 = list({b.id for b in ctx.guild.text_channels if b.category_id in ch_category_2})
-        await ctx.send("auction\n------")
-        for ch in ch_list_1:
-            await ctx.send(
-                f"INSERT INTO tend VALUES ({ch}, ARRAY[0], ARRAY[0]);")
-        await ctx.send("deal\n------")
-        for ch2 in ch_list_2:
-            await ctx.send(
-                f"INSERT INTO deal VALUES ({ch2}, 0, 0, 'undefined', 'undefined', 'undefined', 'undefined');")
 
     @commands.command()
     async def dbsetup(self, ctx, set_type):
         if set_type == "a":
             cur.execute("INSERT INTO auction (ch_id) values (%s)", (ctx.channel.id,))
-            db.commit()
-            await asyncio.sleep(1)
             self.bot.reset_ch_db(ctx.channel.id, set_type)
         elif set_type == "d":
             cur.execute("INSERT INTO deal (ch_id) values (%s)", (ctx.channel.id,))
-            db.commit()
-            await asyncio.sleep(1)
             self.bot.reset_ch_db(ctx.channel.id, set_type)
         else:
             await ctx.send(f"{ctx.prefix}dbsetup [a, d]")
-
-    # auctionのやつ
-    @commands.command()
-    async def test(self, ctx):
-        cur.execute("SELECT DISTINCT auction.ch_id, auction.auction_owner_id, auction.auction_item, tend.tender_id, "
-                    "auction.unit, tend.tend_price, auction.auction_end_time FROM "
-                    "(auction JOIN tend ON auction.ch_id = tend.ch_id)")
-        data = cur.fetchall()
-        description = ""
-        for i in range(len(data)):
-            # debug出てもらっても困るので消滅させる。
-            if data[i][0] == 747728655735586876:
-                continue
-            # オークションが開催されてないときdisplay_nameが取れない。(人いないし)よって分岐
-            elif data[i][1] == 0:
-                description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
-                description += f"   現在このチャンネルでオークションは開催していません！\n"
-            # 他記述。
-            else:
-                description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
-                description += f"   出品者 → {self.bot.get_user(id=data[i][1]).display_name}\n"
-                description += f"   商品名 → {data[i][2]}\n"
-                # 多分no bidで更新すると死ぬ気がするので分岐
-                if data[i][3][-1] == 0:
-                    description += "    入札者はまだいません！\n"
-                else:
-                    description += f"   最高額入札者 → {self.bot.get_user(id=data[i][3][-1]).display_name}\n"
-                    description += f"   入札額 → {data[i][4]}{self.bot.stack_check_reverse(data[i][5][-1])}\n"
-                description += f"   終了時刻 → {data[i][6]}\n"
-            description += "\n--------\n\n"
-
-            # 文字数制限回避。多分足りない
-            if len(description) >= 1800:
-                embed = discord.Embed(description=description, color=0x59a5e3)
-                await ctx.channel.send(embed=embed)
-                description = ""
-
-        embed = discord.Embed(description=description, color=0x59a5e3)
-        await ctx.channel.send(embed=embed)
-
-    # dealのやつ
-    @commands.command()
-    async def test2(self, ctx):
-        cur.execute("SELECT * from deal")
-        data = cur.fetchall()
-        description = ""
-        for i in range(len(data)):
-            # 取引が開催されてないときdisplay_nameが取れない。(人いないし)よって分岐
-            if data[i][1] == 0:
-                description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
-                description += f"   現在このチャンネルで取引は開催していません！\n"
-            # 他記述。
-            else:
-                description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
-                description += f"   出品者 → {self.bot.get_user(id=data[i][1]).display_name}\n"
-                description += f"   商品名 → {data[i][3]}\n"
-                description += f"   出品価格 → {data[i][6]}{self.bot.stack_check_reverse(data[i][4])}\n"
-                description += f"   出品価格 → {data[i][5]}\n"
-            description += "\n--------\n\n"
-
-            # 文字数制限回避。多分足りない
-            if len(description) >= 1800:
-                embed = discord.Embed(description=description, color=0x59a5e3)
-                await ctx.channel.send(embed=embed)
-                description = ""
-
-        embed = discord.Embed(description=description, color=0x59a5e3)
-        await ctx.channel.send(embed=embed)
 
 
 def setup(bot):
