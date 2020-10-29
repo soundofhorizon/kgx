@@ -73,7 +73,19 @@ class KGX(commands.Bot):
                       "-------\n" \
                       "<:siina:558251559394213888>!set_user_auction_count USER_ID 開催個数\n\n" \
                       "そのユーザーの現在のオークションの開催個数を指定します。\n\n" \
-                      "-------\n"
+                      "-------\n" \
+                      "<:shiina_balance:558251559394213888>!show_bid_ranking\n\n" \
+                      "<#705040893593387039>の更新\n\n" \
+                      "-------\n" \
+                      "<:shiina:558175954686705664>!star_delete\n\n" \
+                      "星を強制的に取り外す\n\n" \
+                      "-------\n" \
+                      "<:shiina_balance:558251559394213888>!execute_sql\n\n" \
+                      "引数のSQL文を実行する\n\n" \
+                      "-------\n" \
+                      "<:siina:558251559394213888>!dbsetup\n\n" \
+                      "実行チャンネルをデータベースに登録する\n\n" \
+                      "-------\n" 
         self.embed = discord.Embed(description=description, color=0x66cdaa)
 
         self.cur = cur
@@ -271,7 +283,7 @@ class KGX(commands.Bot):
             if value2 <= 63:
                 if value2 <= 0:
                     return 0
-                return f"{value2}個"
+                return value2
             else:
                 i, j = divmod(value2, 64)
                 k, m = divmod(i, 54)
