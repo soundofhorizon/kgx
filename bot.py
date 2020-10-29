@@ -23,12 +23,11 @@ class KGX(commands.Bot):
     def __init__(self, prefix):
         super().__init__(command_prefix=prefix, help_command=None)
 
-        description = "<:shiina_balance:558175954686705664>!start\n\n" \
+        description_1 = "<:shiina_balance:558175954686705664>!start\n\n" \
                       "オークションを始めるためのコマンドです。オークションチャンネルでのみ使用可能です。\n\n" \
                       "-------\n" \
-                      "<:siina:558251559394213888>!bid\n\n" \
-                      "オークションが終わったときにオークション内容を報告するためのコマンドです。\n" \
-                      "ここで報告した内容は <#558132754953273355> に表示されます\n\n" \
+                      "<:siina:558251559394213888>!tend 入札する量\n\n" \
+                      "\n\n" \
                       "-------\n" \
                       "<:shiina_balance:558175954686705664>!end\n\n" \
                       "取引を終了するためのコマンドです。\n\n" \
@@ -44,8 +43,9 @@ class KGX(commands.Bot):
                       "-------\n" \
                       "<:siina:558251559394213888>!help\n\n" \
                       "このBotのヘルプを表示します。\n\n" \
-                      "-------\n" \
-                      "**ここから以下は運営専用**\n--------\n" \
+                      "-------\n"
+
+        description_2 = "**ここから以下は運営専用**\n--------\n" \
                       "<:shiina_balance:558175954686705664>!del 消去するメッセージの数(int)\n\n" \
                       "メッセージを指定した数、コマンドを打ったチャンネルの最新のメッセージから消します。\n\n" \
                       "-------\n" \
@@ -86,7 +86,8 @@ class KGX(commands.Bot):
                       "<:siina:558251559394213888>!dbsetup\n\n" \
                       "実行チャンネルをデータベースに登録する\n\n" \
                       "-------\n" 
-        self.embed = discord.Embed(description=description, color=0x66cdaa)
+        self.embed_1 = discord.Embed(description=description_1, color=0x66cdaa)
+        self.embed_2 = discord.Embed(description=description_2, color=0x66cdaa)
 
         self.cur = cur
 
@@ -100,7 +101,8 @@ class KGX(commands.Bot):
     async def on_ready(self):
         color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
         await self.get_channel(678083611697872910).purge(limit=1)
-        await self.get_channel(678083611697872910).send(embed=self.embed)
+        await self.get_channel(678083611697872910).send(embed=self.embed_1)
+        await self.get_channel(678083611697872910).send(embed=self.embed_2)
         await self.get_channel(722092542249795679).send(
             embed=discord.Embed(description="起動しました。", color=random.choice(color)))
 
