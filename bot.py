@@ -89,7 +89,7 @@ class KGX(commands.Bot):
         self.embed_1 = discord.Embed(description=description_1, color=0x66cdaa)
         self.embed_2 = discord.Embed(description=description_2, color=0x66cdaa)
 
-        self.cur = cur
+        self.cur = cur 
 
         for cog in os.listdir(f"./cogs"):  # cogの読み込み
             if cog.endswith(".py"):
