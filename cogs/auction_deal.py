@@ -436,7 +436,7 @@ class AuctionDael(commands.Cog):
                 return
 
             # 少数は可能。
-            def check_style(m: str) -> Union[bool, float]:
+            def check_style(m: str) -> bool:
                 style_list = m.lower().replace("st", "").replace("lc", "").split("+")
                 for i in range(len(style_list)):
                     try:
@@ -508,9 +508,9 @@ class AuctionDael(commands.Cog):
                             db.commit()
                             await self.bot.get_channel(705040893593387039).purge(limit=10)
                             await asyncio.sleep(0.1)
-                            embed = self.bot.create_high_bid_ranking()
-                            for i in range(len(embed)):
-                                await self.bot.get_channel(705040893593387039).send(embed=embed[i])
+                            embeds = self.bot.create_high_bid_ranking()
+                            for embed in embeds:
+                                await self.bot.get_channel(705040893593387039).send(embed=embed)
 
                         embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                         await ctx.channel.send(embed=embed)
@@ -528,32 +528,32 @@ class AuctionDael(commands.Cog):
                     embed = discord.Embed(description="不正な値です。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
+
                 # 入札時間の判定
                 time = datetime.now() + timedelta(hours=1)
                 finish_time = datetime.strptime(auction[6], r"%Y/%m/%d-%H:%M")
                 flag = False
+
                 if time > finish_time:
                     embed = discord.Embed(description="終了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     await asyncio.sleep(2)
-                    await ctx.message.delete()
 
-                    msg = await ctx.fetch_message(auction[2])
-                    await msg.delete()
                     embed = discord.Embed(title="オークション内容", color=0xffaf60)
-                    embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}', inline=True)
-                    embed.add_field(name="出品物", value=f'\n\n{auction[3]}', inline=True)
+                    embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}')
+                    embed.add_field(name="出品物", value=f'\n\n{auction[3]}')
                     value = "なし" if auction[5] == "なし" else f"{auction[7]}{self.bot.stack_check_reverse(auction[5])}"
                     embed.add_field(name="開始価格", value=f'\n\n{auction[7]}{self.bot.stack_check_reverse(auction[4])}',
                                     inline=False)
                     embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                     finish_time = (finish_time + timedelta(days=1)).strftime("%Y/%m/%d-%H:%M")
-                    embed.add_field(name="終了日時", value=f'\n\n{finish_time}', inline=True)
-                    embed.add_field(name="特記事項", value=f'\n\n{auction[8]}', inline=True)
-                    embed_id = await ctx.send(embed=embed)
+                    embed.add_field(name="終了日時", value=f'\n\n{finish_time}')
+                    embed.add_field(name="特記事項", value=f'\n\n{auction[8]}')
+                    msg = await ctx.fetch_message(auction[2])
+                    await msg.edit(embed=embed)  # メッセージの更新で対応する
                     # 変更点をUPDATE
                     cur.execute("UPDATE auction SET embed_message_id = %s, auction_end_time = %s WHERE ch_id = %s",
-                                (embed_id.id, finish_time, ctx.channel.id))
+                                (msg.id, finish_time, ctx.channel.id))
                     db.commit()
 
                     # 延長をオークション主催者に伝える
@@ -575,7 +575,7 @@ class AuctionDael(commands.Cog):
                     f"UPDATE tend SET tender_id = '{tend_data[1]}', tend_price = '{tend_data[2]}' WHERE ch_id = %s",
                     (ctx.channel.id,))
                 db.commit()
-                await ctx.message.delete()
+                await ctx.message.delete()  # !tendのメッセージを削除する
                 await asyncio.sleep(0.1)
 
                 if flag:  # 終了時間が延長される場合は通知する
@@ -600,9 +600,9 @@ class AuctionDael(commands.Cog):
                                       )
                 embed.set_image(url="attachment://icon.png")
                 embed.set_footer(text=f"入札時刻: {time}")
-                await ctx.channel.send(file=image, embed=embed)
+                await ctx.send(file=image, embed=embed)
 
-                # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before?tender==0), Indexerrorも送信しない
+                # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before?tender==0), IndexErrorも送信しない
                 try:
                     before_tender = tend_data[1][-2]
                     if before_tender == 0:
