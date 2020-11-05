@@ -21,7 +21,8 @@ cur = db.cursor()  # なんか操作する時に使うやつ
 
 class KGX(commands.Bot):
     def __init__(self, prefix):
-        super().__init__(command_prefix=prefix, help_command=None)
+        intents = discord.Intents.all()
+        super().__init__(command_prefix=prefix, help_command=None, intents=intents)
 
         description_1 = "<:shiina_balance:558175954686705664>!start\n\n" \
                       "オークションを始めるためのコマンドです。オークションチャンネルでのみ使用可能です。\n\n" \
