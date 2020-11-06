@@ -21,7 +21,6 @@ class CheckAuctionDealData(commands.Cog):
 
     # auctionのやつ
     @tasks.loop(minutes=1)
-    @commands.command()
     async def auction_data(self, ctx):
         auction_data_channel = self.bot.get_channel(id=771034285352026162)
         await auction_data_channel.purge(limit=100)
@@ -75,7 +74,6 @@ class CheckAuctionDealData(commands.Cog):
 
     # dealのやつ
     @tasks.loop(minutes=1)
-    @commands.command()
     async def deal_data(self, ctx):
         deal_data_channel = self.bot.get_channel(id=771068489627861002)
         await deal_data_channel.purge(limit=100)
