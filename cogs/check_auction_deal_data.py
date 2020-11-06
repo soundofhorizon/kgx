@@ -14,7 +14,9 @@ cur = db.cursor()  # なんか操作する時に使うやつ
 
 
 class CheckAuctionDealData(commands.Cog):
+
     def __init__(self, bot):
+        await self.bot.wait_until_ready()
         self.bot = bot
         self.auction_data.start()
         self.deal_data.start()
