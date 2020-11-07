@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import os
 import re
+import traceback
 
 import discord
 import psycopg2
@@ -235,6 +236,70 @@ class AdminOnly(commands.Cog):
         else:
             await ctx.send(f"{ctx.prefix}dbsetup [a, d]")
 
+    @commands.command()
+    async def auction_data(self, ctx):
+        try:
+            auction_data_channel = self.bot.get_channel(id=771034285352026162)
+            await auction_data_channel.purge(limit=100)
+            cur.execute("SELECT DISTINCT auction.ch_id, auction.auction_owner_id, auction.auction_item,"
+                        "tend.tender_id, auction.unit, tend.tend_price, auction.auction_end_time FROM "
+                        "(auction JOIN tend ON auction.ch_id = tend.ch_id)")
+            sql_data = cur.fetchall()
+            description = ""
+            before_sort_data = []
+            # [ch_id, ch_name, data]の2重リストを作成する。いい方法があったら変更してほしい><
+            for i in range(len(before_sort_data)):
+                before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data])
+            data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
+            for i in range(len(data)):
+                # debug出てもらっても困るので消滅させる。
+                if data[i][0] == 747728655735586876:
+                    continue
+                # オークションが開催されてないときdisplay_nameが取れない。(人いないし)よって分岐
+                elif data[i][1] == 0:
+                    description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
+                    description += f"   現在このチャンネルでオークションは開催していません！\n"
+                # 他記述。
+                else:
+                    # 終了時刻までの残り時間を計算
+                    now = datetime.datetime.now()
+                    check = datetime.datetime.strptime(data[i][6] ,"%Y/%m/%d-%H:%M:%S")
+                    diff = now - check
+                    diff_hours = int(diff.seconds/3600)
+                    diff_minites = int((diff.seconds - diff_hours*3600)/60)
+                    diff_seconds = diff.seconds - diff_hours*3600 - diff_minites*60
+
+                    description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
+                    description += f"   出品者 → {self.bot.get_user(id=data[i][1]).display_name}\n"
+                    description += f"   商品名 → {data[i][2]}\n"
+                    # 多分no bidで更新すると死ぬ気がするので分岐
+                    if data[i][3][-1] == 0:
+                        description += "    入札者はまだいません！\n"
+                    else:
+                        description += f"   最高額入札者 → {self.bot.get_user(id=data[i][3][-1]).display_name}\n"
+                        description += f"   入札額 → {data[i][4]}{self.bot.stack_check_reverse(data[i][5][-1])}\n"
+                    if diff_hours == 0:
+                        description += f"   終了まで残り → **{diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒**\n"
+                    else:
+                        description += f"   終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒\n"
+                description += "\n--------\n\n"
+
+                # 文字数制限回避。多分足りない
+                if len(description) >= 1800:
+                    embed = discord.Embed(description=description, color=0x59a5e3)
+                    await auction_data_channel.send(embed=embed)
+                    description = ""
+        except Exception as e:
+            db.commit()
+            orig_error = getattr(e, "original", e)
+            error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+            error_message = f'```{error_msg}```'
+            ch = self.bot.get_channel(628807266753183754)
+            d = datetime.datetime.now()  # 現在時刻の取得
+            time = d.strftime("%Y/%m/%d %H:%M:%S")
+            embed = discord.Embed(title='Error_log', description=error_message, color=0xf04747)
+            embed.set_footer(text=f'channel:on_check_auction_deal_data\ntime:{time}\nuser:None')
+            await ch.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))

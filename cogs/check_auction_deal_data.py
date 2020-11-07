@@ -1,4 +1,3 @@
-import asyncio
 import traceback
 from discord.ext import commands, tasks
 import discord
@@ -24,14 +23,19 @@ class CheckAuctionDealData(commands.Cog):
     # auctionのやつ
     @tasks.loop(minutes=1)
     async def auction_data(self, ctx):
-        auction_data_channel = self.bot.get_channel(id=771034285352026162)
-        await auction_data_channel.purge(limit=100)
         try:
+            auction_data_channel = self.bot.get_channel(id=771034285352026162)
+            await auction_data_channel.purge(limit=100)
             cur.execute("SELECT DISTINCT auction.ch_id, auction.auction_owner_id, auction.auction_item,"
                         "tend.tender_id, auction.unit, tend.tend_price, auction.auction_end_time FROM "
                         "(auction JOIN tend ON auction.ch_id = tend.ch_id)")
-            data = cur.fetchall()
+            sql_data = cur.fetchall()
             description = ""
+            before_sort_data = []
+            # [ch_id, ch_name, data]の2重リストを作成する。いい方法があったら変更してほしい><
+            for i in range(len(before_sort_data)):
+                before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data])
+            data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
                 if data[i][0] == 747728655735586876:
@@ -64,6 +68,7 @@ class CheckAuctionDealData(commands.Cog):
             await auction_data_channel.send(embed=embed)
 
         except Exception as e:
+            db.commit()
             orig_error = getattr(e, "original", e)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
             error_message = f'```{error_msg}```'
@@ -71,15 +76,15 @@ class CheckAuctionDealData(commands.Cog):
             d = datetime.datetime.now()  # 現在時刻の取得
             time = d.strftime("%Y/%m/%d %H:%M:%S")
             embed = discord.Embed(title='Error_log', description=error_message, color=0xf04747)
-            embed.set_footer(text=f'channel:on_check_time_loop\ntime:{time}\nuser:None')
+            embed.set_footer(text=f'channel:on_check_auction_deal_data\ntime:{time}\nuser:None')
             await ch.send(embed=embed)
 
     # dealのやつ
     @tasks.loop(minutes=1)
     async def deal_data(self, ctx):
-        deal_data_channel = self.bot.get_channel(id=771068489627861002)
-        await deal_data_channel.purge(limit=100)
         try:
+            deal_data_channel = self.bot.get_channel(id=771068489627861002)
+            await deal_data_channel.purge(limit=100)
             cur.execute("SELECT * from deal")
             data = cur.fetchall()
             description = ""
@@ -114,7 +119,7 @@ class CheckAuctionDealData(commands.Cog):
             d = datetime.datetime.now()  # 現在時刻の取得
             time = d.strftime("%Y/%m/%d %H:%M:%S")
             embed = discord.Embed(title='Error_log', description=error_message, color=0xf04747)
-            embed.set_footer(text=f'channel:on_check_time_loop\ntime:{time}\nuser:None')
+            embed.set_footer(text=f'channel:on_check_auction_deal_data\ntime:{time}\nuser:None')
             await ch.send(embed=embed)
 
 
