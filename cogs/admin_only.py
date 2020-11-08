@@ -237,19 +237,23 @@ class AdminOnly(commands.Cog):
             await ctx.send(f"{ctx.prefix}dbsetup [a, d]")
 
     @commands.command()
-    async def auction_data(self, ctx):
+    async def test(self, ctx):
             auction_data_channel = self.bot.get_channel(id=771034285352026162)
             await auction_data_channel.purge(limit=100)
             cur.execute("SELECT DISTINCT auction.ch_id, auction.auction_owner_id, auction.auction_item,"
                         "tend.tender_id, auction.unit, tend.tend_price, auction.auction_end_time FROM "
                         "(auction JOIN tend ON auction.ch_id = tend.ch_id)")
             sql_data = cur.fetchall()
+            await auction_data_channel.send(sql_data)
             description = ""
             before_sort_data = []
             # [ch_id, ch_name, data]の2重リストを作成する。いい方法があったら変更してほしい><
             for i in range(len(before_sort_data)):
                 before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data])
             data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
+
+            await auction_data_channel.send(data)
+
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
                 if data[i][2][0] == 747728655735586876:
