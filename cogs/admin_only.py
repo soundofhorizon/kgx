@@ -252,31 +252,31 @@ class AdminOnly(commands.Cog):
             data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
-                if data[i][0] == 747728655735586876:
+                if data[i][2][0] == 747728655735586876:
                     continue
                 # オークションが開催されてないときdisplay_nameが取れない。(人いないし)よって分岐
-                elif data[i][1] == 0:
-                    description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
+                elif data[i][2][1] == 0:
+                    description += f"{self.bot.get_channel(id=data[i][2][0]).name}:\n"
                     description += f"   現在このチャンネルでオークションは開催していません！\n"
                 # 他記述。
                 else:
                     # 終了時刻までの残り時間を計算
                     now = datetime.datetime.now()
-                    check = datetime.datetime.strptime(data[i][6] ,"%Y/%m/%d-%H:%M:%S")
+                    check = datetime.datetime.strptime(data[i][2][6] ,"%Y/%m/%d-%H:%M:%S")
                     diff = now - check
                     diff_hours = int(diff.seconds/3600)
                     diff_minites = int((diff.seconds - diff_hours*3600)/60)
                     diff_seconds = diff.seconds - diff_hours*3600 - diff_minites*60
 
-                    description += f"{self.bot.get_channel(id=data[i][0]).name}:\n"
-                    description += f"   出品者 → {self.bot.get_user(id=data[i][1]).display_name}\n"
-                    description += f"   商品名 → {data[i][2]}\n"
+                    description += f"{self.bot.get_channel(id=data[i][2][0]).name}:\n"
+                    description += f"   出品者 → {self.bot.get_user(id=data[i][2][1]).display_name}\n"
+                    description += f"   商品名 → {data[i][2][2]}\n"
                     # 多分no bidで更新すると死ぬ気がするので分岐
-                    if data[i][3][-1] == 0:
+                    if data[i][2][3][-1] == 0:
                         description += "    入札者はまだいません！\n"
                     else:
-                        description += f"   最高額入札者 → {self.bot.get_user(id=data[i][3][-1]).display_name}\n"
-                        description += f"   入札額 → {data[i][4]}{self.bot.stack_check_reverse(data[i][5][-1])}\n"
+                        description += f"   最高額入札者 → {self.bot.get_user(id=data[i][2][3][-1]).display_name}\n"
+                        description += f"   入札額 → {data[i][2][4]}{self.bot.stack_check_reverse(data[i][2][5][-1])}\n"
                     if diff_hours == 0:
                         description += f"   終了まで残り → **{diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒**\n"
                     else:
