@@ -282,6 +282,7 @@ class AdminOnly(commands.Cog):
                     else:
                         description += f"   終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒\n"
                 description += "\n--------\n\n"
+                await auction_data_channel.send(description)
 
                 # 文字数制限回避。多分足りない
                 if len(description) >= 1800:
