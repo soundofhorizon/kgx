@@ -238,7 +238,6 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def auction_data(self, ctx):
-        try:
             auction_data_channel = self.bot.get_channel(id=771034285352026162)
             await auction_data_channel.purge(limit=100)
             cur.execute("SELECT DISTINCT auction.ch_id, auction.auction_owner_id, auction.auction_item,"
@@ -289,17 +288,6 @@ class AdminOnly(commands.Cog):
                     embed = discord.Embed(description=description, color=0x59a5e3)
                     await auction_data_channel.send(embed=embed)
                     description = ""
-        except Exception as e:
-            db.commit()
-            orig_error = getattr(e, "original", e)
-            error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-            error_message = f'```{error_msg}```'
-            ch = self.bot.get_channel(628807266753183754)
-            d = datetime.datetime.now()  # 現在時刻の取得
-            time = d.strftime("%Y/%m/%d %H:%M:%S")
-            embed = discord.Embed(title='Error_log', description=error_message, color=0xf04747)
-            embed.set_footer(text=f'channel:on_check_auction_deal_data\ntime:{time}\nuser:None')
-            await ch.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
