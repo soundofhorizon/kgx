@@ -244,7 +244,6 @@ class AdminOnly(commands.Cog):
                         "tend.tender_id, auction.unit, tend.tend_price, auction.auction_end_time FROM "
                         "(auction JOIN tend ON auction.ch_id = tend.ch_id)")
             sql_data = cur.fetchall()
-            await auction_data_channel.send(sql_data)
             description = ""
             before_sort_data = []
             # [ch_id, ch_name, data]の2重リストを作成する。いい方法があったら変更してほしい><
@@ -252,7 +251,7 @@ class AdminOnly(commands.Cog):
                 before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data])
             data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
 
-            await auction_data_channel.send(data)
+            await auction_data_channel.send(data[0])
 
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
