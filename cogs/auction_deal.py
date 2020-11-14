@@ -386,7 +386,7 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             user_input_4 = await self.bot.wait_for('message', check=check)
 
-            await self.bot.delete_to(ctx, first_message_object)
+            await self.bot.delete_to(ctx, first_message_object.id)
 
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
