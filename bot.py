@@ -399,7 +399,7 @@ class KGX(commands.Bot):
         :param content: dmの内容
         :return: dmを送信できたかのbool値
         """
-        user = self.get_user(int(user_id))
+        user = self.bot.get_user(int(user_id))
         try:
             if isinstance(content, discord.Embed):
                 await user.send(embed=content)
