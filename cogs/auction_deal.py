@@ -170,7 +170,15 @@ class AuctionDael(commands.Cog):
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
             user_input_2 = await self.bot.wait_for('message', check=check3)
+            #check3()の正規表現を正しいものにしてください「1hoge」で通ってしまい、
+            #stack_check_reverse()で0が返ってくるため開始価格が0になります
+            #そのための応急処置 20201114けい制作
+            if user_input_2 == 0:
+                await ctx.channel.send(f"{ctx.author.mention}さん、使用できる単位はLC, st, 個または数字のみです")
+                return
+            #ここまで応急処置
             user_input_2 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_2.content))
+            if user_input_2 == 0:
             kaisi_kakaku = self.bot.stack_check(user_input_2)  # kaisi_kakakuはint型
 
             embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。"
