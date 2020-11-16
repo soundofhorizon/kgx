@@ -675,7 +675,7 @@ class AuctionDael(commands.Cog):
                     (ctx.channel.id,))
                 db.commit()
                 # 1つ戻した状態で入札状態を出力
-                await delete_to(ctx, auction_data[2])
+                #await delete_to(ctx, auction_data[2])
 
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 avatar_url = self.bot.get_user(id=int(tend_data[1][-1])).avatar_url_as(format="png")
