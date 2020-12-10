@@ -402,7 +402,7 @@ class KGX(commands.Bot):
         try:
             user = self.get_user(int(user_id))
         except ValueError as e:
-            ch = self.guild.get_channel(628807266753183754)
+            ch = self.get_channel(628807266753183754)
             await ch.send(user_id)
         try:
             if isinstance(content, discord.Embed):
