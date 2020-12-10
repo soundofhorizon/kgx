@@ -399,7 +399,11 @@ class KGX(commands.Bot):
         :param content: dmの内容
         :return: dmを送信できたかのbool値
         """
-        user = self.get_user(int(user_id))
+        try:
+            user = self.get_user(int(user_id))
+        except ValueError as e:
+            ch = self.guild.get_channel(628807266753183754)
+            await ch.send(user_id)
         try:
             if isinstance(content, discord.Embed):
                 await user.send(embed=content)
