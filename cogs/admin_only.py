@@ -34,8 +34,8 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def check_all_user_ID(self, ctx):
-        channel = self.bot.get_channel(642052474672250880)
-        guild = self.bot.get_guild(558125111081697300)
+        channel = self.bot.get_channel(769236872538357801)
+        guild = self.bot.get_guild(730269755432239116)
         bot_count = 0
         for member in guild.members:
             if member.bot:
