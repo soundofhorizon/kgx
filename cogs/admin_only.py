@@ -253,8 +253,6 @@ class AdminOnly(commands.Cog):
                 before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data])
             data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
 
-            await auction_data_channel.send(before_sort_data[0])
-
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
                 if data[i][2][0] == 747728655735586876:
