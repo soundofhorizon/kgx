@@ -249,7 +249,7 @@ class AdminOnly(commands.Cog):
             description = ""
             before_sort_data = []
             # [ch_id, ch_name, data]の2重リストを作成する。いい方法があったら変更してほしい><
-            for i in range(len(before_sort_data)):
+            for i in range(len(sql_data)):
                 before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data])
             data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
 
