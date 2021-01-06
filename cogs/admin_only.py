@@ -253,7 +253,7 @@ class AdminOnly(commands.Cog):
                 before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data])
             data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
 
-　　　　　　　await auction_data_channel.send(len(data))
+            await auction_data_channel.send(len(data))
 
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
@@ -267,7 +267,7 @@ class AdminOnly(commands.Cog):
                 else:
                     # 終了時刻までの残り時間を計算
                     now = datetime.datetime.now()
-                    check = datetime.datetime.strptime(data[i][2][6] ,"%Y/%m/%d-%H:%M:%S")
+                    check = datetime.datetime.strptime(data[i][2][6], "%Y/%m/%d-%H:%M:%S")
                     diff = now - check
                     diff_hours = int(diff.seconds/3600)
                     diff_minites = int((diff.seconds - diff_hours*3600)/60)
@@ -296,6 +296,7 @@ class AdminOnly(commands.Cog):
                     description = ""
             embed = discord.Embed(description=description, color=0x59a5e3)
             await auction_data_channel.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
