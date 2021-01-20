@@ -105,7 +105,7 @@ class KGX(commands.Bot):
         await self.get_channel(678083611697872910).send(embed=self.embed_1)
         await self.get_channel(678083611697872910).send(embed=self.embed_2)
         await self.get_channel(722092542249795679).send(
-            embed=discord.Embed(description="起動しました。再起用の変更", color=random.choice(color)))
+            embed=discord.Embed(description="起動しました。", color=random.choice(color)))
 
     async def on_guild_channel_create(self, channel):
         """チャンネルが出来た際に自動で星をつける"""
