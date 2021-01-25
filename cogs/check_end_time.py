@@ -69,7 +69,7 @@ class CheckEndTime(commands.Cog):
                     await log_ch.send(embed=embed)
 
                     # オークションが終わったらその結果を主催者と落札者に通知
-                    description = f"{ch.name}にて行われていた 品物名: **{item}** のオークションは\n{tender.display_name}により" \
+                    description = f"{ch.name}にて行われていた{owner.display_name}による 品物名: **{item}** のオークションは\n{tender.display_name}により" \
                                   f"**{tend_price}**にて落札されました"
                     embed = discord.Embed(description=description, color=0xffaf60)
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")

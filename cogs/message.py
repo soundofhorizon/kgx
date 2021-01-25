@@ -35,7 +35,7 @@ class Message(commands.Cog):
                 p = re.compile(r'^[a-zA-Z0-9_]+$')
                 if p.fullmatch(mcid):
                     mcid = str.lower(mcid)
-                    url = f"https://w4.minecraftserver.jp/player/{mcid}"
+                    url = f"https://ranking-gigantic.seichi.click//player/{mcid}"
                     try:
                         res = requests.get(url)
                         res.raise_for_status()

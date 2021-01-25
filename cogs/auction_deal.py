@@ -3,7 +3,6 @@ import io
 import os
 import re
 from datetime import datetime, timedelta
-from typing import Union
 
 import discord
 import psycopg2
@@ -504,7 +503,7 @@ class AuctionDael(commands.Cog):
                     embed.add_field(name="チャンネル名", value=f'\n\n{ctx.channel.name}', inline=False)
                     await self.bot.get_channel(558132754953273355).send(embed=embed)
                     # オークションが終わったらその結果を通知
-                    description = f"{ctx.channel.name}にて行われていた 品物名: **{auction_data[3]}** のオークションは\n{ctx.author.display_name}により" \
+                    description = f"{ctx.channel.name}にて行われていた{self.bot.get_user(id=auction_data[1]).display_name}による 品物名: **{auction_data[3]}** のオークションは\n{ctx.author.display_name}により" \
                                   f"**{tend_price}**にて落札されました"
                     embed = discord.Embed(description=description, color=0xffaf60)
                     time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
@@ -616,7 +615,7 @@ class AuctionDael(commands.Cog):
             await ctx.send(file=image, embed=embed)
 
             # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before?tender==0)
-            if len(tend_data[1]) == 1:  # 初回の入札は弾く
+            if len(tend_data[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
                 return
             before_tender = tend_data[1][-1]
             text = f"チャンネル名: {ctx.channel.name}において貴方より高い入札がされました。\n" \
