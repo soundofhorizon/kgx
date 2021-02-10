@@ -170,13 +170,13 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             user_input_2 = await self.bot.wait_for('message', check=check3)
             user_input_2 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_2.content))
-            #check3()の正規表現を正しいものにしてください「1hoge」で通ってしまい、
-            #stack_check_reverse()で0が返ってくるため開始価格が0になります
-            #そのための応急処置 20201114けい制作
+            # check3()の正規表現を正しいものにしてください「1hoge」で通ってしまい、
+            # stack_check_reverse()で0が返ってくるため開始価格が0になります
+            # そのための応急処置 20201114けい制作
             if user_input_2 == 0:
                 await ctx.channel.send(f"{ctx.author.mention}さん、使用できる単位はLC, st, 個または数字のみです")
                 return
-            #ここまで応急処置
+            # ここまで応急処置
             kaisi_kakaku = self.bot.stack_check(user_input_2)  # kaisi_kakakuはint型
 
             embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。"
@@ -582,8 +582,8 @@ class AuctionDael(commands.Cog):
             updated_tend_data[1].append(ctx.author.id)
             updated_tend_data[2].append(self.bot.stack_check(price))
 
-            updated_tend_data[1] = self.bot.list_to_tuple_string(tend_data[1])
-            updated_tend_data[2] = self.bot.list_to_tuple_string(tend_data[2])
+            updated_tend_data[1] = self.bot.list_to_tuple_string(updated_tend_data[1])
+            updated_tend_data[2] = self.bot.list_to_tuple_string(updated_tend_data[2])
 
             cur.execute(
                 f"UPDATE tend SET tender_id = '{updated_tend_data[1]}', tend_price = '{updated_tend_data[2]}' WHERE ch_id = %s",
@@ -615,10 +615,11 @@ class AuctionDael(commands.Cog):
             embed.set_footer(text=f"入札時刻: {time}")
             await ctx.send(file=image, embed=embed)
 
+            before_tender = tend_data[1][-1]
+
             # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before?tender==0)
             if len(tend_data[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
                 return
-            before_tender = tend_data[1][-1]
             text = f"チャンネル名: {ctx.channel.name}において貴方より高い入札がされました。\n" \
                    f"入札者: {ctx.author.display_name}, 入札額: **{auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}**\n"
             embed = discord.Embed(description=text, color=0x4259fb)
