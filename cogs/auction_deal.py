@@ -615,10 +615,10 @@ class AuctionDael(commands.Cog):
             embed.set_footer(text=f"入札時刻: {time}")
             await ctx.send(file=image, embed=embed)
 
-            before_tender = tend_data[1][-1]
+            before_tender = tend[1][-1]
 
             # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before?tender==0)
-            if len(tend_data[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
+            if len(tend[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
                 return
             text = f"チャンネル名: {ctx.channel.name}において貴方より高い入札がされました。\n" \
                    f"入札者: {ctx.author.display_name}, 入札額: **{auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}**\n"
