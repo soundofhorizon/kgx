@@ -578,14 +578,15 @@ class AuctionDael(commands.Cog):
             # チャンネルid, 入札者idのlist, 入札額のリストが入っている
             tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
 
-            tend_data[1].append(ctx.author.id)
-            tend_data[2].append(self.bot.stack_check(price))
+            updated_tend_data = tend_data.copy()
+            updated_tend_data[1].append(ctx.author.id)
+            updated_tend_data[2].append(self.bot.stack_check(price))
 
-            tend_data[1] = self.bot.list_to_tuple_string(tend_data[1])
-            tend_data[2] = self.bot.list_to_tuple_string(tend_data[2])
+            updated_tend_data[1] = self.bot.list_to_tuple_string(tend_data[1])
+            updated_tend_data[2] = self.bot.list_to_tuple_string(tend_data[2])
 
             cur.execute(
-                f"UPDATE tend SET tender_id = '{tend_data[1]}', tend_price = '{tend_data[2]}' WHERE ch_id = %s",
+                f"UPDATE tend SET tender_id = '{updated_tend_data[1]}', tend_price = '{updated_tend_data[2]}' WHERE ch_id = %s",
                 (ctx.channel.id,))
             db.commit()
             await ctx.message.delete()  # !tendのメッセージを削除する
