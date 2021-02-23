@@ -105,7 +105,7 @@ class KGX(commands.Bot):
         await self.get_channel(678083611697872910).send(embed=self.embed_1)
         await self.get_channel(678083611697872910).send(embed=self.embed_2)
         await self.get_channel(722092542249795679).send(
-            embed=discord.Embed(description="起動しました。再起用の変更", color=random.choice(color)))
+            embed=discord.Embed(description="起動しました", color=random.choice(color)))
 
     async def on_guild_channel_create(self, channel):
         """チャンネルが出来た際に自動で星をつける"""
@@ -399,6 +399,13 @@ class KGX(commands.Bot):
         :param content: dmの内容
         :return: dmを送信できたかのbool値
         """
+
+        cur.execute("SELECT bid_score FROM user_data where user_id = %s", (user_id,))
+        user_data = list(cur.fetchone())
+        dm_flag = user_data[3]
+        if not dm_flag:
+            return False
+
         try:
             user = self.get_user(int(user_id))
         except ValueError as e:
