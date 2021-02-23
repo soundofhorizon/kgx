@@ -464,7 +464,7 @@ class AuctionDael(commands.Cog):
             tend_data = cur.fetchone()
 
             # ARRAYから最新の入札状況を引き抜く。初期状態は0
-            tend = [tend_data[0], tend_data[1][-1], tend_data[2][-1]]
+            tend = [tend_data[0], tend_data[1], tend_data[2]]
 
             # 条件に1つでも合致していたらreturn
             # 入札人物の判定
@@ -473,13 +473,13 @@ class AuctionDael(commands.Cog):
                 await ctx.send(embed=embed)
                 return
 
-            elif ctx.author.id == tend[1] and (not self.bot.stack_check(price) >= int(auction[5])):
+            elif ctx.author.id == tend[1][-1] and (not self.bot.stack_check(price) >= int(auction[5])):
                 embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
 
             # 入札価格の判定
-            if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend[2]):
+            if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend[2][-1]):
                 embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
@@ -510,7 +510,7 @@ class AuctionDael(commands.Cog):
                     time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
                     await self.bot.dm_send(auction[1], embed)
-                    await self.bot.dm_send(tend[1], embed)
+                    await self.bot.dm_send(tend[1][-1], embed)
 
                     # ランキング送信
                     if "椎名" in ctx.channel.name:
