@@ -401,7 +401,7 @@ class KGX(commands.Bot):
         """
 
         cur.execute("SELECT dm_flag FROM user_data where user_id = %s", (user_id,))
-        dm_flag = cur.fetchone()
+        dm_flag = cur.fetchone()[0]
 
         dm_flag_type = f"{type(dm_flag)}"
 
