@@ -197,7 +197,7 @@ class Message(commands.Cog):
             cur.execute(f"update user_data set dm_flag = {dm_boolean} where user_id = {ctx.author.id}")
             db.commit()
 
-            if dm_boolean:
+            if dm_boolean.lower() == "true":
                 await ctx.channel.send("botからのDMを受け取る設定にしました。")
             else:
                 await ctx.channel.send("botからのDMを拒否する設定にしました。")
