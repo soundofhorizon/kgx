@@ -432,6 +432,7 @@ class AuctionDael(commands.Cog):
         if not self.bot.is_auction_category(ctx):
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
+            return
 
         # priceのスタイルを調整
         price = f"{price}".replace(" ", "").replace("　", "")
