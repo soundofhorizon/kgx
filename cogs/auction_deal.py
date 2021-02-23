@@ -618,14 +618,10 @@ class AuctionDael(commands.Cog):
 
             # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before_tender==0)
             #今までの状態だと初回IndexErrorが発生するので順番を前に持ってきました
-            try:
-                if len(tend[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
-                    return
-            except TypeError:
-                await ctx.channel.send(f"{tend[1]}")
+            if len(tend[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
+                return
 
-            #後ろから2番目のインデックスは"-2"です。
-            before_tender_id = int(tend[1][-2])
+            before_tender_id = int(tend[1][-1])
 
             text = f"チャンネル名: {ctx.channel.name}において貴方より高い入札がされました。\n" \
                    f"入札者: {ctx.author.display_name}, 入札額: **{auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}**\n"
