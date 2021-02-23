@@ -105,7 +105,7 @@ class KGX(commands.Bot):
         await self.get_channel(678083611697872910).send(embed=self.embed_1)
         await self.get_channel(678083611697872910).send(embed=self.embed_2)
         await self.get_channel(722092542249795679).send(
-            embed=discord.Embed(description="起動しました。再起用の変更", color=random.choice(color)))
+            embed=discord.Embed(description="起動しました", color=random.choice(color)))
 
     async def on_guild_channel_create(self, channel):
         """チャンネルが出来た際に自動で星をつける"""
@@ -403,7 +403,8 @@ class KGX(commands.Bot):
         cur.execute("SELECT dm_flag FROM user_data where user_id = %s", (user_id,))
         dm_flag = cur.fetchone()[0]
 
-        dm_flag_type = f"{type(dm_flag)}"
+        if not dm_flag:
+            return False
 
         try:
             user = self.get_user(int(user_id))
@@ -412,7 +413,7 @@ class KGX(commands.Bot):
             await ch.send(user_id)
         try:
             if isinstance(content, discord.Embed):
-                await user.send(embed=content, content=dm_flag_type)
+                await user.send(embed=content)
             else:
                 await user.send(content)
         except Exception:
