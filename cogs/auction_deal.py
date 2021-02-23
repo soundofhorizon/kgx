@@ -626,7 +626,6 @@ class AuctionDael(commands.Cog):
 
             #後ろから2番目のインデックスは"-2"です。
             before_tender_id = int(tend[1][-2])
-            before_tender = self.bot.get_user(before_tender_id)
 
             text = f"チャンネル名: {ctx.channel.name}において貴方より高い入札がされました。\n" \
                    f"入札者: {ctx.author.display_name}, 入札額: **{auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}**\n"
@@ -634,7 +633,7 @@ class AuctionDael(commands.Cog):
             time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
 
-            await self.bot.dm_send(before_tender, embed)
+            await self.bot.dm_send(before_tender_id, embed)
 
         else:
             embed = discord.Embed(description=f"{ctx.author.display_name}さん。入力した値が不正です。もう一度正しく入力を行ってください。",
