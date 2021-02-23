@@ -616,17 +616,25 @@ class AuctionDael(commands.Cog):
             embed.set_footer(text=f"入札時刻: {time}")
             await ctx.send(file=image, embed=embed)
 
-            before_tender = tend[1][-1]
-
-            # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before?tender==0)
+            # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before_tender==0)
+            #今までの状態だと初回IndexErrorが発生するので順番を前に持ってきました
             if len(tend[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
                 return
+
+            #後ろから2番目のインデックスは"-2"です。
+            before_tender_id = int(tend[1][-2])
+            before_tender = self.bot.get_user(before_tender_id)
+
             text = f"チャンネル名: {ctx.channel.name}において貴方より高い入札がされました。\n" \
                    f"入札者: {ctx.author.display_name}, 入札額: **{auction[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}**\n"
             embed = discord.Embed(description=text, color=0x4259fb)
             time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
-            await self.bot.dm_send(before_tender, embed)
+            #DM拒否してたりブロックされてるとエラー、よって例外処理をすべき
+            try:
+                await self.bot.dm_send(before_tender, embed)
+            except discord.errors.Forbidden:
+                pass
 
         else:
             embed = discord.Embed(description=f"{ctx.author.display_name}さん。入力した値が不正です。もう一度正しく入力を行ってください。",
