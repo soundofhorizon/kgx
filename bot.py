@@ -399,6 +399,12 @@ class KGX(commands.Bot):
         :param content: dmの内容
         :return: dmを送信できたかのbool値
         """
+
+        cur.execute("SELECT dm_flag FROM user_data where user_id = %s", (user_id,))
+        dm_flag = cur.fetchone()
+
+        dm_flag_type = f"{type(dm_flag)}"
+
         try:
             user = self.get_user(int(user_id))
         except ValueError as e:
@@ -406,7 +412,7 @@ class KGX(commands.Bot):
             await ch.send(user_id)
         try:
             if isinstance(content, discord.Embed):
-                await user.send(embed=content)
+                await user.send(embed=content, content=dm_flag_type)
             else:
                 await user.send(content)
         except Exception:
