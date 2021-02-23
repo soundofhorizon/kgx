@@ -618,8 +618,11 @@ class AuctionDael(commands.Cog):
 
             # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before_tender==0)
             #今までの状態だと初回IndexErrorが発生するので順番を前に持ってきました
-            if len(tend[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
-                return
+            try:
+                if len(tend[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
+                    return
+            except TypeError:
+                await ctx.channel.send(f"{tend[1]}")
 
             #後ろから2番目のインデックスは"-2"です。
             before_tender_id = int(tend[1][-2])
@@ -630,11 +633,8 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(description=text, color=0x4259fb)
             time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
-            #DM拒否してたりブロックされてるとエラー、よって例外処理をすべき
-            try:
-                await self.bot.dm_send(before_tender, embed)
-            except discord.errors.Forbidden:
-                pass
+
+            await self.bot.dm_send(before_tender, embed)
 
         else:
             embed = discord.Embed(description=f"{ctx.author.display_name}さん。入力した値が不正です。もう一度正しく入力を行ってください。",
