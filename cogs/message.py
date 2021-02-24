@@ -160,6 +160,8 @@ class Message(commands.Cog):
                 await ctx.channel.send(f"{mcid}さんのuuid: {uuid}をシステムに登録しました。")
                 role = discord.utils.get(ctx.guild.roles, name="uuid未チェック")
                 await ctx.author.remove_roles(role)
+                role = discord.utils.get(ctx.guild.roles, id=558999306204479499) #MCID報告済み
+                await ctx.author.add_roles(role)
             else:
                 await ctx.channel.send(f"MCID:{mcid}は存在しません。もう一度確認してください。")
         else:
