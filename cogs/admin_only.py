@@ -297,6 +297,11 @@ class AdminOnly(commands.Cog):
             embed = discord.Embed(description=description, color=0x59a5e3)
             await auction_data_channel.send(embed=embed)
 
+    @commands.command()
+    async def restart(self, ctx):
+        await ctx.send("restarting ")
+        await self.bot.close()
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
