@@ -125,6 +125,9 @@ class CheckEndTime(commands.Cog):
                         continue
 
         except Exception as e:
+            if isinstance(e, psycopg2.InterfaceError):
+                await self.bot.close()
+
             orig_error = getattr(e, "original", e)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
             error_message = f'```{error_msg}```'
