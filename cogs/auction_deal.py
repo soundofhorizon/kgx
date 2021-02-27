@@ -254,6 +254,7 @@ class AuctionDael(commands.Cog):
                 embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
                 await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
                 auction_embed = await ctx.channel.send(embed=embed)
+                await auction_embed.pin()
                 try:
                     await asyncio.wait_for(ctx.channel.edit(name=ctx.channel.name.split('☆')[0]), timeout=3.0)
                 except asyncio.TimeoutError:
@@ -409,6 +410,7 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send(
                     "<:shiina_balance:558175954686705664>取引を開始します<:shiina_balance:558175954686705664>")
                 deal_embed = await ctx.channel.send(embed=embed)
+                await deal_embed.pin()
                 try:
                     await asyncio.wait_for(ctx.channel.edit(name=ctx.channel.name.split('☆')[0]), timeout=3.0)
                 except asyncio.TimeoutError:

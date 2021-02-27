@@ -77,8 +77,16 @@ class AdminOnly(commands.Cog):
     async def stop_deal(self, ctx):
         # dbのリセット
         if ">" in ctx.channel.category.name:
+            cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
+            auction = cur.fetchone()
+            auction_embed = await ctx.channel.fetch_message(auction[2])
+            await auction_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "a")
         elif "*" in ctx.channel.category.name:
+            cur.execute("SELECT * FROM deal where ch_id = %s", (ctx.channel.id,))
+            deal = cur.fetchone()
+            deal_embed = await ctx.channel.fetch_message(deal[2])
+            await deal_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "d")
 
         embed = discord.Embed(
