@@ -529,6 +529,10 @@ class AuctionDael(commands.Cog):
 
                     embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                     await ctx.channel.send(embed=embed)
+
+                    auction_embed = await ctx.fetch_message(auction[2])
+                    await auction_embed.unpin()
+
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
                     self.bot.reset_ch_db(ctx.channel.id, "a")
                     await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
