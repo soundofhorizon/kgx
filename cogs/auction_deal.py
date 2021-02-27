@@ -512,7 +512,7 @@ class AuctionDael(commands.Cog):
                     time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
                     await self.bot.dm_send(auction[1], embed)
-                    await self.bot.dm_send(tend[1][-1], embed)
+                    await self.bot.dm_send(ctx.author.id, embed)
 
                     # ランキング送信
                     if "椎名" in ctx.channel.name:
