@@ -93,6 +93,7 @@ class CheckEndTime(commands.Cog):
                     await ch.send(embed=embed)
 
                     ch = self.bot.get_channel(id=row[0])
+                    await ch.send(f"{row[0]} {type(row[0])} {row[2]} {type(row[2])}")
                     auction_embed = await ch.fetch_message(row[2])
                     await auction_embed.unpin()
 
