@@ -715,11 +715,22 @@ class AuctionDael(commands.Cog):
     async def consent(self, ctx):
         if not self.bot.is_normal_category(ctx):
             return
+
+        if '☆' in ctx.channel.name:
+            embed = discord.Embed(
+                description=f'{ctx.author.display_name}さん。このチャンネルでは取引は行われていません',
+                color=0xff0000)
+            await ctx.channel.send(embed=embed)
+            return
+
         # chのdbを消し去る
         cur.execute("SELECT * from deal WHERE ch_id = %s", (ctx.channel.id,))
         dael_data = cur.fetchone()
         owner = self.bot.get_user(int(dael_data[1]))
         await owner.send(f"{ctx.author.name}が{ctx.channel.mention}の取引を承諾しました")
+
+        deal_embed = await ctx.fetch_message(dael_data[2])
+        await deal_embed.unpin()
 
         self.bot.reset_ch_db(ctx.channel.id, "d")
 
