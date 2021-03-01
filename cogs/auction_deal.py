@@ -213,8 +213,8 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             user_input_4 = await self.bot.wait_for('message', check=check2)
 
-            year_month_day_list = user_input_4.content.split("-")[0].split("/")
-            hour_min_list = user_input_4.content.split("-")[1].split(":")
+            year_month_day_list = list(map(user_input_4.content.split("-")[0].split("/")))
+            hour_min_list = list(map(int, user_input_4.content.split("-")[1].split(":")))
             now = datetime.now()
             if hour_min_list == ["24", "00"]:
                 finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
