@@ -441,7 +441,7 @@ class KGX(commands.Bot):
 
     @staticmethod
     async def delete_to(ctx, msg_id: int) -> None:
-        """特定のメッセージ以降のメッセージを削除する"""
+        """特定のメッセージまでのメッセージを削除する"""
         msg = await ctx.fetch_message(msg_id)
         await ctx.channel.purge(limit=None, after=msg)
         await ctx.channel.purge(limit=1)

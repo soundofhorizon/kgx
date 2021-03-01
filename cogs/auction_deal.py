@@ -85,12 +85,9 @@ class AuctionDael(commands.Cog):
                 return
                 # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
             try:
-                return m.channel == ctx.channel and \
-                       ((re.match(r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}", m.content) and datetime.strptime(m.content, "%Y/%m/%d-%H:%M"))
-                        or re.match(r"[0-9]{4}/[0-9]{2}/[0-9]{2}-24:00", m.content)
-                        ) and m.author == ctx.author
+                return m.channel == ctx.channel and re.match(r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}", m.content) and datetime.strptime(m.content, "%Y/%m/%d-%H:%M") and m.author == ctx.author
             except ValueError:
-                return False
+                return re.match(r"[0-9]{4}/[0-9]{2}/[0-9]{2}-24:00", m.content)
 
         def check3(m):
             """価格フォーマットチェック"""
