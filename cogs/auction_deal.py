@@ -640,7 +640,7 @@ class AuctionDael(commands.Cog):
 
     @commands.command(aliases=["Add"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
-    async def add(self, ctx, add_price: int):
+    async def add(self, ctx, add_price: str):
         if self.bot.is_auction_category(ctx):
             cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
             auction_data = cur.fetchone()
@@ -667,7 +667,7 @@ class AuctionDael(commands.Cog):
                     return
                 # add
                 now_tend_price = tend_data[2][-1]
-                added_tend_price = now_tend_price + add_price
+                added_tend_price = now_tend_price + self.bot.stack_check_reverse(self.bot.stack_check(add_price))
                 # listに追加
                 tend_data[1].append(ctx.author.id)
                 tend_data[2].append(added_tend_price)
