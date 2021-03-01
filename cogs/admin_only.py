@@ -311,9 +311,7 @@ class AdminOnly(commands.Cog):
         await self.bot.close()
 
     @commands.command()
-    async def kick(self, ctx):
-        role_id = int(ctx.message.content.split()[1].replace("<@&", "").replace(">", ""))
-        role = discord.utils.get(ctx.guild.roles, id=role_id)
+    async def kick(self, ctx, role: discord.Role):
         n = len(role.members)
         for mem in role.members:
             await mem.kick()
