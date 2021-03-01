@@ -686,6 +686,7 @@ class AuctionDael(commands.Cog):
                     (ctx.channel.id,))
                 db.commit()
 
+                await ctx.channel.purge(limit=1)
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 avatar_url = self.bot.get_user(id=int(tend_data[1][-1])).avatar_url_as(format="png")
                 image = requests.get(avatar_url)
