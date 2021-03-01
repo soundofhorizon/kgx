@@ -310,6 +310,16 @@ class AdminOnly(commands.Cog):
         await ctx.send("restarting ")
         await self.bot.close()
 
+    @commands.command()
+    async def kick(self, ctx):
+        role_id = int(ctx.message.content.split()[1].replace("<@&", "").replace(">", ""))
+        role = discord.utils.get(ctx.guild.roles, id=role_id)
+        n = len(role.members)
+        for mem in role.members:
+            await mem.kick()
+
+        await ctx.channel.send(f"{role.mention}持ちの{n}人を吹き飛ばしました")
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
