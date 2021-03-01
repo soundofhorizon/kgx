@@ -668,7 +668,7 @@ class AuctionDael(commands.Cog):
 
                 # 0の時は最初の入札者になっているのでreturn
                 if tend_data[1][-1] == 0:
-                    embed = discord.Embed(description="最初の入札者です。これ以上の差し戻しは出来ません。", color=0x4259fb)
+                    embed = discord.Embed(description="入札がなにもありません。最初の入札はtendコマンドで行ってください。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
                 # add
