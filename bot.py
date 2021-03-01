@@ -444,6 +444,7 @@ class KGX(commands.Bot):
         """特定のメッセージ以降のメッセージを削除する"""
         msg = await ctx.fetch_message(msg_id)
         await ctx.channel.purge(limit=None, after=msg)
+        await ctx.channel.purge(limit=1)
 
 
 if __name__ == '__main__':
