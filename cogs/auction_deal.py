@@ -667,7 +667,7 @@ class AuctionDael(commands.Cog):
                     return
                 # add
                 now_tend_price = tend_data[2][-1]
-                added_tend_price = now_tend_price + self.bot.stack_check_reverse(self.bot.stack_check(add_price))
+                added_tend_price = now_tend_price + self.bot.stack_check(add_price)
                 # listに追加
                 tend_data[1].append(ctx.author.id)
                 tend_data[2].append(added_tend_price)
