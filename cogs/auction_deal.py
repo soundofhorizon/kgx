@@ -218,6 +218,7 @@ class AuctionDael(commands.Cog):
             now = datetime.now()
             if hour_min_list == [24, 00]:
                 finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
+                user_input_4.content = finish_time.strftime('%Y/%m/%d-%H:%M')
             else:
                 finish_time = datetime.strptime(user_input_4.content, r"%Y/%m/%d-%H:%M")
 
@@ -357,6 +358,7 @@ class AuctionDael(commands.Cog):
             now = datetime.now()
             if hour_min_list == [24, 00]:
                 finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
+                user_input_3.content = finish_time.strftime('%Y/%m/%d-%H:%M')
             else:
                 finish_time = datetime.strptime(user_input_3.content, r"%Y/%m/%d-%H:%M")
 
