@@ -72,6 +72,60 @@ class AuctionDael(commands.Cog):
 
     @commands.command()
     async def start(self, ctx):
+
+        def check(m):
+            """ユーザーの次のメッセージを待つ"""
+            if m.author.bot:
+                return
+            return m.channel == ctx.channel and m.author == ctx.author
+
+        def check2(m):
+            """日付型になってるかを確かめる"""
+            if m.author.bot:
+                return
+                # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
+            try:
+                return m.channel == ctx.channel and \
+                       ((re.match(r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}", m.content) and datetime.strptime(m.content, "%Y/%m/%d-%H:%M"))
+                        or re.match(r"[0-9]{4}/[0-9]{2}/[0-9]{2}-24:00", m.content)
+                        ) and m.author == ctx.author
+            except ValueError:
+                return False
+
+        def check3(m):
+            """価格フォーマットチェック"""
+            if m.author.bot:
+                return
+            if m.channel != ctx.channel:
+                return False
+            # 〇st+△(記号はint)もしくは△であるのを確かめる
+            else:
+                return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
+                    r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
+                        ) and m.author == ctx.author
+
+        def check4(m):
+            """価格フォーマットチェック(なしを含む)"""
+            if m.author.bot:
+                return
+            elif m.author == ctx.author:
+                if m.channel != ctx.channel:
+                    return False
+                # 〇st+△(記号はint)もしくは△であるのを確かめる
+                return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
+                    r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
+                        or m.content == "なし") and m.author == ctx.author
+
+        def over24Hdatetime(year, month, day, hour, minute):
+
+            """24時間以上の表記を正常な表記にする"""
+            minutes = int(hour)*60 + int(minute)
+
+            dt = datetime(year=year, month=month, day=day)
+            dt += timedelta(minutes=minutes)
+
+            return dt
+
         # 2つ行ってる場合はreturn
         user = ctx.author.id
         if self.bot.get_user_auction_count(user) >= 2 and ctx.author.id != 251365193127297024:
@@ -92,48 +146,6 @@ class AuctionDael(commands.Cog):
                 await asyncio.sleep(3)
                 await ctx.message.delete()
                 return
-
-            def check(m):
-                """ユーザーの次のメッセージを待つ"""
-                if m.author.bot:
-                    return
-                return m.channel == ctx.channel and m.author == ctx.author
-
-            def check2(m):
-                """日付型になってるかを確かめる"""
-                if m.author.bot:
-                    return
-                    # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
-                try:
-                    return m.channel == ctx.channel and re.match(
-                        r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}",
-                        m.content) and datetime.strptime(m.content, "%Y/%m/%d-%H:%M") and m.author == ctx.author
-                except ValueError:
-                    return False
-
-            def check3(m):
-                """価格フォーマットチェック"""
-                if m.author.bot:
-                    return
-                if m.channel != ctx.channel:
-                    return False
-                # 〇st+△(記号はint)もしくは△であるのを確かめる
-                else:
-                    return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
-                        r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
-                            ) and m.author == ctx.author
-
-            def check4(m):
-                """価格フォーマットチェック(なしを含む)"""
-                if m.author.bot:
-                    return
-                elif m.author == ctx.author:
-                    if m.channel != ctx.channel:
-                        return False
-                    # 〇st+△(記号はint)もしくは△であるのを確かめる
-                    return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
-                        r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
-                            or m.content == "なし") and m.author == ctx.author
 
             # 単位の設定
             unit = ""
@@ -203,8 +215,15 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
             user_input_4 = await self.bot.wait_for('message', check=check2)
+
+            year_month_day_list = user_input_4.content.split("-")[0].split("/")
+            hour_min_list = user_input_4.content.split("-")[1].split(":")
             now = datetime.now()
-            finish_time = datetime.strptime(user_input_4.content, r"%Y/%m/%d-%H:%M")
+            if hour_min_list == ["24", "00"]:
+                finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
+            else:
+                finish_time = datetime.strptime(user_input_4.content, r"%Y/%m/%d-%H:%M")
+
             if now >= finish_time:
                 # purge()の処理は入っていません
                 await ctx.channel.send(f"{ctx.author.mention}さん、現在時刻より前、又は同時刻に終了時刻が設定されています。やり直してください。")
@@ -292,36 +311,6 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 return
 
-            def check(m):
-                """ユーザーの次のメッセージを待つ"""
-                if m.author.bot:
-                    return
-                return m.channel == ctx.channel and m.author == ctx.author
-
-            def check2(m):
-                """日付型になってるかを確かめる"""
-                if m.author.bot:
-                    return
-                    # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
-                try:
-                    return m.channel == ctx.channel and re.match(
-                        r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}",
-                        m.content) and datetime.strptime(m.content, "%Y/%m/%d-%H:%M") and m.author == ctx.author
-                except ValueError:
-                    return False
-
-            def check3(m):
-                """価格フォーマットチェック"""
-                if m.author.bot:
-                    return
-                if m.channel != ctx.channel:
-                    return False
-                # 〇st+△(記号はint)もしくは△であるのを確かめる
-                else:
-                    return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
-                        r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
-                            ) and m.author == ctx.author
-
             # 単位の設定
             if self.bot.is_siina_category(ctx):
                 unit = "椎名"
@@ -366,8 +355,14 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             user_input_3 = await self.bot.wait_for('message', check=check2)
 
+            year_month_day_list = user_input_3.content.split("-")[0].split("/")
+            hour_min_list = user_input_3.content.split("-")[1].split(":")
             now = datetime.now()
-            finish_time = datetime.strptime(user_input_3.content, r"%Y/%m/%d-%H:%M")
+            if hour_min_list == ["24", "00"]:
+                finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
+            else:
+                finish_time = datetime.strptime(user_input_3.content, r"%Y/%m/%d-%H:%M")
+
             if now >= finish_time:
                 # purge()の処理は入っていません
                 await ctx.channel.send(f"{ctx.author.mention}さん、現在時刻より前、又は同時刻に終了時刻が設定されています。やり直してください。")
@@ -625,7 +620,7 @@ class AuctionDael(commands.Cog):
             await ctx.send(file=image, embed=embed)
 
             # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before_tender==0)
-            #今までの状態だと初回IndexErrorが発生するので順番を前に持ってきました
+            # 今までの状態だと初回IndexErrorが発生するので順番を前に持ってきました
             if len(tend[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
                 return
 
@@ -688,7 +683,7 @@ class AuctionDael(commands.Cog):
                     (ctx.channel.id,))
                 db.commit()
                 # 1つ戻した状態で入札状態を出力
-                #await delete_to(ctx, auction_data[2])
+                # await delete_to(ctx, auction_data[2])
 
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 avatar_url = self.bot.get_user(id=int(tend_data[1][-1])).avatar_url_as(format="png")
@@ -703,7 +698,7 @@ class AuctionDael(commands.Cog):
                     description=f"入札者: **{self.bot.get_user(id=int(tend_data[1][-1])).display_name}**, \n"
                                 f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
                     color=0x4259fb
-                    )
+                )
                 embed.set_image(url="attachment://icon.png")
                 embed.set_footer(text=f"入札時刻: {time}")
                 await ctx.channel.send(file=image, embed=embed)
