@@ -112,8 +112,8 @@ class AdminOnly(commands.Cog):
         except asyncio.TimeoutError:
             pass
 
-    @commands.command()
-    async def es(self, ctx, *, content):
+    @commands.command(aliases=["es"])
+    async def execute_sql(self, ctx, *, content):
         cur.execute(content)
         if not content.lower().startswith("select"):  # select以外だったらcommitしてreturn
             await ctx.send(f'SQL文`{content}`は正常に実行されました')
@@ -182,7 +182,7 @@ class AdminOnly(commands.Cog):
                                                   value for value in result_list[start_num - 1:start_num + 9]))
                     await msg.edit(embed=embed)
 
-    @es.error
+    @execute_sql.error
     async def sql_error(self, ctx, error):
         await ctx.send("SQL文が違うだろう！！？？")
         db.commit()
