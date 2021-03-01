@@ -430,7 +430,7 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=kazu)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
-    @commands.command()
+    @commands.command(aliases=["Tend"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def tend(self, ctx, *, price):
         if not self.bot.is_auction_category(ctx):
