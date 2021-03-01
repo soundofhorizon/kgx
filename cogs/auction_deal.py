@@ -261,7 +261,7 @@ class AuctionDael(commands.Cog):
             user_input_6 = await self.bot.wait_for('message', check=check)
 
             if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
-                kazu = 2
+                kazu = 3
                 await ctx.channel.purge(limit=kazu)
                 await asyncio.sleep(0.3)
                 embed = discord.Embed(title="オークション内容", color=0xffaf60)
@@ -394,7 +394,7 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             user_input_6 = await self.bot.wait_for('message', check=check)
             if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
-                kazu = 2
+                kazu = 3
                 await ctx.channel.purge(limit=kazu)
                 await asyncio.sleep(0.3)
                 embed = discord.Embed(title="取引内容", color=0xffaf60)
