@@ -638,17 +638,75 @@ class AuctionDael(commands.Cog):
                                   color=0x4259fb)
             await ctx.send(embed=embed)
 
+    @commands.command(aliases=["Add"])
+    @commands.cooldown(1, 1, type=commands.BucketType.channel)
+    async def add(self, ctx, add_price: int):
+        if self.bot.is_auction_category(ctx):
+            cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
+            auction_data = cur.fetchone()
+
+            # オークションが行われていなければ警告して終了
+            if "☆" in ctx.channel.name:
+                embed = discord.Embed(description="このコマンドはオークション開催中のみ使用可能です。", color=0x4259fb)
+                await ctx.send(embed=embed)
+                return
+            # オークション主催者であれば警告して終了
+            elif ctx.author.id == auction_data[1]:
+                embed = discord.Embed(description="このコマンドはオークション主催者は使用不可能です。", color=0x4259fb)
+                await ctx.send(embed=embed)
+                return
+            else:
+                cur.execute("select * from tend where ch_id = %s", (ctx.channel.id,))
+                tend_data = cur.fetchone()
+                tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
+
+                # 0の時は最初の入札者になっているのでreturn
+                if tend_data[1][-1] == 0:
+                    embed = discord.Embed(description="最初の入札者です。これ以上の差し戻しは出来ません。", color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    return
+                # add
+                now_tend_price = tend_data[2][-1]
+                added_tend_price = now_tend_price + add_price
+                # listに追加
+                tend_data[1].append(ctx.author.id)
+                tend_data[2].append(added_tend_price)
+
+                tend_data_str_1 = self.bot.list_to_tuple_string(tend_data[1])
+                tend_data_str_2 = self.bot.list_to_tuple_string(tend_data[2])
+
+                cur.execute(
+                    f"UPDATE tend SET tender_id = '{tend_data_str_1}', tend_price = '{tend_data_str_2}' WHERE ch_id = %s",
+                    (ctx.channel.id,))
+                db.commit()
+
+                time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+                avatar_url = self.bot.get_user(id=int(tend_data[1][-1])).avatar_url_as(format="png")
+                image = requests.get(avatar_url)
+                image = io.BytesIO(image.content)
+                image.seek(0)
+                image = Image.open(image)
+                image = image.resize((100, 100))
+                image.save("./icon.png")
+                image = discord.File("./icon.png", filename="icon.png")
+                embed = discord.Embed(
+                    description=f"入札者: **{self.bot.get_user(id=int(tend_data[1][-1])).display_name}**, \n"
+                                f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
+                    color=0x4259fb
+                )
+                embed.set_image(url="attachment://icon.png")
+                embed.set_footer(text=f"入札時刻: {time}")
+                await ctx.channel.send(file=image, embed=embed)
+        else:
+            embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
+            await ctx.send(embed=embed)
+
     @commands.command()
     async def remand(self, ctx):
         if self.bot.is_auction_category(ctx):
 
             cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
             auction_data = cur.fetchone()
-
-            async def delete_to(ctx, ch_id):
-                delete_ch = ctx.channel
-                msg = await delete_ch.fetch_message(ch_id)
-                await delete_ch.purge(limit=None, after=msg)
 
             # オークションが行われていなければ警告して終了
             if "☆" in ctx.channel.name:
