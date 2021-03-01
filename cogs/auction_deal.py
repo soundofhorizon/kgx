@@ -218,7 +218,6 @@ class AuctionDael(commands.Cog):
             now = datetime.now()
             if hour_min_list == [24, 00]:
                 finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
-                user_input_4.content = finish_time.strftime('%Y/%m/%d-%H:%M')
             else:
                 finish_time = datetime.strptime(user_input_4.content, r"%Y/%m/%d-%H:%M")
 
@@ -272,6 +271,10 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
                 auction_embed = await ctx.channel.send(embed=embed)
                 await auction_embed.pin()
+
+                # 24:00だとSQL突っ込むと詰むのでここで変える
+                if hour_min_list == [24, 00]:
+                    user_input_4.content = finish_time.strftime('%Y/%m/%d-%H:%M')
 
                 # 椎名の部分を数字に変換(開始と即決)
                 user_input_2 = self.bot.stack_check(user_input_2)
@@ -358,7 +361,6 @@ class AuctionDael(commands.Cog):
             now = datetime.now()
             if hour_min_list == [24, 00]:
                 finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
-                user_input_3.content = finish_time.strftime('%Y/%m/%d-%H:%M')
             else:
                 finish_time = datetime.strptime(user_input_3.content, r"%Y/%m/%d-%H:%M")
 
@@ -406,6 +408,10 @@ class AuctionDael(commands.Cog):
                     "<:shiina_balance:558175954686705664>取引を開始します<:shiina_balance:558175954686705664>")
                 deal_embed = await ctx.channel.send(embed=embed)
                 await deal_embed.pin()
+
+                # 24:00だとSQL突っ込むと詰むのでここで変える
+                if hour_min_list == [24, 00]:
+                    user_input_3.content = finish_time.strftime('%Y/%m/%d-%H:%M')
 
                 user_input_2 = self.bot.stack_check(user_input_2)
                 cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
