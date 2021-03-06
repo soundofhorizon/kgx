@@ -25,7 +25,7 @@ class Loops(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def show_all_channel_info(self):
-        embeds_message_id = 817614532079648818
+        await self.bot.wait_until_ready()
         auction_data_channel = self.bot.get_channel(id=771034285352026162)
         await auction_data_channel.purge(limit=100)
         cur.execute("SELECT DISTINCT auction.ch_id, auction.auction_owner_id, auction.auction_item,"
@@ -112,8 +112,7 @@ class Loops(commands.Cog):
                 await auction_data_channel.send(embed=embed)
                 description = ""
         embed = discord.Embed(description=description, color=0x59a5e3)
-        before_embed = auction_data_channel.fetch_message(id=embeds_message_id)
-        await before_embed.edit(embed=embed)
+        await auction_data_channel.send(embed=embed)
 
 
 def setup(bot):
