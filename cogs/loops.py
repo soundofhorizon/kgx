@@ -87,7 +87,7 @@ class Loops(commands.Cog):
                 diff_minites = int((diff.seconds - diff_hours*3600)/60)
                 diff_seconds = diff.seconds - diff_hours*3600 - diff_minites*60
 
-                description += f"{self.bot.get_channel(id=data[i][2][0]).name}:\n"
+                description += f"{self.bot.get_channel(id=data[i][2][0]).mention}:\n"
                 description += f"   出品者 → {self.bot.get_user(id=data[i][2][1]).display_name}\n"
                 description += f"   商品名 → {data[i][2][2]}\n"
                 # 多分no bidで更新すると死ぬ気がするので分岐
