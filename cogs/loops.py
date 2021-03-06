@@ -75,10 +75,7 @@ class Loops(commands.Cog):
 
         for i in range(len(data)):
             # debug出てもらっても困るので消滅させる。
-            if data[i][2][0] == 747728655735586876:
-                continue
-            # オークションが開催されてないときdisplay_nameが取れない。(人いないし)よって分岐
-            elif data[i][2][1] == 0:
+            if data[i][2][1] == 0:
                 continue
             # 他記述。
             else:
@@ -95,7 +92,7 @@ class Loops(commands.Cog):
                 description += f"   商品名 → {data[i][2][2]}\n"
                 # 多分no bidで更新すると死ぬ気がするので分岐
                 if data[i][2][3][-1] == 0:
-                    continue
+                    description += "    入札者はまだいません！\n"
                 else:
                     description += f"   最高額入札者 → {self.bot.get_user(id=data[i][2][3][-1]).display_name}\n"
                     description += f"   入札額 → {data[i][2][4]}{self.bot.stack_check_reverse(data[i][2][5][-1])}\n"
@@ -103,7 +100,7 @@ class Loops(commands.Cog):
                     description += f"   終了まで残り → **{diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒**\n"
                 else:
                     description += f"   終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒\n"
-                description += "\n--------\n\n"
+            description += "\n--------\n\n"
 
             # 文字数制限回避。多分足りない
             if len(description) >= 1800:
