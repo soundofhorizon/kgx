@@ -79,8 +79,7 @@ class Loops(commands.Cog):
                 continue
             # オークションが開催されてないときdisplay_nameが取れない。(人いないし)よって分岐
             elif data[i][2][1] == 0:
-                description += f"{self.bot.get_channel(id=data[i][2][0]).name}:\n"
-                description += f"   現在このチャンネルでオークションは開催していません！\n"
+                continue
             # 他記述。
             else:
                 # 終了時刻までの残り時間を計算
