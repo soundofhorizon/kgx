@@ -646,123 +646,28 @@ class AuctionDael(commands.Cog):
 
     @commands.command(aliases=["Add"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
-    async def add(self, ctx, add_price: str):
-        if self.bot.is_auction_category(ctx):
-            cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
-            auction_data = cur.fetchone()
-
-            # オークションが行われていなければ警告して終了
-            if "☆" in ctx.channel.name:
-                embed = discord.Embed(description="このコマンドはオークション開催中のみ使用可能です。", color=0x4259fb)
-                await ctx.send(embed=embed)
-                return
-            # オークション主催者であれば警告して終了
-            elif ctx.author.id == auction_data[1]:
-                embed = discord.Embed(description="このコマンドはオークション主催者は使用不可能です。", color=0x4259fb)
-                await ctx.send(embed=embed)
-                return
-            else:
-                cur.execute("select * from tend where ch_id = %s", (ctx.channel.id,))
-                tend_data = cur.fetchone()
-                tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
-
-                # 0の時は最初の入札者になっているのでreturn
-                if tend_data[1][-1] == 0:
-                    embed = discord.Embed(description="入札がなにもありません。最初の入札はtendコマンドで行ってください。", color=0x4259fb)
-                    await ctx.send(embed=embed)
-                    return
-                # add
-                now_tend_price = tend_data[2][-1]
-                added_tend_price = now_tend_price + self.bot.stack_check(add_price)
-                # listに追加
-                tend_data[1].append(ctx.author.id)
-                tend_data[2].append(added_tend_price)
-
-                tend_data_str_1 = self.bot.list_to_tuple_string(tend_data[1])
-                tend_data_str_2 = self.bot.list_to_tuple_string(tend_data[2])
-
-                cur.execute(
-                    f"UPDATE tend SET tender_id = '{tend_data_str_1}', tend_price = '{tend_data_str_2}' WHERE ch_id = %s",
-                    (ctx.channel.id,))
-                db.commit()
-
-                # 入札時間の判定
-                time = datetime.now() + timedelta(hours=1)
-                finish_time = datetime.strptime(auction_data[6], r"%Y/%m/%d-%H:%M")
-                flag = False
-    
-                if time > finish_time:
-                    embed = discord.Embed(description="終了1時間前以内の入札です。終了時刻を1日延長します。", color=0x4259fb)
-                    await ctx.send(embed=embed)
-                    await asyncio.sleep(2)
-    
-                    embed = discord.Embed(title="オークション内容", color=0xffaf60)
-                    embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction_data[1]).display_name}')
-                    embed.add_field(name="出品物", value=f'\n\n{auction_data[3]}')
-                    value = "なし" if auction_data[5] == "なし" else f"{auction_data[7]}{self.bot.stack_check_reverse(auction_data[5])}"
-                    embed.add_field(name="開始価格", value=f'\n\n{auction_data[7]}{self.bot.stack_check_reverse(auction_data[4])}',
-                                    inline=False)
-                    embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
-                    finish_time = (finish_time + timedelta(days=1)).strftime("%Y/%m/%d-%H:%M")
-                    embed.add_field(name="終了日時", value=f'\n\n{finish_time}')
-                    embed.add_field(name="特記事項", value=f'\n\n{auction_data[8]}')
-                    msg = await ctx.fetch_message(auction_data[2])
-                    await msg.edit(embed=embed)  # メッセージの更新で対応する
-                    # 変更点をUPDATE
-                    cur.execute("UPDATE auction SET embed_message_id = %s, auction_end_time = %s WHERE ch_id = %s",
-                                (msg.id, finish_time, ctx.channel.id))
-                    db.commit()
-    
-                    # 延長をオークション主催者に伝える
-                    flag = True
-    
-                cur.execute(
-                    f"UPDATE tend SET tender_id = '{tend_data_str_1}', tend_price = '{tend_data_str_2}' WHERE ch_id = %s",
-                    (ctx.channel.id,))
-                db.commit()
-                await ctx.message.delete()  # !tendのメッセージを削除する
-                await asyncio.sleep(0.1)
-    
-                if flag:  # 終了時間が延長される場合は通知する
-                    text = f"チャンネル名: {self.bot.get_channel(id=auction_data[0]).name}において終了1時間前に入札があったため終了時刻を1日延長します。"
-                    embed = discord.Embed(description=text, color=0x4259fb)
-                    time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-                    embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
-                    await self.bot.dm_send(auction_data[1], embed)
-    
-                time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-                avatar_url = ctx.author.avatar_url_as(format="png")
-                image = requests.get(avatar_url)
-                image = io.BytesIO(image.content)
-                image.seek(0)
-                image = Image.open(image)
-                image = image.resize((100, 100))
-                image.save("./icon.png")
-                image = discord.File("./icon.png", filename="icon.png")
-                embed = discord.Embed(description=f"入札者: **{ctx.author.display_name}**, \n"
-                                                  f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(added_tend_price))}**\n",
-                                      color=0x4259fb)
-                embed.set_image(url="attachment://icon.png")
-                embed.set_footer(text=f"入札時刻: {time}")
-                await ctx.send(file=image, embed=embed)
-    
-                # 一つ前のtenderにDMする。ただし存在を確認してから。[0,なにか](初回tend)は送信しない(before_tender==0)
-                # 今までの状態だと初回IndexErrorが発生するので順番を前に持ってきました
-                if len(tend_data[1]) == 1:  # 初回の入札(tend_data=[0]の状態)は弾く
-                    return
-    
-                before_tender_id = int(tend_data[1][-1])
-    
-                text = f"チャンネル名: {ctx.channel.name}において貴方より高い入札がされました。\n" \
-                       f"入札者: {ctx.author.display_name}, 入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(added_tend_price))}**\n"
-                embed = discord.Embed(description=text, color=0x4259fb)
-                time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-                embed.set_footer(text=f'channel:{ctx.channel.name}\nTime:{time}')
-    
-                await self.bot.dm_send(before_tender_id, embed)
-        else:
+    async def add(self, ctx: commands.Context, add_price: str):
+        if not self.bot.is_auction_category(ctx):
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
+            return
+        cur.execute("SELECT * FROM tend where ch_id = %s", (ctx.channel.id,))
+        tend_data = cur.fetchone()
+        tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
+
+        if tend_data[1][-1] == 0:
+            embed = discord.Embed(description="入札がなにもありません。最初の入札はtendコマンドで行ってください。", color=0x4259fb)
+            await ctx.send(embed=embed)
+            return
+
+        add_price = self.bot.stack_check(add_price)
+        if add_price == 0:
+            await ctx.send("入力値が不正です。")
+            return
+
+        price = tend_data[2][-1] + add_price
+        tend = self.bot.get_command("tend")
+        await ctx.invoke(tend, ctx, price)
 
     @commands.command()
     async def remand(self, ctx):
