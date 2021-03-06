@@ -254,11 +254,16 @@ class AdminOnly(commands.Cog):
                         "tend.tender_id, auction.unit, tend.tend_price, auction.auction_end_time FROM "
                         "(auction JOIN tend ON auction.ch_id = tend.ch_id)")
             sql_data = cur.fetchall()
+
             description = ""
             before_sort_data = []
             # [ch_id, ch_name, data]の2重リストを作成し、ch_nameを基準に変更を加える。いい方法があったら変更してほしい><
             for i in range(len(sql_data)):
-                before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data[i]])
+                # 椎名debug
+                if sql_data[i][0] == 747728655735586876:
+                    continue
+                else:
+                    before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data[i]])
 
             # マジでここのアルゴリズムを変えたい
             # 椎名かガチャ券かなどを分類
@@ -267,7 +272,6 @@ class AdminOnly(commands.Cog):
             all_ch = []
             yami_ch = []
             for i in range(len(before_sort_data)):
-                await ctx.channel.send(before_sort_data[i][1])
                 if "椎名" in before_sort_data[i][1]:
                     siina_ch.append(before_sort_data[i])
                 elif "ガチャ券" in before_sort_data[i][1]:
