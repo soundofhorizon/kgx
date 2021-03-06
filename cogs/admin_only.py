@@ -349,6 +349,11 @@ class AdminOnly(commands.Cog):
 
         await ctx.channel.send(f"{role.mention}持ちの{n}人を吹き飛ばしました")
 
+    @commands.command()
+    async def create_embed(self, ctx):
+        embed = discord.Embed(description="test")
+        await ctx.channel.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
