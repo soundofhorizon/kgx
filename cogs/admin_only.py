@@ -262,7 +262,7 @@ class AdminOnly(commands.Cog):
             data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
 
             for i in range(3):
-                await ctx.channel.send(data[0][i])
+                await ctx.channel.send(data[0][2][i])
 
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
