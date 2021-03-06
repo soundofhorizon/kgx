@@ -44,11 +44,12 @@ class Loops(commands.Cog):
                 before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data[i]])
 
         # マジでここのアルゴリズムを変えたい
-        # 椎名かガチャ券かなどを分類
+        # 椎名かガチャ券かなどを分類(ついでに開催されてるオークション数を調べる)
         siina_ch = []
         gatya_ch = []
         all_ch = []
         yami_ch = []
+        active_auction = 0
         for i in range(len(before_sort_data)):
             if "椎名" in before_sort_data[i][1]:
                 siina_ch.append(before_sort_data[i])
@@ -58,6 +59,8 @@ class Loops(commands.Cog):
                 all_ch.append(before_sort_data[i])
             elif "闇取引" in before_sort_data[i][1]:
                 yami_ch.append(before_sort_data[i])
+            if not before_sort_data[i][2][1] == 0:
+                active_auction += 1
         # 椎名 - ガチャ券 - all - 闇取引の順で正規表現で殴りラムダ式で並び替え
         siina_ch_sorted = sorted(siina_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
         gatya_ch_sorted = sorted(gatya_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
@@ -73,12 +76,14 @@ class Loops(commands.Cog):
         for i in yami_ch_sorted:
             data.append(i)
 
+        showed_active_auction = 0
         for i in range(len(data)):
             # debug出てもらっても困るので消滅させる。
             if data[i][2][1] == 0:
                 continue
             # 他記述。
             else:
+                showed_active_auction += 1
                 # 終了時刻までの残り時間を計算
                 now = datetime.datetime.now()
                 check = datetime.datetime.strptime(data[i][2][6], "%Y/%m/%d-%H:%M")
@@ -100,7 +105,7 @@ class Loops(commands.Cog):
                     description += f"   終了まで残り → **{diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒**\n"
                 else:
                     description += f"   終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒\n"
-            if len(data) >= 2 and i < len(data) - 1:
+            if active_auction >= 2 and showed_active_auction < active_auction:
                 description += "\n--------\n\n"
 
             # 文字数制限回避。多分足りない
