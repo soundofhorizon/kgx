@@ -246,7 +246,7 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        embeds_message_id = 817614532079648818
+        embeds_message_id = 817617654512746526
         auction_data_channel = self.bot.get_channel(id=771034285352026162)
         await auction_data_channel.purge(limit=100)
         cur.execute("SELECT DISTINCT auction.ch_id, auction.auction_owner_id, auction.auction_item,"
