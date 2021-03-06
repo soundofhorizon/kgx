@@ -267,6 +267,7 @@ class AdminOnly(commands.Cog):
             all_ch = []
             yami_ch = []
             for i in range(len(before_sort_data)):
+                await ctx.channel.send(before_sort_data[i][1])
                 if "椎名" in before_sort_data[i][1]:
                     siina_ch.append(before_sort_data[i])
                 elif "ガチャ券" in before_sort_data[i][1]:
@@ -276,18 +277,18 @@ class AdminOnly(commands.Cog):
                 elif "闇取引" in before_sort_data[i][1]:
                     yami_ch.append(before_sort_data[i])
             # 椎名 - ガチャ券 - all - 闇取引の順で正規表現で殴りラムダ式で並び替え
-            siina_ch = sorted(siina_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
-            gatya_ch = sorted(gatya_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
-            all_ch = sorted(all_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
-            yami_ch = sorted(yami_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
+            siina_ch_sorted = sorted(siina_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
+            gatya_ch_sorted = sorted(gatya_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
+            all_ch_sorted = sorted(all_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
+            yami_ch_sorted = sorted(yami_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
             data = []
-            for i in siina_ch:
+            for i in siina_ch_sorted:
                 data.append(i)
-            for i in gatya_ch:
+            for i in gatya_ch_sorted:
                 data.append(i)
-            for i in all_ch:
+            for i in all_ch_sorted:
                 data.append(i)
-            for i in yami_ch:
+            for i in yami_ch_sorted:
                 data.append(i)
 
             for i in range(len(data)):
