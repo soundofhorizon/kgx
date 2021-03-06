@@ -256,10 +256,39 @@ class AdminOnly(commands.Cog):
             sql_data = cur.fetchall()
             description = ""
             before_sort_data = []
-            # [ch_id, ch_name, data]の2重リストを作成する。いい方法があったら変更してほしい><
+            # [ch_id, ch_name, data]の2重リストを作成し、ch_nameを基準に変更を加える。いい方法があったら変更してほしい><
             for i in range(len(sql_data)):
                 before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data[i]])
-            data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
+
+            # マジでここのアルゴリズムを変えたい
+            # 椎名かガチャ券かなどを分類
+            siina_ch = []
+            gatya_ch = []
+            all_ch = []
+            yami_ch = []
+            for i in range(len(before_sort_data)):
+                if "椎名" in before_sort_data[i][1]:
+                    siina_ch.append(before_sort_data[i])
+                elif "ガチャ券" in before_sort_data[i][1]:
+                    gatya_ch.append(before_sort_data[i])
+                elif "all" in before_sort_data[i][1]:
+                    all_ch.append(before_sort_data[i])
+                elif "闇取引" in before_sort_data[i][1]:
+                    yami_ch.append(before_sort_data[i])
+            # 椎名 - ガチャ券 - all - 闇取引の順で正規表現で殴りラムダ式で並び替え
+            siina_ch = sorted(siina_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
+            gatya_ch = sorted(gatya_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
+            all_ch = sorted(all_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
+            yami_ch = sorted(yami_ch, reverse=False, key=lambda x: int(re.search(r'\d+', x[1]).group()))
+            data = []
+            for i in siina_ch:
+                data.append(i)
+            for i in gatya_ch:
+                data.append(i)
+            for i in all_ch:
+                data.append(i)
+            for i in yami_ch:
+                data.append(i)
 
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
@@ -274,7 +303,7 @@ class AdminOnly(commands.Cog):
                     # 終了時刻までの残り時間を計算
                     now = datetime.datetime.now()
                     check = datetime.datetime.strptime(data[i][2][6], "%Y/%m/%d-%H:%M")
-                    diff = now - check
+                    diff = check - now
                     diff_hours = int(diff.seconds/3600)
                     diff_minites = int((diff.seconds - diff_hours*3600)/60)
                     diff_seconds = diff.seconds - diff_hours*3600 - diff_minites*60
