@@ -276,7 +276,7 @@ class AdminOnly(commands.Cog):
                 else:
                     # 終了時刻までの残り時間を計算
                     now = datetime.datetime.now()
-                    check = datetime.datetime.strptime(data[i][2][6], "%Y/%m/%d-%H:%M:%S")
+                    check = datetime.datetime.strptime(data[i][2][6], "%Y/%m/%d-%H:%M")
                     diff = now - check
                     diff_hours = int(diff.seconds/3600)
                     diff_minites = int((diff.seconds - diff_hours*3600)/60)
