@@ -25,7 +25,6 @@ class Loops(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def show_all_channel_info(self):
-        await self.bot.wait_until_ready()
         embeds_message_id = 817614532079648818
         auction_data_channel = self.bot.get_channel(id=771034285352026162)
         await auction_data_channel.purge(limit=100)
