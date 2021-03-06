@@ -100,7 +100,7 @@ class Loops(commands.Cog):
                     description += f"   終了まで残り → **{diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒**\n"
                 else:
                     description += f"   終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒\n"
-            if len(data) >= 2:
+            if len(data) >= 2 and i < len(data) - 1:
                 description += "\n--------\n\n"
 
             # 文字数制限回避。多分足りない
