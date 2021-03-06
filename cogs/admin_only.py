@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import os
 import re
-import traceback
 
 import discord
 import psycopg2
@@ -261,7 +260,8 @@ class AdminOnly(commands.Cog):
                 before_sort_data.append([sql_data[i][0], self.bot.get_channel(id=sql_data[i][0]).name, sql_data])
             data = sorted(before_sort_data, reverse=False, key=lambda x: x[1])
 
-            await auction_data_channel.send(len(data))
+            for i in range(len(data)):
+                await ctx.channel.send(data[i])
 
             for i in range(len(data)):
                 # debug出てもらっても困るので消滅させる。
