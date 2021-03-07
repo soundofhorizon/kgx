@@ -15,7 +15,8 @@ class Loops(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.presence_change_task.start()
-        self.show_all_channel_info.start()
+        self.show_all_auction_channel_info.start()
+        self.show_all_deal_channel_info.start()
 
     @tasks.loop(seconds=20)
     async def presence_change_task(self):
@@ -24,7 +25,7 @@ class Loops(commands.Cog):
         await self.bot.change_presence(status=discord.Status.online, activity=game)
 
     @tasks.loop(seconds=15)
-    async def show_all_channel_info(self):
+    async def show_all_auction_channel_info(self):
         await self.bot.wait_until_ready()
         auction_data_channel = self.bot.get_channel(id=771034285352026162)
         await auction_data_channel.purge(limit=100)
@@ -120,7 +121,8 @@ class Loops(commands.Cog):
         await auction_data_channel.send(embed=embed)
 
     @tasks.loop(seconds=15)
-    async def test(self):
+    async def show_all_deal_channel_info(self):
+        await self.bot.wait_until_ready()
         deal_data_channel = self.bot.get_channel(id=771068489627861002)
         await deal_data_channel.purge(limit=100)
         cur.execute("SELECT * from deal")
