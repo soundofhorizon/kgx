@@ -667,7 +667,7 @@ class AuctionDael(commands.Cog):
 
         price = tend_data[2][-1] + add_price
         tend = self.bot.get_command("tend")
-        await ctx.invoke(tend, self, ctx, price)
+        await ctx.invoke(tend, price)
 
     @commands.command()
     async def remand(self, ctx):
