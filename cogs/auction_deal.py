@@ -432,7 +432,7 @@ class AuctionDael(commands.Cog):
 
     @commands.command(aliases=["Tend"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
-    async def tend(self, ctx, *, price):
+    async def tend(self, ctx, price):
         if not self.bot.is_auction_category(ctx):
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
