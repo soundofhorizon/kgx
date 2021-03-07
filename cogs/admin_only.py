@@ -258,7 +258,7 @@ class AdminOnly(commands.Cog):
         await ctx.channel.send(f"{role.mention}持ちの{n}人を吹き飛ばしました")
 
     @commands.command()
-    async def test(self):
+    async def test(self, ctx):
         deal_data_channel = self.bot.get_channel(id=771068489627861002)
         await deal_data_channel.purge(limit=100)
         cur.execute("SELECT * from deal")
@@ -319,9 +319,9 @@ class AdminOnly(commands.Cog):
                 now = datetime.datetime.now()
                 check = datetime.datetime.strptime(data[i][2][5], "%Y/%m/%d-%H:%M")
                 diff = check - now
-                diff_hours = int(diff.seconds/3600)
-                diff_minites = int((diff.seconds - diff_hours*3600)/60)
-                diff_seconds = diff.seconds - diff_hours*3600 - diff_minites*60
+                diff_hours = int(diff.seconds / 3600)
+                diff_minites = int((diff.seconds - diff_hours * 3600) / 60)
+                diff_seconds = diff.seconds - diff_hours * 3600 - diff_minites * 60
 
                 description += f"{self.bot.get_channel(id=data[i][2][0]).mention}:\n"
                 description += f"   出品者 → {self.bot.get_user(id=data[i][2][1]).display_name}\n"
@@ -344,7 +344,6 @@ class AdminOnly(commands.Cog):
         if not len(description) == 0:
             embed = discord.Embed(description=description, color=0x59a5e3)
         await deal_data_channel.send(embed=embed)
-
 
 
 def setup(bot):
