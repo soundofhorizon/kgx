@@ -24,7 +24,7 @@ class Loops(commands.Cog):
         game = discord.Game(f"{self.bot.get_guild(558125111081697300).member_count}人を監視中")
         await self.bot.change_presence(status=discord.Status.online, activity=game)
 
-    @tasks.loop(seconds=15)
+    @tasks.loop(seconds=60)
     async def show_all_auction_channel_info(self):
         await self.bot.wait_until_ready()
         auction_data_channel = self.bot.get_channel(id=771034285352026162)
@@ -120,7 +120,7 @@ class Loops(commands.Cog):
             embed = discord.Embed(description=description, color=0x59a5e3)
         await auction_data_channel.send(embed=embed)
 
-    @tasks.loop(seconds=15)
+    @tasks.loop(seconds=60)
     async def show_all_deal_channel_info(self):
         await self.bot.wait_until_ready()
         deal_data_channel = self.bot.get_channel(id=771068489627861002)
