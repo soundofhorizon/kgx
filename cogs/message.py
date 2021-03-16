@@ -34,7 +34,6 @@ class Message(commands.Cog):
                 mcid = f'{message.content}'.replace('\\', '')
                 p = re.compile(r'^[a-zA-Z0-9_]+$')
                 if p.fullmatch(mcid):
-                    mcid = str.lower(mcid)
                     url = f"https://ranking-gigantic.seichi.click/player/{mcid}"
                     try:
                         res = requests.get(url)
