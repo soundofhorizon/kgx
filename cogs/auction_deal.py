@@ -523,11 +523,11 @@ class AuctionDael(commands.Cog):
                                     (ctx.author.display_name, auction_data[3], self.bot.stack_check(price),
                                      self.bot.get_user(id=auction_data[1]).display_name))
                         db.commit()
-                        await self.bot.get_channel(705040893593387039).purge(limit=10)
-                        await asyncio.sleep(0.1)
+                        await self.bot.get_channel(832956663908007946).purge(limit=10)
+                        await asyncio.sleep(1)
                         embeds = self.bot.create_high_bid_ranking()
                         for embed in embeds:
-                            await self.bot.get_channel(705040893593387039).send(embed=embed)
+                            await self.bot.get_channel(832956663908007946).send(embed=embed)
 
                     embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                     await ctx.channel.send(embed=embed)

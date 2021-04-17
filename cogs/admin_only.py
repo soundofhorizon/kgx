@@ -65,10 +65,11 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def show_bid_ranking(self, ctx):
-        await self.bot.get_channel(705040893593387039).purge(limit=10)
+        await self.bot.get_channel(832956663908007946).purge(limit=10)
+        await asyncio.sleep(1)
         embed = self.bot.create_high_bid_ranking()
         for i in range(len(embed)):
-            await self.bot.get_channel(705040893593387039).send(embed=embed[i])
+            await self.bot.get_channel(832956663908007946).send(embed=embed[i])
 
     @commands.command()
     async def stop_deal(self, ctx):
