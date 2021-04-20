@@ -207,7 +207,7 @@ class AuctionDael(commands.Cog):
 
             embed = discord.Embed(
                 description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
-                            "例 2020年5月14日の午後8時に終了したい場合：\n**2020/05/14-20:00**と入力してください。\n"
+                            f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
                             "この形でない場合認識されません！",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
@@ -350,7 +350,7 @@ class AuctionDael(commands.Cog):
             user_input_2 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_2.content))
             embed = discord.Embed(
                 description="取引終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
-                            "例　5月14日の午後8時に終了したい場合：\n**2021/05/14-20:00**と入力してください。\nこの形でない場合認識されません！\n"
+                            f"例　5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\nこの形でない場合認識されません！\n"
                             "**間違えて打ってしまった場合その部分は必ず削除してください。**",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
