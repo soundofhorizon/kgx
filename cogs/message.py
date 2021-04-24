@@ -31,50 +31,53 @@ class Message(commands.Cog):
         try:
             # MCID_check
             if message.channel.id == 558278443440275461:
-                mcid = f'{message.content}'.replace('\\', '')
-                p = re.compile(r'^[a-zA-Z0-9_]+$')
-                if p.fullmatch(mcid):
-                    url = f"https://ranking-gigantic.seichi.click/player/{mcid}"
+                mcid = message.content.replace("\\", "")
+                if re.fullmatch("[a-zA-Z0-9_]{2,16}", mcid):
+                    url = "https://ranking-gigantic.seichi.click/api/search/player"
+                    payload = {'lim': '1', 'q': mcid}
                     try:
-                        res = requests.get(url)
+                        res = requests.get(url, params=payload)
+                        # {'result_count': 1, 'query': 'unchama',
+                        # 'players': [{'name': 'unchama','uuid': 'b66cc3f6-a045-42ad-b4b8-320f20caf140'}]}
                         res.raise_for_status()
-                        soup = bs4.BeautifulSoup(res.text, "html.parser")
-                        td = soup.td
-                        if f'{mcid}' in f'{td}':
+                        res = res.json()
+
+                        if res["result_count"] >= 1 and res["players"][0]["name"].lower() == mcid.lower():
                             # 存在した場合の処理
                             role1 = discord.utils.get(message.guild.roles, name="新人")
                             role2 = discord.utils.get(message.guild.roles, name="MCID報告済み")
-                            emoji = ['👍', '🙆']
                             await message.author.remove_roles(role1)
                             await message.author.add_roles(role2)
                             try:
                                 await message.author.edit(nick=mcid)
                             except discord.errors.Forbidden:
                                 await message.channel.send(f"{message.author.mention}権限エラー\nニックネームを申請したMCIDに変更してください。")
+
+                            emoji = ['👍', '🙆']
                             await message.add_reaction(random.choice(emoji))
-                            # uuidを確かめる
-                            uuid = self.bot.mcid_to_uuid(mcid)
                             channel = self.bot.get_channel(591244559019802650)
-                            color = [0x3efd73, 0xfb407c, 0xf3f915, 0xc60000, 0xed8f10, 0xeacf13, 0x9d9d9d, 0xebb652,
-                                     0x4259fb,
-                                     0x1e90ff]
+                            color = [
+                                0x3efd73, 0xfb407c, 0xf3f915, 0xc60000,
+                                0xed8f10, 0xeacf13, 0x9d9d9d, 0xebb652,
+                                0x4259fb, 0x1e90ff
+                            ]
                             embed = discord.Embed(description=f'{message.author.display_name}のMCIDの報告を確認したよ！',
                                                   color=random.choice(color))
-                            embed.set_author(name=message.author,
-                                             icon_url=message.author.avatar_url, )  # ユーザー名+ID,アバターをセット
+                            embed.set_author(name=message.author, icon_url=message.author.avatar_url)
                             await channel.send(embed=embed)
 
                             # SQLのuser_dataに新規登録
-                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);", (message.author.id, 0, 0, uuid))
+                            uuid = res["players"][0]["uuid"].replace("-", "")
+                            cur.execute( "INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);", (message.author.id, 0, 0, uuid))
                             db.commit()
                         else:
                             embed = discord.Embed(
                                 description=f'{message.author} さん。\n入力されたMCIDは実在しないか、又はまだ一度も整地鯖にログインしていません。\n'
-                                            f'続けて間違った入力を行うと規定によりBANの対象になることがあります。',
+                                '続けて間違った入力を行うと規定によりBANの対象になることがあります。',
                                 color=0xff0000)
                             await message.channel.send(embed=embed)
                     except requests.exceptions.HTTPError:
-                        await message.channel.send(f'requests.exceptions.HTTPError')
+                        await message.channel.send("requests.exceptions.HTTPError")
                 else:
                     embed = discord.Embed(description="MCIDに使用できない文字が含まれています'\n続けて間違った入力を行うと規定によりBANの対象になることがあります。",
                                           color=0xff0000)
