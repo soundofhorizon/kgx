@@ -4,6 +4,7 @@ import json
 import random
 import os
 import traceback
+import re
 from datetime import datetime
 from typing import Union, List
 
@@ -239,40 +240,25 @@ class KGX(commands.Bot):
     @staticmethod
     def stack_check(value) -> int:
         """
-        [a lc + b st + c]がvalueで来ることを想定する(関数使用前に文の構造確認を取る)
-        少数出来た場合、少数で計算して最後にintぐるみをして値を返す
-        :param value: [a lc + b st + c]の形の価格
-        :return: 価格をn個にしたもの(少数は丸め込む)
+        [a lc + b st + c…]などがvalueで来ることを想定する(正しくない文字列が渡されれば0を返す)
+        小数で来た場合、小数で計算して最後にintぐるみをして値を返す
+        :param value: [a lc + b st + c…]の形の価格
+        :return: 価格をn個にしたもの(小数は丸め込む)
         """
-        value = str(value).replace("椎名", "").lower()
-        stack_frag = False
-        lc_frag = False
-        calc_result = [0, 0, 0]
-        if "lc" in value:
-            lc_frag = True
-        if "st" in value:
-            stack_frag = True
-        try:
-            data = value.replace("lc", "").replace("st", "").replace("個", "").split("+")
-            if lc_frag:
-                calc_result[0] = data[0]
-                data.pop(0)
-            if stack_frag:
-                calc_result[1] = data[0]
-                data.pop(0)
-            try:
-                calc_result[2] = data[0]
-            except IndexError:
-                pass
-            a = float(calc_result[0])
-            b = float(calc_result[1])
-            c = float(calc_result[2])
-            d = int(float(a * 3456 + b * 64 + c))
-            if d <= 0:
-                return 0
-            else:
-                return d
-        except ValueError:
+        UNITS = {"lc": 3456, "st": 64, "個": 1, "椎名": 1} # 単位と対応する値
+        value = str(value).lower()
+
+        if re.fullmatch(r"\d+(\.\d+)?(st|lc|個|椎名)?(\s*\+\s*\d+(\.\d+)?(st|lc|個|椎名)?)*", value):
+            result = 0
+
+            for term in re.split(r"\s*\+\s*", value): # 項ごとに分割
+                unit_match = re.search(r"(st|lc|個|椎名)?$", term)
+                unit = UNITS.get(unit_match.group(), 1)
+                result += float(term[:unit_match.start()]) * unit
+
+            return int(result)
+
+        else:
             return 0
 
     @staticmethod
