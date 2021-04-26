@@ -238,13 +238,14 @@ class KGX(commands.Bot):
         return embed_list
 
     @staticmethod
-    def stack_check(value) -> int:
+    def stack_check(*value) -> int:
         """
         [a lc + b st + c…]などがvalueで来ることを想定する(正しくない文字列が渡されれば0を返す)
         小数で来た場合、小数で計算して最後にintぐるみをして値を返す
         :param value: [a lc + b st + c…]の形の価格
         :return: 価格をn個にしたもの(小数は丸め込む)
         """
+　　　　　value = "".join(value)
         UNITS = {"lc": 3456, "st": 64, "個": 1, "椎名": 1} # 単位と対応する値
         value = str(value).lower()
 
