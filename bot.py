@@ -238,21 +238,21 @@ class KGX(commands.Bot):
         return embed_list
 
     @staticmethod
-    def stack_check(*value) -> int:
+    def stack_check(value) -> int:
         """
         [a lc + b st + c…]などがvalueで来ることを想定する(正しくない文字列が渡されれば0を返す)
         小数で来た場合、小数で計算して最後にintぐるみをして値を返す
         :param value: [a lc + b st + c…]の形の価格
         :return: 価格をn個にしたもの(小数は丸め込む)
         """
-        value = "".join(value)
         UNITS = {"lc": 3456, "st": 64, "個": 1, "椎名": 1} # 単位と対応する値
         value = str(value).lower()
 
-        if re.fullmatch(r"\d+(\.\d+)?(st|lc|個|椎名)?(\s*\+\s*\d+(\.\d+)?(st|lc|個|椎名)?)*", value):
+        if re.fullmatch(r"\s*\d+(\.\d+)?(st|lc|個|椎名)?(\s*\+\s*\d+(\.\d+)?(st|lc|個|椎名)?)*\s*", value):
+            value = re.sub(r"\s", "", value) # 空白文字を削除
             result = 0
 
-            for term in re.split(r"\s*\+\s*", value): # 項ごとに分割
+            for term in value.split("+"): # 項ごとに分割
                 unit_match = re.search(r"(st|lc|個|椎名)?$", term)
                 unit = UNITS.get(unit_match.group(), 1)
                 result += float(term[:unit_match.start()]) * unit

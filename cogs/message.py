@@ -170,7 +170,7 @@ class Message(commands.Cog):
             await ctx.channel.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
 
     @commands.command()
-    async def stack_check(self, ctx, amount):
+    async def stack_check(self, ctx, *, amount):
         # 数値かどうかで渡す関数を変更する
         try:
             if int(amount):
