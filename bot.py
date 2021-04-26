@@ -245,7 +245,7 @@ class KGX(commands.Bot):
         :param value: [a lc + b st + c…]の形の価格
         :return: 価格をn個にしたもの(小数は丸め込む)
         """
-　　　　　value = "".join(value)
+        value = "".join(value)
         UNITS = {"lc": 3456, "st": 64, "個": 1, "椎名": 1} # 単位と対応する値
         value = str(value).lower()
 
