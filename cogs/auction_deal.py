@@ -3,6 +3,7 @@ import io
 import os
 import re
 from datetime import datetime, timedelta
+from bisect import bisect
 
 import discord
 import psycopg2
@@ -32,7 +33,7 @@ class AuctionDael(commands.Cog):
         p = re.compile(r'^[0-9]+$')
         if p.fullmatch(str(pt)):
             cur.execute("SELECT bid_score FROM user_data where user_id = %s", (ctx.author.id,))
-            oldscore = list(cur.fetchone())
+            old_score = list(cur.fetchone())
             new_score = oldscore[0] + pt
             cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (new_score, ctx.author.id))
             db.commit()
@@ -42,7 +43,8 @@ class AuctionDael(commands.Cog):
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
             await channel.send(embed=embed)
 
-            if new_score in [1, 3, 5, 10, 30, 60, 100]:  # ランクアップのときのポイントだったら
+            threshold = [1, 3, 5, 10, 30, 60, 100]
+            if bisect(threshold, old_score) != bisect(threshold, new_score):  # beforeとnewで違うランクだったら
                 before, after = self.bot.check_role(new_score, ctx)
                 if before is None:
                     await ctx.author.add_roles(after)
