@@ -34,7 +34,7 @@ class AuctionDael(commands.Cog):
         if p.fullmatch(str(pt)):
             cur.execute("SELECT bid_score FROM user_data where user_id = %s", (ctx.author.id,))
             old_score = list(cur.fetchone())
-            new_score = oldscore[0] + pt
+            new_score = old_score[0] + pt
             cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (new_score, ctx.author.id))
             db.commit()
 
