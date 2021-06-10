@@ -124,8 +124,8 @@ class AdminOnly(commands.Cog):
         for row in data:
             result.append(", ".join(map(repr, row)))
 
-        if len(result) <= 2000:
-            embed = discord.Embed(title="SQL文の実行結果", description=result)
+        if len("\n".join(result)) <= 2000:
+            embed = discord.Embed(title="SQL文の実行結果", description="\n".join(result))
             await ctx.send(embed=embed)
         else:
             react_list = ["\U000025c0\U0000fe0f", "\U000025b6\U0000fe0f"]
@@ -133,7 +133,7 @@ class AdminOnly(commands.Cog):
             page = 0
             max_page = (len(result)-1)//10+1 # 切り上げ除算
             embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)",
-                                  description="\n".join(value for value in result[:10]))
+                                  description="\n".join(result[:10]))
             msg = await ctx.send(embed=embed)
 
             for react in react_list:
