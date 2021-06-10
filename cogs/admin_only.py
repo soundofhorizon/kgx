@@ -1,6 +1,7 @@
 import asyncio
 import os
 import re
+from traceback import TracebackException
 
 import discord
 import psycopg2
@@ -173,7 +174,8 @@ class AdminOnly(commands.Cog):
 
     @execute_sql.error
     async def sql_error(self, ctx, error):
-        await ctx.send("SQL文が違うだろう！！？？")
+        tb_format = "".join(TracebackException.from_exception(error).format_exception_only())
+        await ctx.send(f"```{tb_format}``")
         db.commit()
 
     @commands.group(invoke_without_command=True)
