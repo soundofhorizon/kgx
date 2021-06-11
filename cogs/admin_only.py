@@ -1,6 +1,7 @@
 import asyncio
 import os
 import re
+from traceback import TracebackException
 
 import discord
 import psycopg2
@@ -119,22 +120,20 @@ class AdminOnly(commands.Cog):
 
         data = cur.fetchall()
 
-        result = ""
-        for i in range(len(data)):
-            result += '、'.join(str(d) for d in data[i])
-            result += "\n"
+        result = []
+        for row in data:
+            result.append(", ".join(map(repr, row)))
 
-        if len(result) <= 2000:
-            embed = discord.Embed(title="SQL文の実行結果", description=result)
+        if len("\n".join(result)) <= 2000:
+            embed = discord.Embed(title="SQL文の実行結果", description="\n".join(result))
             await ctx.send(embed=embed)
         else:
-            result_list = result.splitlines()
             react_list = ["\U000025c0\U0000fe0f", "\U000025b6\U0000fe0f"]
 
             page = 0
-            max_page = round(len(result_list) / 10)
+            max_page = (len(result)-1)//10+1 # 切り上げ除算
             embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)",
-                                  description="\n".join(value for value in result_list[0:10]))
+                                  description="\n".join(result[:10]))
             msg = await ctx.send(embed=embed)
 
             for react in react_list:
@@ -159,30 +158,24 @@ class AdminOnly(commands.Cog):
                     emoji = str(reaction.emoji)
                     await msg.remove_reaction(emoji, user)
                     if emoji == react_list[0]:  # 戻るリアクションだったら
-                        if page == 0:
-                            page = max_page
-                        else:
-                            page -= 1
+                        page -= 1
+                    elif emoji == react_list[1]:  # 進むリアクションだったら
+                        page += 1
+                    page %= max_page # (0 <= page < max_page) を満たすように
 
-                    if emoji == react_list[1]:  # 進むリアクションだったら
-                        if page == max_page:
-                            page = 0
-                        else:
-                            page += 1
-                    start_num = page * 10 + 1
-                    if len(result_list) < start_num + 9:
-                        embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{len(result_list)}件目)",
-                                              description="\n".join(
-                                                  value for value in result_list[start_num - 1:len(result_list)]))
+                    start_index = page * 10
+                    if len(result) < start_index + 10:
+                        embed = discord.Embed(title=f"SQL文の実行結果({start_index+1}-{len(result)}件目)",
+                                              description="\n".join(result[start_index:]))
                     else:
-                        embed = discord.Embed(title=f"SQL文の実行結果({start_num}-{start_num + 9}件目)",
-                                              description="\n".join(
-                                                  value for value in result_list[start_num - 1:start_num + 9]))
+                        embed = discord.Embed(title=f"SQL文の実行結果({start_index+1}-{start_index+10}件目)",
+                                              description="\n".join(result[start_index:start_index+10]))
                     await msg.edit(embed=embed)
 
     @execute_sql.error
     async def sql_error(self, ctx, error):
-        await ctx.send("SQL文が違うだろう！！？？")
+        tb_format = "".join(TracebackException.from_exception(error).format_exception_only())
+        await ctx.send(f"```{tb_format}``")
         db.commit()
 
     @commands.group(invoke_without_command=True)
