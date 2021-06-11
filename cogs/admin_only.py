@@ -175,7 +175,7 @@ class AdminOnly(commands.Cog):
     @execute_sql.error
     async def sql_error(self, ctx, error):
         tb_format = "".join(TracebackException.from_exception(error).format_exception_only())
-        await ctx.send(f"```{tb_format}``")
+        await ctx.send(f"```\n{tb_format}```")
         db.commit()
 
     @commands.group(invoke_without_command=True)

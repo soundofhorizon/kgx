@@ -121,7 +121,9 @@ class KGX(commands.Bot):
 
     async def on_command_error(self, ctx, error):
         """すべてのコマンドで発生したエラーを拾う"""
-        if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
+        if isinstance(error, commands.CommandInvokeError): # コマンド実行時にエラーが発生したら
+            if hasattr(ctx.command, "on_error"): # コマンド別のエラーハンドラが定義されていれば
+                return
             orig_error = getattr(error, "original", error)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
             error_message = f'```{error_msg}```'
