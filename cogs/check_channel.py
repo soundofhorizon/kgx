@@ -25,16 +25,16 @@ class CheckChannel(commands.Cog):
             # オークションについて
             cur.execute("SELECT * from auction")
             auction_data = cur.fetchall()
-            for row in auction_data:
-                ch = self.bot.get_channel(id=int(row[0]))
+            for ch_id, auction_owner_id in auction_data:
+                ch = self.bot.get_channel(id=ch_id)
                 if ch is None:
                     return
-                if row[1] == 0 and "☆" not in ch.name:
+                if auction_owner_id == 0 and "☆" not in ch.name:
                     try:
                         await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
                     except asyncio.TimeoutError:
                         continue
-                elif row[1] != 0 and "☆" in ch.name:
+                elif auction_owner_id != 0 and "☆" in ch.name:
                     try:
                         await asyncio.wait_for(ch.edit(name=ch.name.split('☆')[0]), timeout=3.0)
                     except asyncio.TimeoutError:
@@ -43,14 +43,14 @@ class CheckChannel(commands.Cog):
             # 取引について
             cur.execute("SELECT * from deal;")
             deal_data = cur.fetchall()
-            for row in deal_data:
-                ch = self.bot.get_channel(id=row[0])
-                if row[1] == 0 and "☆" not in ch.name:
+            for ch_id, deal_owner_id in deal_data:
+                ch = self.bot.get_channel(id=ch_id)
+                if deal_owner_id == 0 and "☆" not in ch.name:
                     try:
                         await asyncio.wait_for(ch.edit(name=f"{ch.name}☆"), timeout=3.0)
                     except asyncio.TimeoutError:
                         continue
-                elif row[1] != 0 and "☆" in ch.name:
+                elif deal_owner_id != 0 and "☆" in ch.name:
                     try:
                         await asyncio.wait_for(ch.edit(name=ch.name.split('☆')[0]), timeout=3.0)
                     except asyncio.TimeoutError:
