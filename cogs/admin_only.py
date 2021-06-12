@@ -76,15 +76,15 @@ class AdminOnly(commands.Cog):
     async def stop_deal(self, ctx):
         # dbのリセット
         if ">" in ctx.channel.category.name:
-            cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
-            auction = cur.fetchone()
-            auction_embed = await ctx.fetch_message(auction[2])
+            cur.execute("SELECT embed_message_id FROM auction where ch_id = %s", (ctx.channel.id,))
+            embed_message_id, = cur.fetchone()
+            auction_embed = await ctx.fetch_message(embed_message_id)
             await auction_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "a")
         elif "*" in ctx.channel.category.name:
-            cur.execute("SELECT * FROM deal where ch_id = %s", (ctx.channel.id,))
-            deal = cur.fetchone()
-            deal_embed = await ctx.fetch_message(deal[2])
+            cur.execute("SELECT embed_message_id FROM deal where ch_id = %s", (ctx.channel.id,))
+            embed_message_id, = cur.fetchone()
+            deal_embed = await ctx.fetch_message(embed_message_id)
             await deal_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "d")
 
@@ -185,8 +185,7 @@ class AdminOnly(commands.Cog):
     @user_caution.command()
     async def get(self, ctx, user: discord.Member):
         cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (user.id,))
-        data = cur.fetchone()
-        caution_level = data[0]
+        caution_level, = cur.fetchone()
         await ctx.send(f"{user}の警告レベルは{caution_level}です")
 
     @user_caution.command()
@@ -202,8 +201,8 @@ class AdminOnly(commands.Cog):
     @bidGS.command(name="get")
     async def _get(self, ctx, user: discord.Member):
         cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (user.id,))
-        data = cur.fetchone()
-        await ctx.send(f"{user}の落札ポイントは{data[0]}です")
+        bid_score, = cur.fetchone()
+        await ctx.send(f"{user}の落札ポイントは{bid_score}です")
 
     @bidGS.command(name="set")
     async def _set(self, ctx, user: discord.Member, n: int):

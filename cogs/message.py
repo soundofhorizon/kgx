@@ -193,8 +193,8 @@ class Message(commands.Cog):
 
             cur.execute(f"select dm_flag from user_data where user_id = {ctx.author.id}")
 
-            user_data = cur.fetchone()
-            if (dm_boolean.lower() == "true" and user_data[0]) or (dm_boolean.lower() == "false" and (not user_data[0])):
+            dm_flag, = cur.fetchone()
+            if (dm_boolean.lower() == "true" and dm_flag) or (dm_boolean.lower() == "false" and (not dm_flag)):
                 await ctx.channel.send("既に設定された値に変更されています。")
                 return
 
