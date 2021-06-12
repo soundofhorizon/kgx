@@ -789,7 +789,7 @@ class AuctionDael(commands.Cog):
 
             description_rows = []
 
-            for i, (tender_data, tend_price) in enumerate(tenders_data[1:], tend_prices[1:], 1):
+            for i, (tender_data, tend_price) in enumerate(zip(tenders_data[1:], tend_prices[1:]), 1):
                 description_rows.append(f"{i}: {self.bot.get_user(id=tender_data).display_name}, {unit}{self.bot.stack_check_reverse(tend_price)}")
 
                 if len(description := "\n\n".join(description_rows)) >= 1800:
