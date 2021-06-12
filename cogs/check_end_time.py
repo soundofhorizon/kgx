@@ -25,26 +25,25 @@ class CheckEndTime(commands.Cog):
             log_ch = self.bot.get_channel(558132754953273355)
 
             # オークションについて
-            cur.execute("SELECT * from auction;")
+            cur.execute("SELECT ch_id, auction_owner_id, embed_message_id, auction_item, auction_end_time, unit from auction;")
             auction_data = cur.fetchall()
-            for row in auction_data:
-                if row[6] == "undefined":
+            for ch_id, auction_owner_id, embed_message_id, item, auction_end_time, unit in auction_data:
+                if auction_end_time == "undefined":
                     continue
-                if datetime.datetime.strptime(row[6], "%Y/%m/%d-%H:%M") <= now:
-                    ch = self.bot.get_channel(int(row[0]))
-                    owner = kgx.get_member(int(row[1]))
-                    item = row[3]
+                if datetime.datetime.strptime(auction_end_time, "%Y/%m/%d-%H:%M") <= now:
+                    ch = self.bot.get_channel(ch_id)
+                    owner = kgx.get_member(auction_owner_id)
 
-                    cur.execute("SELECT * from tend WHERE ch_id=%s;", (ch.id,))
-                    tend_data = cur.fetchone()
-                    tender = kgx.get_member(int(tend_data[1][-1]))
-                    price = self.bot.stack_check_reverse(int(tend_data[2][-1]))
+                    cur.execute("SELECT tender_id, tend_price from tend WHERE ch_id=%s;", (ch.id,))
+                    tenders_id, tend_prices = cur.fetchone()
+                    tender = kgx.get_member(tenders_id[-1])
+                    price = self.bot.stack_check_reverse(tend_prices[-1])
                     if int(self.bot.stack_check(price)) == 0:
                         # 入札者なしという事
                         embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
                         time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                         embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                        await self.bot.dm_send(row[1], embed)
+                        await self.bot.dm_send(auction_owner_id, embed)
                         embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                         await ch.send(embed=embed)
                         # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
@@ -57,7 +56,7 @@ class CheckEndTime(commands.Cog):
                             continue
                         continue
 
-                    tend_price = f"{row[7]}{price}"
+                    tend_price = f"{unit}{price}"
 
                     embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
                     embed.add_field(name="落札日", value=f'\n\n{now.strftime("%Y/%m/%d")}', inline=False)
@@ -74,14 +73,14 @@ class CheckEndTime(commands.Cog):
                     embed = discord.Embed(description=description, color=0xffaf60)
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                    await self.bot.dm_send(row[1], embed)
-                    await self.bot.dm_send(tend_data[1][-1], embed)
+                    await self.bot.dm_send(auction_owner_id, embed)
+                    await self.bot.dm_send(tenders_id[-1], embed)
 
                     # ランキング送信
                     if "椎名" in ch.name:
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                                    (tender.display_name, item, tend_data[2][-1], owner.display_name))
+                                    (tender.display_name, item, tend_prices[-1], owner.display_name))
                         db.commit()
                         await self.bot.get_channel(832956663908007946).purge(limit=10)
                         await asyncio.sleep(1)
@@ -92,8 +91,8 @@ class CheckEndTime(commands.Cog):
                     embed = discord.Embed(description=f"{owner.display_name}が出品した{item}を{tender.display_name}が{tend_price}で落札しました！", color=0xffaf60)
                     await ch.send(embed=embed)
 
-                    ch = self.bot.get_channel(id=row[0])
-                    auction_embed = await ch.fetch_message(row[2])
+                    ch = self.bot.get_channel(id=ch_id)
+                    auction_embed = await ch.fetch_message(embed_message_id)
                     await auction_embed.unpin()
 
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
@@ -107,26 +106,26 @@ class CheckEndTime(commands.Cog):
                 await asyncio.sleep(1)
 
             # 取引について
-            cur.execute("SELECT * from deal;")
+            cur.execute("SELECT ch_id, deal_owner_id, embed_message_id, deal_end_time from deal;")
             deal_data = cur.fetchall()
-            for row in deal_data:
-                if row[5] == "undefined":
+            for ch_id, deal_owner_id, embed_message_id, deal_end_time in deal_data:
+                if deal_end_time == "undefined":
                     continue
-                if datetime.datetime.strptime(row[5], "%Y/%m/%d-%H:%M") <= now:
-                    ch = self.bot.get_channel(id=row[0])
+                if datetime.datetime.strptime(deal_end_time, "%Y/%m/%d-%H:%M") <= now:
+                    ch = self.bot.get_channel(id=ch_id)
                     embed = discord.Embed(description=f"{ch.name}の取引は不成立でしたので終了します")
                     time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                     embed.set_footer(text=f'channel:{ch.name}\nTime:{time}')
-                    await self.bot.dm_send(row[1], embed)
+                    await self.bot.dm_send(deal_owner_id, embed)
                     embed = discord.Embed(description="取引が終了しました", color=0xffaf60)
                     await ch.send(embed=embed)
 
-                    ch = self.bot.get_channel(id=row[0])
-                    deal_embed = await ch.fetch_message(row[2])
+                    ch = self.bot.get_channel(id=ch_id)
+                    deal_embed = await ch.fetch_message(embed_message_id)
                     await deal_embed.unpin()
 
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
-                    self.bot.reset_ch_db(row[0], "d")
+                    self.bot.reset_ch_db(ch_id, "d")
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
                     try:
