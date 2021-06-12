@@ -24,21 +24,21 @@ class CheckUser(commands.Cog):
             await self.bot.wait_until_ready()
             kgx = self.bot.get_guild(558125111081697300)
             # オークションについて
-            cur.execute("SELECT * from auction;")
+            cur.execute("SELECT ch_id, auction_owner_id from auction;")
             auction_data = cur.fetchall()
-            for row in auction_data:
-                if row[1] == 0:
+            for ch_id, auction_owner_id in auction_data:
+                if auction_owner_id == 0:
                     continue
-                if not kgx.get_member(row[1]):
-                    ch = self.bot.get_channel(id=row[0])
+                if not kgx.get_member(auction_owner_id):
+                    ch = self.bot.get_channel(id=ch_id)
                     d = datetime.datetime.now()  # 現在時刻の取得
                     time = d.strftime("%Y/%m/%d %H:%M:%S")
 
-                    description = f"このオークションの主催者であるユーザーID: {row[1]} は\n" \
+                    description = f"このオークションの主催者であるユーザーID: {auction_owner_id} は\n" \
                                   f"このサーバーから退出したためこのオークションは終了します。"
                     embed = discord.Embed(description=description, color=0xdc143c)
                     embed.set_footer(text=f'channel:{ch.name}\ntime:{time}')
-                    self.bot.reset_ch_db(row[0], "a")
+                    self.bot.reset_ch_db(ch_id, "a")
                     await ch.send(embed=embed)
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
@@ -48,21 +48,21 @@ class CheckUser(commands.Cog):
                         continue
 
             # 取引について
-            cur.execute("SELECT * from deal;")
+            cur.execute("SELECT ch_id, deal_owner_id from deal;")
             deal_data = cur.fetchall()
-            for row in deal_data:
-                if row[1] == 0:
+            for ch_id, deal_owner_id in deal_data:
+                if deal_owner_id == 0:
                     continue
-                if not kgx.get_member(row[1]):
-                    ch = self.bot.get_channel(id=row[0])
+                if not kgx.get_member(deal_owner_id):
+                    ch = self.bot.get_channel(id=ch_id)
                     d = datetime.datetime.now()  # 現在時刻の取得
                     time = d.strftime("%Y/%m/%d %H:%M:%S")
 
-                    description = f"この取引の主催者であるユーザーID: {row[1]} は\n" \
+                    description = f"この取引の主催者であるユーザーID: {deal_owner_id} は\n" \
                                   f"このサーバーから退出したためこの取引は終了します。"
                     embed = discord.Embed(description=description, color=0xdc143c)
                     embed.set_footer(text=f'channel:{ch.name}\ntime:{time}')
-                    self.bot.reset_ch_db(row[0], "d")
+                    self.bot.reset_ch_db(ch_id, "d")
                     await ch.send(embed=embed)
                     await ch.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
