@@ -23,7 +23,7 @@ class CheckChannel(commands.Cog):
         try:
             await self.bot.wait_until_ready()
             # オークションについて
-            cur.execute("SELECT * from auction")
+            cur.execute("SELECT ch_id, auction_owner_id from auction")
             auction_data = cur.fetchall()
             for ch_id, auction_owner_id in auction_data:
                 ch = self.bot.get_channel(id=ch_id)
@@ -41,7 +41,7 @@ class CheckChannel(commands.Cog):
                         continue
 
             # 取引について
-            cur.execute("SELECT * from deal;")
+            cur.execute("SELECT ch_id, deal_owner_id from deal;")
             deal_data = cur.fetchall()
             for ch_id, deal_owner_id in deal_data:
                 ch = self.bot.get_channel(id=ch_id)
