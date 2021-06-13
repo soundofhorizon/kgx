@@ -174,19 +174,17 @@ class KGX(commands.Bot):
     def create_ranking_embed(self) -> discord.Embed:
         """落札ランキングのemebedを作成"""
         # user_dataテーブルには「0:ユーザーID bigint, 1:落札ポイント smallint, 2:警告レベル smallint」で格納されているのでこれを全部、落札ポイント降順になるように出す
-        cur.execute("SELECT * FROM user_data ORDER BY bid_score desc;")
+        cur.execute("SELECT user_id, bid_score FROM user_data ORDER BY bid_score desc;")
         data = cur.fetchall()
 
         # ランキングを出力する。まずは辞書型の落札ポイントを基準として降順ソートする。メンバーをmem,スコアをscoreとする
-        rank = 1
         description = ""
-        for i in range(len(data)):
-            # 落札ポイント0ptは表示しない
-            if data[i][1] == 0:
-                continue
-            elif self.get_user(data[i][0]):
-                description += f"{rank}位: {str(self.get_user(data[i][0]).display_name)} - 落札ポイント -> {str(data[i][1])}\n"
-                rank += 1
+        for rank, (user_id, bid_score) in enumerate(data, 1):
+            # 落札ポイント0pt以下は表示しない
+            if bid_score == 0:
+                break
+            elif user := self.get_user(user_id):
+                description += f"{rank}位: {user.display_name} - 落札ポイント -> {bid_score}\n"
 
         # 表示する
         d = datetime.now()  # 現在時刻の取得
@@ -210,26 +208,21 @@ class KGX(commands.Bot):
         # データ毎に取り出す
         description = ""
 
-        for i in range(len(data)):
+        for i, (bidder_name, item_name, bid_price, seller_id) in enumerate(data[:300], 1):
             # 気持ち程度のレイアウト合わせ。1桁と2桁の違い
             if i <= 9:
                 description += " "
             # listの中身は[落札者,落札物,落札額,出品者ID]
-            description += f"{i + 1}位: 出品者->{data[i][3]}\n" \
-                           f"  　　出品物->{data[i][1]}\n" \
-                           f"  　　落札額->椎名{bot.stack_check_reverse(int(data[i][2]))}\n" \
-                           f"  　　落札者->{data[i][0]}\n\n"
+            description += f"{i}位: 出品者->{bidder_name}\n" \
+                           f"  　　出品物->{item_name}\n" \
+                           f"  　　落札額->椎名{bot.stack_check_reverse(bid_price)}\n" \
+                           f"  　　落札者->{bidder_name}\n\n"
 
             # descriptionの長さが2000を超えるとエラーになる。吐き出してリセット案件
             if len(description) > 1800:
                 embed = discord.Embed(title="**落札額ランキング**", description=description, color=0xddc7ff)
                 embed_list.append(embed)
                 description = ""
-            else:
-                pass
-            # 何位まで出力するか.
-            if i >= 299:
-                break
 
         # 表示する
         embed = discord.Embed(description=description, color=0xddc7ff)
@@ -294,10 +287,10 @@ class KGX(commands.Bot):
     def get_user_auction_count(user_id: int) -> int:
         """ユーザーが開催しているオークションの数を取得"""
         cur.execute("SELECT count(*) from auction where auction_owner_id = %s", (user_id,))
-        a = tuple(cur.fetchone())
+        auction_count, = cur.fetchone()
         cur.execute("SELECT count(*) from deal where deal_owner_id = %s", (user_id,))
-        b = tuple(cur.fetchone())
-        return int(a[0]) + int(b[0])
+        deal_count, = cur.fetchone()
+        return auction_count + deal_count
 
     @staticmethod
     def reset_ch_db(channel_id: int, mode: str) -> None:
@@ -390,7 +383,7 @@ class KGX(commands.Bot):
         """
 
         cur.execute("SELECT dm_flag FROM user_data where user_id = %s", (user_id,))
-        dm_flag = cur.fetchone()[0]
+        dm_flag, = cur.fetchone()
 
         if not dm_flag:
             return False

@@ -33,7 +33,7 @@ class AuctionDael(commands.Cog):
         p = re.compile(r'^[0-9]+$')
         if p.fullmatch(str(pt)):
             cur.execute("SELECT bid_score FROM user_data where user_id = %s", (ctx.author.id,))
-            old_score = list(cur.fetchone())[0]
+            old_score, = cur.fetchone()
             new_score = old_score + pt
             cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (new_score, ctx.author.id))
             db.commit()
@@ -454,9 +454,9 @@ class AuctionDael(commands.Cog):
         def check_style(m: str) -> bool:
             """入札額の表記を確認する"""
             style_list = m.lower().replace("st", "").replace("lc", "").split("+")
-            for i in range(len(style_list)):
+            for style in style_list:
                 try:
-                    float(style_list[i])
+                    float(style)
                 except ValueError:
                     return False
             return True
@@ -766,8 +766,8 @@ class AuctionDael(commands.Cog):
 
     @commands.command()
     async def tend_history(self, ctx):
-        cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
-        auction_data = cur.fetchone()
+        cur.execute("SELECT auction_owner_id, unit FROM auction where ch_id = %s", (ctx.channel.id,))
+        auction_owner_id, unit = cur.fetchone()
 
         # オークションが行われていなければ警告して終了
         if "☆" in ctx.channel.name:
@@ -775,27 +775,29 @@ class AuctionDael(commands.Cog):
             await ctx.send(embed=embed)
             return
         # オークション主催者じゃなければ警告して終了
-        elif ctx.author.id != auction_data[1]:
+        elif ctx.author.id != auction_owner_id:
             embed = discord.Embed(description="このコマンドはオークション主催者のみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
             return
         else:
-            cur.execute("select * from tend where ch_id = %s", (ctx.channel.id,))
-            tend_data = cur.fetchone()
+            cur.execute("select tender_id, tend_price from tend where ch_id = %s", (ctx.channel.id,))
+            tenders_data, tend_prices = cur.fetchone()
 
-            tendrs_data = tend_data[1]
-            tend_prices = tend_data[2]
+            if len(tenders_data) == 1:
+                await ctx.send("入札者はまだいません")
+                return
 
-            discription = ""
+            description_rows = []
 
-            for i in range(1, len(tend_data[1])):
-                discription += f"{i}: {self.bot.get_user(id=tendrs_data[i]).display_name}, {auction_data[7]}{self.bot.stack_check_reverse(tend_prices[i])}\n\n"
+            for i, (tender_data, tend_price) in enumerate(zip(tenders_data[1:], tend_prices[1:]), 1):
+                description_rows.append(f"{i}: {self.bot.get_user(id=tender_data).display_name}, {unit}{self.bot.stack_check_reverse(tend_price)}")
 
-                if len(discription) >= 1800:
-                    await ctx.channel.send(embed=discord.Embed(description=discription, color=0xffaf60))
-                    discription = ""
+                if len(description := "\n\n".join(description_rows)) >= 1800:
+                    await ctx.channel.send(embed=discord.Embed(description=description, color=0xffaf60))
+                    description_rows.clear()
 
-            await ctx.channel.send(embed=discord.Embed(description=discription, color=0xffaf60))
+            if description:
+                await ctx.channel.send(embed=discord.Embed(description=description, color=0xffaf60))
 
 
 def setup(bot):
