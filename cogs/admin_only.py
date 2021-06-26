@@ -229,10 +229,12 @@ class AdminOnly(commands.Cog):
             cur.execute("INSERT INTO tend (ch_id) values (%s)", (ctx.channel.id,))
             db.commit()
             self.bot.reset_ch_db(ctx.channel.id, set_type)
+            await ctx.send(f"{ctx.channel.name}をオークションチャンネルとしてデータベースに登録しました")
         elif set_type == "d":
             cur.execute("INSERT INTO deal (ch_id) values (%s)", (ctx.channel.id,))
             db.commit()
             self.bot.reset_ch_db(ctx.channel.id, set_type)
+            await ctx.send(f"{ctx.channel.name}を取引チャンネルとしてデータベースに登録しました")
         else:
             await ctx.send(f"{ctx.prefix}dbsetup [a, d]")
 
