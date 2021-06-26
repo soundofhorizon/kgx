@@ -20,7 +20,10 @@ db = psycopg2.connect(SQLpath)  # sqlに接続
 cur = db.cursor()  # なんか操作する時に使うやつ
 
 
+stack_check_pattern = re.compile(r"\s*\d+(\.\d+)?(st|lc|個)?(\s*\+\s*\d+(\.\d+)?(st|lc|個)?)*\s*")
+
 class KGX(commands.Bot):
+    stack_check_pattern = stack_check_pattern
     def __init__(self, prefix):
         intents = discord.Intents.all()
         super().__init__(command_prefix=prefix, help_command=None, intents=intents)
@@ -240,15 +243,15 @@ class KGX(commands.Bot):
         :param value: [a lc + b st + c…]の形の価格
         :return: 価格をn個にしたもの(小数は丸め込む)
         """
-        UNITS = {"lc": 3456, "st": 64, "個": 1, "椎名": 1} # 単位と対応する値
+        UNITS = {"lc": 3456, "st": 64, "個": 1} # 単位と対応する値
         value = str(value).lower()
 
-        if re.fullmatch(r"\s*\d+(\.\d+)?(st|lc|個|椎名)?(\s*\+\s*\d+(\.\d+)?(st|lc|個|椎名)?)*\s*", value):
+        if stack_check_pattern.fullmatch(value):
             value = re.sub(r"\s", "", value) # 空白文字を削除
             result = 0
 
             for term in value.split("+"): # 項ごとに分割
-                unit_match = re.search(r"(st|lc|個|椎名)?$", term)
+                unit_match = re.search(r"(st|lc|個)?$", term)
                 unit = UNITS.get(unit_match.group(), 1)
                 result += float(term[:unit_match.start()]) * unit
 
@@ -263,25 +266,21 @@ class KGX(commands.Bot):
         :param value: int型の価格
         :return:　valueをストックされた形に直す
         """
-        try:
-            value2 = int(value)
-            if value2 <= 63:
-                if value2 <= 0:
-                    return 0
-                return value2
-            else:
-                i, j = divmod(value2, 64)
-                k, m = divmod(i, 54)
-                calc_result = []
-                if k != 0:
-                    calc_result.append(f"{k}LC")
-                if m != 0:
-                    calc_result.append(f"{m}st")
-                if j != 0:
-                    calc_result.append(f"{j}個")
-                return f"{'+'.join(calc_result)}"
-        except ValueError:
-            return 0
+        if value <= 63:
+            if value <= 0:
+                return 0
+            return value
+        else:
+            st, single = divmod(value, 64)
+            lc, st = divmod(st, 54)
+            calc_result = []
+            if lc != 0:
+                calc_result.append(f"{lc}LC")
+            if st != 0:
+                calc_result.append(f"{st}st")
+            if single != 0:
+                calc_result.append(f"{single}個")
+            return '+'.join(calc_result)
 
     @staticmethod
     def get_user_auction_count(user_id: int) -> int:
