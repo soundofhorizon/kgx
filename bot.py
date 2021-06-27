@@ -6,7 +6,7 @@ import os
 import traceback
 import re
 from datetime import datetime
-from typing import Union, List
+from typing import Union, List, Optional
 
 import bs4
 import discord
@@ -233,29 +233,29 @@ class KGX(commands.Bot):
         return embed_list
 
     @staticmethod
-    def stack_check(value) -> int:
+    def stack_check(value) -> Optional[int]:
         """
-        [a lc + b st + c…]などがvalueで来ることを想定する(正しくない文字列が渡されれば0を返す)
+        [a lc + b st + c…]などがvalueで来ることを想定する(正しくない文字列が渡されればNoneを返す)
         小数で来た場合、小数で計算して最後にintぐるみをして値を返す
         :param value: [a lc + b st + c…]の形の価格
         :return: 価格をn個にしたもの(小数は丸め込む)
         """
-        UNITS = {"lc": 3456, "st": 64, "個": 1, "椎名": 1} # 単位と対応する値
+        UNITS = {"lc": 3456, "st": 64} # 単位と対応する値
         value = str(value).lower()
 
-        if re.fullmatch(r"\s*\d+(\.\d+)?(st|lc|個|椎名)?(\s*\+\s*\d+(\.\d+)?(st|lc|個|椎名)?)*\s*", value):
-            value = re.sub(r"\s", "", value) # 空白文字を削除
-            result = 0
+        if not re.fullmatch(r"\s*\d+(\.\d+)?(st|lc)?(\s*\+\s*\d+(\.\d+)?(st|lc)?)*\s*", value):
+            return
 
-            for term in value.split("+"): # 項ごとに分割
-                unit_match = re.search(r"(st|lc|個|椎名)?$", term)
-                unit = UNITS.get(unit_match.group(), 1)
-                result += float(term[:unit_match.start()]) * unit
+        value = re.sub(r"\s", "", value) # 空白文字を削除
+        result = 0
 
-            return int(result)
+        for term in value.split("+"): # 項ごとに分割
+            unit_match = re.search(r"(st|lc)?$", term)
+            unit = UNITS.get(unit_match.group(), 1)
+            result += float(term[:unit_match.start()]) * unit
 
-        else:
-            return 0
+        return int(result)
+
 
     @staticmethod
     def stack_check_reverse(value: int) -> Union[int, str]:
@@ -263,25 +263,21 @@ class KGX(commands.Bot):
         :param value: int型の価格
         :return:　valueをストックされた形に直す
         """
-        try:
-            value2 = int(value)
-            if value2 <= 63:
-                if value2 <= 0:
-                    return 0
-                return value2
-            else:
-                i, j = divmod(value2, 64)
-                k, m = divmod(i, 54)
-                calc_result = []
-                if k != 0:
-                    calc_result.append(f"{k}LC")
-                if m != 0:
-                    calc_result.append(f"{m}st")
-                if j != 0:
-                    calc_result.append(f"{j}個")
-                return f"{'+'.join(calc_result)}"
-        except ValueError:
-            return 0
+        if value <= 63:
+            if value <= 0:
+                return 0
+            return value
+        else:
+            st, single = divmod(value, 64)
+            lc, st= divmod(i, 54)
+            calc_result = []
+            if lc != 0:
+                calc_result.append(f"{lc}LC")
+            if st != 0:
+                calc_result.append(f"{st}st")
+            if single != 0:
+                calc_result.append(f"{single}個")
+            return '+'.join(calc_result)
 
     @staticmethod
     def get_user_auction_count(user_id: int) -> int:
