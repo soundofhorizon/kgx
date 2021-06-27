@@ -258,18 +258,18 @@ class KGX(commands.Bot):
 
 
     @staticmethod
-    def stack_check_reverse(value: int) -> Union[int, str]:
+    def stack_check_reverse(value: int) -> str:
         """
         :param value: int型の価格
         :return:　valueをストックされた形に直す
         """
         if value <= 63:
             if value <= 0:
-                return 0
-            return value
+                return "0"
+            return str(value)
         else:
             st, single = divmod(value, 64)
-            lc, st= divmod(i, 54)
+            lc, st= divmod(st, 54)
             calc_result = []
             if lc != 0:
                 calc_result.append(f"{lc}LC")
