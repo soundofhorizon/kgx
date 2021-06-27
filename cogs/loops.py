@@ -190,7 +190,7 @@ class Loops(commands.Cog):
                 description += f"{self.bot.get_channel(id=data[i][2][0]).mention}:\n"
                 description += f"   出品者 → {self.bot.get_user(id=data[i][2][1]).display_name}\n"
                 description += f"   商品名 → {data[i][2][3]}\n"
-                description += f"   希望価格 → {data[i][2][6]}{self.bot.stack_check_reverse(data[i][2][4])}\n"
+                description += f"   希望価格 → {data[i][2][6]}{self.bot.stack_check_reverse(int(data[i][2][4]))}\n"
                 if diff.days == 0:
                     description += f"   終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**\n"
                 else:

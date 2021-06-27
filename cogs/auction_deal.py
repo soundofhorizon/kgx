@@ -462,6 +462,7 @@ class AuctionDael(commands.Cog):
             return True
 
         if check_style(price):
+            price = self.bot.stack_check(price)
             # 開始価格、即決価格、現在の入札額を取り寄せ
             # auction[0] - auction[7]が各種auctionDBのデータとなる
             cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
@@ -479,26 +480,26 @@ class AuctionDael(commands.Cog):
                 await ctx.send(embed=embed)
                 return
 
-            elif ctx.author.id == tend[1][-1] and (not self.bot.stack_check(price) >= int(auction[5])):
+            elif ctx.author.id == tend[1][-1] and not price >= int(auction[5]):
                 embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
 
             # 入札価格の判定
-            if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend[2][-1]):
+            if price < int(auction[4]) or price <= int(tend[2][-1]):
                 embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
 
             elif auction[5] != "なし":
-                if self.bot.stack_check(price) >= int(auction[5]):
+                if price >= int(auction[5]):
                     embed = discord.Embed(description=f"即決価格と同額以上の価格が入札されました。{ctx.author.display_name}さんの落札です。",
                                           color=0x4259fb)
                     await ctx.send(embed=embed)
                     # オークション情報を取る
                     cur.execute(f"SELECT * FROM auction where ch_id = {ctx.channel.id}")
                     auction_data = cur.fetchone()
-                    tend_price = f"{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}"
+                    tend_price = f"{auction_data[7]}{self.bot.stack_check_reverse(price)}"
 
                     embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
                     embed.add_field(name="落札日", value=f'\n\n{datetime.now().strftime("%Y/%m/%d")}', inline=False)
@@ -522,7 +523,7 @@ class AuctionDael(commands.Cog):
                     if "椎名" in ctx.channel.name:
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                                    (ctx.author.display_name, auction_data[3], self.bot.stack_check(price),
+                                    (ctx.author.display_name, auction_data[3], price,
                                      self.bot.get_user(id=auction_data[1]).display_name))
                         db.commit()
                         await self.bot.get_channel(832956663908007946).purge(limit=10)
@@ -547,7 +548,7 @@ class AuctionDael(commands.Cog):
                         pass
                     return
 
-            elif self.bot.stack_check(price) == 0:
+            elif price == 0 or price is None:
                 embed = discord.Embed(description="不正な値です。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
@@ -565,8 +566,8 @@ class AuctionDael(commands.Cog):
                 embed = discord.Embed(title="オークション内容", color=0xffaf60)
                 embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}')
                 embed.add_field(name="出品物", value=f'\n\n{auction[3]}')
-                value = "なし" if auction[5] == "なし" else f"{auction[7]}{self.bot.stack_check_reverse(auction[5])}"
-                embed.add_field(name="開始価格", value=f'\n\n{auction[7]}{self.bot.stack_check_reverse(auction[4])}',
+                value = "なし" if auction[5] == "なし" else f"{auction[7]}{self.bot.stack_check_reverse(int(auction[5]))}"
+                embed.add_field(name="開始価格", value=f'\n\n{auction[7]}{self.bot.stack_check_reverse(int(auction[4]))}',
                                 inline=False)
                 embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                 finish_time = (finish_time + timedelta(days=1)).strftime("%Y/%m/%d-%H:%M")
@@ -663,7 +664,7 @@ class AuctionDael(commands.Cog):
             return
 
         add_price = self.bot.stack_check(add_price)
-        if add_price == 0:
+        if add_price is None or add_price <= 0:
             await ctx.send("入力値が不正です。")
             return
 
