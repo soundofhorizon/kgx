@@ -243,7 +243,7 @@ class AuctionDael(commands.Cog):
                     await ctx.send("開催期間を12時間以下にすることはできません")
                     continue
                 elif end_time - now >= timedelta(weeks=8):
-                    await ctx.channel.send("8週間以上にわたるオークションはできません")
+                    await ctx.channel.send("2ヶ月以上にわたるオークションはできません")
                     continue
                 break
             end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
@@ -414,7 +414,7 @@ class AuctionDael(commands.Cog):
                     await ctx.send("開催期間を12時間以下にすることはできません")
                     continue
                 elif end_time - now >= timedelta(weeks=8):
-                    await ctx.channel.send("8週間以上にわたる取引はできません")
+                    await ctx.channel.send("2ヶ月以上にわたる取引はできません")
                     continue
                 break
             end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
