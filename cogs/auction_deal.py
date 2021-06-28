@@ -246,7 +246,8 @@ class AuctionDael(commands.Cog):
                     await ctx.channel.send("8週間以上にわたるオークションはできません")
                     continue
                 break
-            end_time_text = end_time.strftime('%Y/%m/%d-%H:%M')
+            end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
+            end_time_text = f"{year}/{month:0>2}/{day:0>2}-{hour:0>2}:{minute:0>2}" # 24:00の場合はそのまま表示
 
             embed = discord.Embed(
                 description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
@@ -294,7 +295,7 @@ class AuctionDael(commands.Cog):
                             "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
                             "unit = %s, notice = %s WHERE ch_id = %s",
                             (ctx.author.id, auction_embed.id, input_item.content, str(start_price),
-                             str(bin_price), end_time_text, unit, input_notice.content, ctx.channel.id))
+                             str(bin_price), end_time_sql, unit, input_notice.content, ctx.channel.id))
                 db.commit()
 
                 try:
@@ -416,7 +417,8 @@ class AuctionDael(commands.Cog):
                     await ctx.channel.send("8週間以上にわたる取引はできません")
                     continue
                 break
-            end_time_text = end_time.strftime('%Y/%m/%d-%H:%M')
+            end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
+            end_time_text = f"{year}/{month:0>2}/{day:0>2}-{hour:0>2}:{minute:0>2}" # 24:00の場合はそのまま表示
 
             embed = discord.Embed(
                 description="その他、出品物の詳細等などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
@@ -454,7 +456,7 @@ class AuctionDael(commands.Cog):
                 cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
                             "deal_hope_price = %s, deal_end_time = %s, unit = %s, notice = %s WHERE ch_id = %s",
                             (ctx.author.id, deal_embed.id, input_item.content, str(hope_price),
-                             end_time_text, unit, input_notice.content, ctx.channel.id))
+                             end_time_sql, unit, input_notice.content, ctx.channel.id))
                 db.commit()
 
                 try:
