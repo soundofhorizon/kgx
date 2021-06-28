@@ -470,14 +470,12 @@ class AuctionDael(commands.Cog):
 
     @commands.command(aliases=["Tend"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
-    async def tend(self, ctx, price):
+    async def tend(self, ctx, *, price):
         if not self.bot.is_auction_category(ctx):
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
             return
 
-        # priceのスタイルを調整
-        price = f"{price}".replace(" ", "").replace("　", "")
         # そもそもオークションが開催してなかったらreturn
         if '☆' in ctx.channel.name:
             embed = discord.Embed(
@@ -486,19 +484,8 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             return
 
-        # 少数は可能。
-        def check_style(m: str) -> bool:
-            """入札額の表記を確認する"""
-            style_list = m.lower().replace("st", "").replace("lc", "").split("+")
-            for style in style_list:
-                try:
-                    float(style)
-                except ValueError:
-                    return False
-            return True
-
-        if check_style(price):
-            price = self.bot.stack_check(price)
+        price = self.bot.stack_check(price)
+        if price is not None or price == 0:
             # 開始価格、即決価格、現在の入札額を取り寄せ
             # auction[0] - auction[7]が各種auctionDBのデータとなる
             cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
@@ -706,7 +693,7 @@ class AuctionDael(commands.Cog):
 
         price = tend_data[2][-1] + add_price
         tend = self.bot.get_command("tend")
-        await ctx.invoke(tend, price)
+        await ctx.invoke(tend, str(price))
 
     @commands.command()
     async def remand(self, ctx):
