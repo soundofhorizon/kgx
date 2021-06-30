@@ -78,12 +78,18 @@ class AdminOnly(commands.Cog):
         if ">" in ctx.channel.category.name:
             cur.execute("SELECT embed_message_id FROM auction where ch_id = %s", (ctx.channel.id,))
             embed_message_id, = cur.fetchone()
+            if embed_message_id == 0:
+                await ctx.send("このチャンネルではオークションが行われていません")
+                return
             auction_embed = await ctx.fetch_message(embed_message_id)
             await auction_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "a")
         elif "*" in ctx.channel.category.name:
             cur.execute("SELECT embed_message_id FROM deal where ch_id = %s", (ctx.channel.id,))
             embed_message_id, = cur.fetchone()
+            if embed_message_id == 0:
+                await ctx.send("このチャンネルでは取引が行われていません")
+                return
             deal_embed = await ctx.fetch_message(embed_message_id)
             await deal_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "d")
