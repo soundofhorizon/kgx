@@ -93,6 +93,8 @@ class AdminOnly(commands.Cog):
             deal_embed = await ctx.fetch_message(embed_message_id)
             await deal_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "d")
+        else:
+            await ctx.send("オークションチャンネルまたは取引チャンネルで実行してください")
 
         embed = discord.Embed(
             description=f"{ctx.author.display_name}によりこのフローは停止させられました。",
