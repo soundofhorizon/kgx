@@ -129,8 +129,8 @@ class Loops(commands.Cog):
             ch_num = int(re.search(r"\d+", channel_name).group())
             return (type_order, ch_num) # type_order,ch_numの順に比較される
         
-        sql_data = filter(lambda x: x[0] in (0, 858158727576027146), sql_data) # 未開催と取引debugを省く
-        deals = sorted(sql_data, key=order_func)
+        deals = filter(lambda x: x[0] in (0, 858158727576027146), sql_data) # 未開催と取引debugを省く
+        deals = sorted(deals, key=order_func)
 
         if not deals:
             embed = discord.Embed(description="取引はまだ一つも行われていません！", color=0x59a5e3)
