@@ -55,7 +55,7 @@ class Loops(commands.Cog):
                 ch_num = int(re.search(r"\d+", channel_name).group())
                 return (type_order, ch_num) # type_order,ch_numの順に比較される
             
-            auctions = filter(lambda x: x[0] in (0, 747728655735586876), sql_data) # 未開催と椎名debugを省く
+            auctions = filter(lambda x: x[0] not in (0, 747728655735586876), sql_data) # 未開催と椎名debugを省く
             auctions = sorted(auctions, key=order_func)
 
             if not auctions:
@@ -144,7 +144,7 @@ class Loops(commands.Cog):
                 ch_num = int(re.search(r"\d+", channel_name).group())
                 return (type_order, ch_num) # type_order,ch_numの順に比較される
             
-            deals = filter(lambda x: x[0] in (0, 858158727576027146), sql_data) # 未開催と取引debugを省く
+            deals = filter(lambda x: x[0] not in (0, 858158727576027146), sql_data) # 未開催と取引debugを省く
             deals = sorted(deals, key=order_func)
 
             if not deals:
