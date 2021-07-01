@@ -72,7 +72,7 @@ class Loops(commands.Cog):
 
             if not auctions:
                 embed = discord.Embed(description="オークションはまだ一つも行われていません！", color=0x59a5e3)
-                auction_data_channel.send(embed=embed)
+                await auction_data_channel.send(embed=embed)
                 return
 
             auctions_description = []
@@ -173,7 +173,7 @@ class Loops(commands.Cog):
 
             if not deals:
                 embed = discord.Embed(description="取引はまだ一つも行われていません！", color=0x59a5e3)
-                deal_data_channel.send(embed=embed)
+                await deal_data_channel.send(embed=embed)
                 return
 
             deals_description = []
