@@ -106,7 +106,7 @@ class Loops(commands.Cog):
         cur.execute("SELECT ch_id, deal_owner_id, deal_item, deal_hope_price, deal_end_time, unit from deal")
         sql_data = cur.fetchall()
 
-        DEAL_TYPES = ["椎名", "ガチャ券", "all", "闇取引"] # 取引の種類一覧
+        DEAL_TYPES = ["椎名", "ガチャ券", "all"] # 取引の種類一覧
         def order_func(record):
             ch_id = record[0]
             channel_name = self.bot.get_channel(id=ch_id).name
