@@ -36,6 +36,18 @@ class Loops(commands.Cog):
                         "(auction JOIN tend ON auction.ch_id = tend.ch_id)")
             sql_data = cur.fetchall()
 
+            def active_filter(record):
+                """
+                開催していないオークションならFalse。ついでにdebugも消す
+                """
+                ch_id, owner_id = record[:2]
+                if ch_id == 747728655735586876:
+                    return False # 椎名debug
+                elif owner_id == 0:
+                    return False # 開催していない
+                else:
+                    return True
+
             AUCTION_TYPES = ["椎名", "ガチャ券", "all", "闇取引"] # オークションの種類一覧
             def order_func(record):
                 """
@@ -55,8 +67,8 @@ class Loops(commands.Cog):
                 ch_num = int(re.search(r"\d+", channel_name).group())
                 return (type_order, ch_num) # type_order,ch_numの順に比較される
             
-            auctions = filter(lambda x: x[0] not in (0, 747728655735586876), sql_data) # 未開催と椎名debugを省く
-            auctions = sorted(auctions, key=order_func)
+            auctions = list(filter(active_filter, sql_data))
+            auctions.sort(key=order_func)
 
             if not auctions:
                 embed = discord.Embed(description="オークションはまだ一つも行われていません！", color=0x59a5e3)
@@ -125,6 +137,18 @@ class Loops(commands.Cog):
             cur.execute("SELECT ch_id, deal_owner_id, deal_item, deal_hope_price, deal_end_time, unit from deal")
             sql_data = cur.fetchall()
 
+            def active_filter(record):
+                """
+                開催していない取引ならFalse。ついでにdebugも消す
+                """
+                ch_id, owner_id = record[:2]
+                if ch_id == 858158727576027146:
+                    return False # 取引debug
+                elif owner_id == 0:
+                    return False # 開催していない
+                else:
+                    return True
+
             DEAL_TYPES = ["椎名", "ガチャ券", "all"] # 取引の種類一覧
             def order_func(record):
                 """
@@ -144,8 +168,8 @@ class Loops(commands.Cog):
                 ch_num = int(re.search(r"\d+", channel_name).group())
                 return (type_order, ch_num) # type_order,ch_numの順に比較される
             
-            deals = filter(lambda x: x[0] not in (0, 858158727576027146), sql_data) # 未開催と取引debugを省く
-            deals = sorted(deals, key=order_func)
+            deals = list(filter(active_filter, sql_data))
+            deals.sort(key=order_func)
 
             if not deals:
                 embed = discord.Embed(description="取引はまだ一つも行われていません！", color=0x59a5e3)
