@@ -36,6 +36,10 @@ class Loops(commands.Cog):
 
         AUCTION_TYPES = ["椎名", "ガチャ券", "all", "闇取引"] # オークションの種類一覧
         def order_func(record):
+            """
+            チャンネル名に対応したタプルを返す
+            椎名1 → (0, 1)、椎名2 → (0, 2), ガチャ券1 → (1, 1)など
+            """
             ch_id = record[0]
             channel_name = self.bot.get_channel(id=ch_id).name
 
@@ -49,8 +53,8 @@ class Loops(commands.Cog):
             ch_num = int(re.search(r"\d+", channel_name).group())
             return (type_order, ch_num) # type_order,ch_numの順に比較される
         
-        sql_data = filter(lambda x: x[0] in (0, 747728655735586876), sql_data) # 未開催と椎名debugを省く
-        auctions = sorted(sql_data, key=order_func)
+        auctions = filter(lambda x: x[0] in (0, 747728655735586876), sql_data) # 未開催と椎名debugを省く
+        auctions = sorted(auctions, key=order_func)
 
         if not auctions:
             embed = discord.Embed(description="オークションはまだ一つも行われていません！", color=0x59a5e3)
@@ -81,7 +85,7 @@ class Loops(commands.Cog):
                 highest_tender = self.bot.get_user(id=tender_id[-1])
                 auction_description.append(f"最高額入札者 → {highest_tender.display_name}")
                 auction_description.append(f"入札額 → {unit}{self.bot.stack_check_reverse(tend_price[-1])}")
-            if diff.days == 0:
+            if diff.days == 0: # 残り1日を切っていたら太字にする
                 auction_description.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
             else:
                 auction_description.append(f"終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒")
@@ -108,6 +112,10 @@ class Loops(commands.Cog):
 
         DEAL_TYPES = ["椎名", "ガチャ券", "all"] # 取引の種類一覧
         def order_func(record):
+            """
+            チャンネル名に対応したタプルを返す
+            椎名1 → (0, 1)、椎名2 → (0, 2), ガチャ券1 → (1, 1)など
+            """
             ch_id = record[0]
             channel_name = self.bot.get_channel(id=ch_id).name
 
@@ -147,7 +155,7 @@ class Loops(commands.Cog):
             deal_description.append(f"出品者 → {owner.display_name}")
             deal_description.append(f"商品名 → {deal_item}")
             deal_description.append(f"希望価格 → {unit}{self.bot.stack_check_reverse(hope_price)}")
-            if diff.days == 0:
+            if diff.days == 0: # 残り1日を切っていたら太字にする
                 deal_description.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
             else:
                 deal_description.append(f"終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒")
