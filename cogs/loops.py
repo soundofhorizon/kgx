@@ -193,7 +193,7 @@ class Loops(commands.Cog):
                 deal_description.append(f"{channel.mention}:")
                 deal_description.append(f"出品者 → {owner.display_name}")
                 deal_description.append(f"商品名 → {deal_item}")
-                deal_description.append(f"希望価格 → {unit}{self.bot.stack_check_reverse(hope_price)}")
+                deal_description.append(f"希望価格 → {unit}{self.bot.stack_check_reverse(int(hope_price))}")
                 if diff.days == 0: # 残り1日を切っていたら太字にする
                     deal_description.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
                 else:
