@@ -215,7 +215,7 @@ class AuctionDael(commands.Cog):
                     await ctx.send("時刻の書式が正しくありません")
                     continue
 
-                year, month, day, hour, minute = map(int, datetime_pattern.fullmatch(input_end_time).groups())
+                year, month, day, hour, minute = map(int, datetime_pattern.fullmatch(input_end_time.content).groups())
 
                 if not 2000 <= year <= 3000:
                     await ctx.send("年は2000~3000の間で指定してください")
@@ -386,7 +386,7 @@ class AuctionDael(commands.Cog):
                     await ctx.send("時刻の書式が正しくありません")
                     continue
 
-                year, month, day, hour, minute = map(int, datetime_pattern.fullmatch(input_end_time).groups())
+                year, month, day, hour, minute = map(int, datetime_pattern.fullmatch(input_end_time.content).groups())
 
                 if not 2000 <= year <= 3000:
                     await ctx.send("年は2000~3000の間で指定してください")
