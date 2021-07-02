@@ -172,17 +172,11 @@ class Message(commands.Cog):
     @commands.command()
     async def stack_check(self, ctx, *, amount):
         # 数値かどうかで渡す関数を変更する
-        if amount.isdigit():
-            amount = int(amount)
-            if self.bot.stack_check_reverse(amount) is None:
-                await ctx.channel.send(f"入力した値が不正な値です。")
-                return
-            else:
-                await ctx.channel.send(f"{amount}はスタック表記で{self.bot.stack_check_reverse(amount)}です。")
+        if amount.isdecimal():
+            await ctx.channel.send(f"{amount}はスタック表記で{self.bot.stack_check_reverse(int(amount))}です。")
         else:
-            if self.bot.stack_check(amount) == 0:
-                await ctx.channel.send(f"入力した値が0または不正な値です。")
-                return
+            if self.bot.stack_check(amount) is None:
+                await ctx.channel.send(f"入力した値が不正な値です。")
             else:
                 await ctx.channel.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
 
