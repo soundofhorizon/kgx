@@ -546,7 +546,7 @@ class AuctionDael(commands.Cog):
                                     (ctx.author.display_name, auction_data[3], price,
                                      self.bot.get_user(id=auction_data[1]).display_name))
                         db.commit()
-                        await self.bot.get_channel(832956663908007946).purge(limit=10)
+                        await self.bot.get_channel(832956663908007946).purge(limit=20)
                         await asyncio.sleep(1)
                         embeds = self.bot.create_high_bid_ranking()
                         for embed in embeds:

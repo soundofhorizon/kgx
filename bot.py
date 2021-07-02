@@ -173,8 +173,10 @@ class KGX(commands.Bot):
 
     def create_ranking_embed(self) -> discord.Embed:
         """落札ランキングのemebedを作成"""
-        # user_dataテーブルには「0:ユーザーID bigint, 1:落札ポイント smallint, 2:警告レベル smallint」で格納されているのでこれを全部、落札ポイント降順になるように出す
-        cur.execute("SELECT user_id, bid_score FROM user_data ORDER BY bid_score desc;")
+        # user_dataテーブルには「0:ユーザーID bigint, 1:落札ポイント smallint, 2:警告レベル smallint」で格納されているので(0, 1)を、落札ポイント降順になるように出す
+        kgx_server = self.get_guild(558125111081697300)
+        members_id = tuple(member.id for member in kgx_server.members) # メンバー全員のid
+        cur.execute("SELECT user_id, bid_score FROM user_data where user_id in %s ORDER BY bid_score desc;", (members_id,)) # メンバーの情報だけ取得
         data = cur.fetchall()
 
         # ランキングを出力する。まずは辞書型の落札ポイントを基準として降順ソートする。メンバーをmem,スコアをscoreとする
@@ -183,8 +185,8 @@ class KGX(commands.Bot):
             # 落札ポイント0pt以下は表示しない
             if bid_score == 0:
                 break
-            elif user := self.get_user(user_id):
-                description += f"{rank}位: {user.display_name} - 落札ポイント -> {bid_score}\n"
+            user = self.get_user(user_id)
+            description += f"{rank}位: {user.display_name} - 落札ポイント -> {bid_score}\n"
 
         # 表示する
         d = datetime.now()  # 現在時刻の取得
@@ -213,7 +215,7 @@ class KGX(commands.Bot):
             if i <= 9:
                 description += " "
             # listの中身は[落札者,落札物,落札額,出品者ID]
-            description += f"{i}位: 出品者->{bidder_name}\n" \
+            description += f"{i}位: 出品者->{seller_id}\n" \
                            f"  　　出品物->{item_name}\n" \
                            f"  　　落札額->椎名{bot.stack_check_reverse(bid_price)}\n" \
                            f"  　　落札者->{bidder_name}\n\n"

@@ -95,6 +95,7 @@ class AdminOnly(commands.Cog):
             self.bot.reset_ch_db(ctx.channel.id, "d")
         else:
             await ctx.send("オークションチャンネルまたは取引チャンネルで実行してください")
+            return
 
         embed = discord.Embed(
             description=f"{ctx.author.display_name}によりこのフローは停止させられました。",
