@@ -213,7 +213,7 @@ class KGX(commands.Bot):
             if i <= 9:
                 description += " "
             # listの中身は[落札者,落札物,落札額,出品者ID]
-            description += f"{i}位: 出品者->{bidder_name}\n" \
+            description += f"{i}位: 出品者->{seller_id}\n" \
                            f"  　　出品物->{item_name}\n" \
                            f"  　　落札額->椎名{bot.stack_check_reverse(bid_price)}\n" \
                            f"  　　落札者->{bidder_name}\n\n"
