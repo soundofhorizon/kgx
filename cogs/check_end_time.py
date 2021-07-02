@@ -38,7 +38,7 @@ class CheckEndTime(commands.Cog):
                     tenders_id, tend_prices = cur.fetchone()
                     tender = kgx.get_member(tenders_id[-1])
                     price = self.bot.stack_check_reverse(tend_prices[-1])
-                    if int(self.bot.stack_check(price)) == 0:
+                    if tend_prices[-1] == 0:
                         # 入札者なしという事
                         embed = discord.Embed(description=f"{ch.name}のオークションは入札者が誰もいなかったので終了します")
                         time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")

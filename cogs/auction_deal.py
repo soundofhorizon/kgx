@@ -80,50 +80,29 @@ class AuctionDael(commands.Cog):
             if m.author.bot:
                 return
             return m.channel == ctx.channel and m.author == ctx.author
-
-        def check2(m):
-            """日付型になってるかを確かめる"""
-            if m.author.bot:
-                return
-                # フォーマットされたdatetimeとの変換を試みTrueかどうかを調べる
-            try:
-                return m.channel == ctx.channel and re.match(r"[0-9]{4}/[0-9]{2}/[0-9]{2}-[0-9]{2}:[0-9]{2}", m.content) and datetime.strptime(m.content, "%Y/%m/%d-%H:%M") and m.author == ctx.author
-            except ValueError:
-                return re.match(r"[0-9]{4}/[0-9]{2}/[0-9]{2}-24:00", m.content)
-
-        def check3(m):
-            """価格フォーマットチェック"""
-            if m.author.bot:
-                return
-            if m.channel != ctx.channel:
-                return False
-            # 〇st+△(記号はint)もしくは△であるのを確かめる
+        
+        datetime_pattern = re.compile(r"(\d{1,4})/(\d{1,2})/(\d{1,2})-(\d{1,2}):(\d{1,2})")
+        
+        def is_exist_date(year, month, day):
+            """
+            存在しない月なら1、存在しない日なら2を返す
+            """
+            if month in (1, 3, 5, 7, 8, 10, 12):
+                if not 1 <= day <= 31:
+                    return 2
+            elif month in (4, 6, 9, 11):
+                if not 1 <= day <= 30:
+                    return 2
+            elif month == 2:
+                if year%400==0 or year%4==0 and year%100!=0: # 閏年なら
+                    if not 1 <= day <= 29:
+                        return 2
+                else:
+                    if not 1 <= day <= 28:
+                        return 2
             else:
-                return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
-                    r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
-                        ) and m.author == ctx.author
-
-        def check4(m):
-            """価格フォーマットチェック(なしを含む)"""
-            if m.author.bot:
-                return
-            elif m.author == ctx.author:
-                if m.channel != ctx.channel:
-                    return False
-                # 〇st+△(記号はint)もしくは△であるのを確かめる
-                return (re.match(r"[0-9]{0,99}LC\+[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(
-                    r"[0-9]{1,99}ST\+[0-9]{1,2}", m.content.upper()) or re.match(r"[1-9]{1,2}", m.content)
-                        or m.content == "なし") and m.author == ctx.author
-
-        def over24Hdatetime(year, month, day, hour, minute):
-
-            """24時間以上の表記を正常な表記にする"""
-            minutes = int(hour)*60 + int(minute)
-
-            dt = datetime(year=year, month=month, day=day)
-            dt += timedelta(minutes=minutes)
-
-            return dt
+                return 1
+            return 0
 
         # 2つ行ってる場合はreturn
         user = ctx.author.id
@@ -147,20 +126,19 @@ class AuctionDael(commands.Cog):
                 return
 
             # 単位の設定
-            unit = ""
             if self.bot.is_siina_category(ctx):
                 unit = "椎名"
             elif self.bot.is_gacha_category(ctx):
                 unit = "ガチャ券"
             else:
-                embed = discord.Embed(description="何によるオークションですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
+                embed = discord.Embed(description="何によるオークションですか？単位を入力してください。(ex.GTギフト券, がちゃりんご, エメラルド etc)",
                                       color=0xffaf60)
                 first_message_object = await ctx.channel.send(embed=embed)
-                user_input_0 = await self.bot.wait_for("message", check=check)
-                unit = user_input_0.content
+                input_unit = await self.bot.wait_for("message", check=check)
+                unit = input_unit.content
 
             # ALLにおいて
-            if "all" in ctx.channel.name.lower() and (unit == "椎名" or unit == "ガチャ券"):
+            if "all" in ctx.channel.name.lower() and unit in ("椎名", "椎名林檎", "ガチャ券"):
                 embed = discord.Embed(description="椎名、ガチャ券のオークションは専用のチャンネルで行ってください。",
                                       color=0xffaf60)
                 await ctx.channel.send(embed=embed)
@@ -173,124 +151,151 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send(embed=embed)
             else:
                 first_message_object = await ctx.channel.send(embed=embed)
-            user_input_1 = await self.bot.wait_for('message', check=check)
+            input_item = await self.bot.wait_for('message', check=check)
 
             embed = discord.Embed(description="開始価格を入力してください。\n**※次のように入力してください。"
-                                              "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**",
+                                              "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
+                                              "終了したい場合は`cancel`と入力してください",
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            user_input_2 = await self.bot.wait_for('message', check=check3)
-            user_input_2 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_2.content))
-            # check3()の正規表現を正しいものにしてください「1hoge」で通ってしまい、
-            # stack_check_reverse()で0が返ってくるため開始価格が0になります
-            # そのための応急処置 20201114けい制作
-            if user_input_2 == 0:
-                await ctx.channel.send(f"{ctx.author.mention}さん、使用できる単位はLC, st, 個または数字のみです")
-                return
-            # ここまで応急処置
-            kaisi_kakaku = self.bot.stack_check(user_input_2)  # kaisi_kakakuはint型
+
+            while not self.bot.is_closed(): # 正しい入力が来るまでwhile
+                user_start_price = await self.bot.wait_for('message', check=check)
+                start_price = self.bot.stack_check(user_start_price.content)
+                if user_start_price.content.lower() == "cancel":
+                    await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
+                if start_price is None:
+                    await ctx.send("価格の形式が正しくありません\n**"
+                        "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
+                elif start_price == 0:
+                    await ctx.send("開始価格を0にすることはできません")
+                else: # 正しい入力ならbreak
+                    break
 
             embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。"
                                               "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
-                                              " ない場合は「``なし``」とお書きください。",
+                                              "ない場合は`なし`とお書きください。\n"
+                                              "終了したい場合は`cancel`と入力してください",
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            user_input_3 = await self.bot.wait_for('message', check=check4)
-            if not user_input_3.content == "なし":
-                user_input_3 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_3.content))
-                sokketu_kakaku = self.bot.stack_check(user_input_3)  # sokketu_kakakuはint型
-                if kaisi_kakaku >= sokketu_kakaku:
-                    # purge()の処理は入っていません
-                    await ctx.channel.send(f"{ctx.author.mention}さん、開始価格が即決価格より高い、又は即決価格と同じです。やり直してください。")
-                    await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
+
+            while not self.bot.is_closed():
+                input_bin_price = await self.bot.wait_for('message', check=check)
+                if input_bin_price.content.lower() == "cancel":
+                    await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
-            else:
-                user_input_3 = "なし"
+                if input_bin_price.content == "なし":
+                    bin_price = "なし"
+                    break
+                bin_price = self.bot.stack_check(input_bin_price.content)
+                if bin_price is None:
+                    await ctx.send("価格の形式が正しくありません\n**"
+                        "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
+                elif bin_price < start_price:
+                    await ctx.send("即決価格が開始価格より低いです。")
+                elif bin_price  == start_price:
+                    await ctx.send("即決価格が開始価格と等しいです。価格が決まっているのであれば、取引チャンネルをお使いください。")
+                else:
+                    break
 
             embed = discord.Embed(
                 description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
                             f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
-                            "この形でない場合認識されません！",
+                            "終了したい場合は`cancel`と入力してください",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            user_input_4 = await self.bot.wait_for('message', check=check2)
 
-            year_month_day_list = list(map(int, user_input_4.content.split("-")[0].split("/")))
-            hour_min_list = list(map(int, user_input_4.content.split("-")[1].split(":")))
-            now = datetime.now()
-            if hour_min_list == [24, 00]:
-                finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
-            else:
-                finish_time = datetime.strptime(user_input_4.content, r"%Y/%m/%d-%H:%M")
+            while not self.bot.is_closed():
+                input_end_time = await self.bot.wait_for('message', check=check)
+                if input_end_time.content.lower() == "cancel":
+                    await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
+                if not datetime_pattern.fullmatch(input_end_time.content):
+                    await ctx.send("時刻の書式が正しくありません")
+                    continue
 
-            if now >= finish_time:
-                # purge()の処理は入っていません
-                await ctx.channel.send(f"{ctx.author.mention}さん、現在時刻より前、又は同時刻に終了時刻が設定されています。やり直してください。")
-                await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
-                return
-            two_months_later = now + timedelta(weeks=8)
-            if finish_time > two_months_later:
-                # purge()の処理は(ry
-                await ctx.channel.send(f"{ctx.author.mention}さん、2ヵ月以上にわたるオークションは禁止されています。やり直してください。")
-                await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
-                return
+                year, month, day, hour, minute = map(int, datetime_pattern.fullmatch(input_end_time).groups())
+
+                if not 2000 <= year <= 3000:
+                    await ctx.send("年は2000~3000の間で指定してください")
+                    continue
+                if is_exist_date(year, month, day) == 1:
+                    await ctx.send("月は1~12の間で指定してください")
+                    continue
+                if is_exist_date(year, month, day) == 2:
+                    await ctx.send(f"{year}年{month}月に{day}日は存在しません")
+                    continue
+                
+                if (hour, minute) == (24, 00):
+                    end_time = datetime(year, month, day) + timedelta(days=1)
+                elif hour not in range(24) or minute not in range(60):
+                    await ctx.send(f"{hour}時{minute}分は存在しません")
+                    continue
+                else:
+                    end_time = datetime(year, month, day, hour, minute)
+
+                now = datetime.now()
+                if end_time <= now:
+                    await ctx.channel.send("終了時刻を現在時刻以前にすることはできません")
+                    continue
+                elif end_time - now <= timedelta(hours=12):
+                    await ctx.send("開催期間を12時間以下にすることはできません")
+                    continue
+                elif end_time - now >= timedelta(weeks=8):
+                    await ctx.channel.send("2ヶ月以上にわたるオークションはできません")
+                    continue
+                break
+            end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
+            end_time_text = f"{year}/{month:0>2}/{day:0>2}-{hour:0>2}:{minute:0>2}" # 24:00の場合はそのまま表示
 
             embed = discord.Embed(
                 description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
                             "何も無ければ「なし」で構いません。",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            user_input_5 = await self.bot.wait_for('message', check=check)
+            input_notice = await self.bot.wait_for('message', check=check)
 
             await self.bot.delete_to(ctx, first_message_object.id)
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
-            embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
-            embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
-            embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2}', inline=False)
-            # 卒決価格なしなら単位は付与しない
-            if user_input_3 == "なし":
-                value = user_input_3
-            else:
-                value = f"{unit}{user_input_3}"
-            embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
-            embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
-            embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
-            await ctx.channel.send(embed=embed)
-            user_input_6 = await self.bot.wait_for('message', check=check)
+            embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
+            embed.add_field(name="出品物", value=f'{input_item.content}', inline=True)
+            embed.add_field(name="開始価格", value=f'{unit}{start_price}', inline=False)
 
-            if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
-                kazu = 3
-                await ctx.channel.purge(limit=kazu)
+            # 即決価格なしなら単位は付与しない
+            if bin_price == "なし":
+                display_bin_price = "なし"
+            else:
+                display_bin_price = f"{unit}{bin_price}"
+            
+            embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
+            embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
+            embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
+            await ctx.channel.send(embed=embed)
+            input_confirm = await self.bot.wait_for('message', check=check)
+
+            if input_confirm.content.lower() in ("yes", "いぇｓ", "いぇs"):
+                await ctx.channel.purge(limit=3)
                 await asyncio.sleep(0.3)
                 embed = discord.Embed(title="オークション内容", color=0xffaf60)
-                embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
-                embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=True)
-                embed.add_field(name="開始価格", value=f'\n\n{unit}{user_input_2}', inline=False)
-                embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
-                embed.add_field(name="終了日時", value=f'\n\n{user_input_4.content}', inline=True)
-                embed.add_field(name="特記事項", value=f'\n\n{user_input_5.content}', inline=True)
+                embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
+                embed.add_field(name="出品物", value=f'{input_item.content}', inline=True)
+                embed.add_field(name="開始価格", value=f'{unit}{start_price}', inline=False)
+                embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
+                embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
+                embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
                 await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
                 auction_embed = await ctx.channel.send(embed=embed)
                 await auction_embed.pin()
 
-                # 24:00だとSQL突っ込むと詰むのでここで変える
-                if hour_min_list == [24, 00]:
-                    user_input_4.content = finish_time.strftime('%Y/%m/%d-%H:%M')
-
-                # 椎名の部分を数字に変換(開始と即決)
-                user_input_2 = self.bot.stack_check(user_input_2)
-                if user_input_3 == "なし":
-                    pass
-                else:
-                    user_input_3 = self.bot.stack_check(user_input_3)
 
                 # SQLにデータ登録
                 cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, "
                             "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
                             "unit = %s, notice = %s WHERE ch_id = %s",
-                            (ctx.author.id, auction_embed.id, user_input_1.content, str(user_input_2),
-                             str(user_input_3), user_input_4.content, unit, user_input_5.content, ctx.channel.id))
+                            (ctx.author.id, auction_embed.id, input_item.content, str(start_price),
+                             str(bin_price), end_time_sql, unit, input_notice.content, ctx.channel.id))
                 db.commit()
 
                 try:
@@ -299,8 +304,7 @@ class AuctionDael(commands.Cog):
                     pass
 
             else:
-                kazu = 2
-                await ctx.channel.purge(limit=kazu)
+                await ctx.channel.purge(limit=2)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
         # 通常取引について
@@ -320,14 +324,14 @@ class AuctionDael(commands.Cog):
             elif self.bot.is_gacha_category(ctx):
                 unit = "ガチャ券"
             else:
-                embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, ガチャリンゴ, エメラルド etc)",
+                embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, がちゃりんご, エメラルド etc)",
                                       color=0xffaf60)
                 first_message_object = await ctx.channel.send(embed=embed)
-                user_input_0 = await self.bot.wait_for("message", check=check)
-                unit = user_input_0.content
+                input_unit = await self.bot.wait_for("message", check=check)
+                unit = input_unit.content
 
             # ALLにおいて
-            if "all" in ctx.channel.name.lower() and (unit == "椎名" or unit == "ガチャ券"):
+            if "all" in ctx.channel.name.lower() and unit in ("椎名", "椎名林檎", "ガチャ券"):
                 await ctx.channel.purge(limit=2)
                 embed = discord.Embed(description="椎名、ガチャ券の取引は専用のチャンネルで行ってください。",
                                       color=0xffaf60)
@@ -342,84 +346,117 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send(embed=embed)
             else:
                 first_message_object = await ctx.channel.send(embed=embed)
-            user_input_1 = await self.bot.wait_for('message', check=check)
+            input_item = await self.bot.wait_for('message', check=check)
 
             embed = discord.Embed(description="希望価格を入力してください。\n**※次のように入力してください。"
-                                              "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1LC+1ST+1 or 1ST+1 or 32**",
+                                              "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
+                                              "終了したい場合は`cancel`と入力してください",
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            user_input_2 = await self.bot.wait_for('message', check=check3)
-            user_input_2 = self.bot.stack_check_reverse(self.bot.stack_check(user_input_2.content))
+            while not self.bot.is_closed():
+                input_hope_price = await self.bot.wait_for('message', check=check)
+                if input_hope_price.content.lower() == "cancel":
+                    await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
+                if input_hope_price.content == "なし":
+                    bin_price = "なし"
+                    break
+                hope_price = self.bot.stack_check(input_hope_price.content)
+                if bin_price is None:
+                    await ctx.send("価格の形式が正しくありません\n**"
+                        "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
+                elif hope_price == 0:
+                    await ctx.send("希望価格を0にすることはできません")
+                else:
+                    break
+            
             embed = discord.Embed(
                 description="取引終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
-                            f"例　5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\nこの形でない場合認識されません！\n"
-                            "**間違えて打ってしまった場合その部分は必ず削除してください。**",
+                            f"例　5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
+                            "終了したい場合は`cancel`と入力してください",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            user_input_3 = await self.bot.wait_for('message', check=check2)
 
-            year_month_day_list = list(map(int, user_input_3.content.split("-")[0].split("/")))
-            hour_min_list = list(map(int, user_input_3.content.split("-")[1].split(":")))
-            now = datetime.now()
-            if hour_min_list == [24, 00]:
-                finish_time = over24Hdatetime(year_month_day_list[0], year_month_day_list[1], year_month_day_list[2], hour_min_list[0], hour_min_list[1])
-            else:
-                finish_time = datetime.strptime(user_input_3.content, r"%Y/%m/%d-%H:%M")
+            while not self.bot.is_closed():
+                input_end_time = await self.bot.wait_for('message', check=check)
+                if input_end_time.content.lower() == "cancel":
+                    await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
+                if not datetime_pattern.fullmatch(input_end_time.content):
+                    await ctx.send("時刻の書式が正しくありません")
+                    continue
 
-            if now >= finish_time:
-                # purge()の処理は入っていません
-                await ctx.channel.send(f"{ctx.author.mention}さん、現在時刻より前、又は同時刻に終了時刻が設定されています。やり直してください。")
-                await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
-                return
-            two_months_later = now + timedelta(weeks=8)
-            if finish_time > two_months_later:
-                # purge()の処理は(ry
-                await ctx.channel.send(f"{ctx.author.mention}さん、2ヵ月以上にわたる取引は禁止されています。やり直してください。")
-                await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
-                return
+                year, month, day, hour, minute = map(int, datetime_pattern.fullmatch(input_end_time).groups())
+
+                if not 2000 <= year <= 3000:
+                    await ctx.send("年は2000~3000の間で指定してください")
+                    continue
+                if is_exist_date(year, month, day) == 1:
+                    await ctx.send("月は1~12の間で指定してください")
+                    continue
+                if is_exist_date(year, month, day) == 2:
+                    await ctx.send(f"{year}年{month}月に{day}日は存在しません")
+                    continue
+                
+                if (hour, minute) == (24, 00):
+                    end_time = datetime(year, month, day) + timedelta(days=1)
+                elif hour not in range(24) or minute not in range(60):
+                    await ctx.send(f"{hour}時{minute}分は存在しません")
+                    continue
+                else:
+                    end_time = datetime(year, month, day, hour, minute)
+
+                now = datetime.now()
+                if end_time <= now:
+                    await ctx.channel.send("終了時刻を現在時刻以前にすることはできません")
+                    continue
+                elif end_time - now <= timedelta(hours=12):
+                    await ctx.send("開催期間を12時間以下にすることはできません")
+                    continue
+                elif end_time - now >= timedelta(weeks=8):
+                    await ctx.channel.send("2ヶ月以上にわたる取引はできません")
+                    continue
+                break
+            end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
+            end_time_text = f"{year}/{month:0>2}/{day:0>2}-{hour:0>2}:{minute:0>2}" # 24:00の場合はそのまま表示
 
             embed = discord.Embed(
-                description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
+                description="その他、出品物の詳細等などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
                             "何も無ければ「なし」で構いません。",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            user_input_4 = await self.bot.wait_for('message', check=check)
+            input_notice = await self.bot.wait_for('message', check=check)
 
             await self.bot.delete_to(ctx, first_message_object.id)
 
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
-            embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
-            embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=False)
-            embed.add_field(name="希望価格", value=f'\n\n{unit}{user_input_2}', inline=True)
-            embed.add_field(name="終了日時", value=f'\n\n{user_input_3.content}', inline=True)
-            embed.add_field(name="特記事項", value=f'\n\n{user_input_4.content}', inline=False)
+            embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
+            embed.add_field(name="出品物", value=f'{input_item.content}', inline=False)
+            embed.add_field(name="希望価格", value=f'{unit}{hope_price}', inline=True)
+            embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
+            embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=False)
             await ctx.channel.send(embed=embed)
-            user_input_6 = await self.bot.wait_for('message', check=check)
-            if user_input_6.content == "YES" or user_input_6.content == "yes" or user_input_6.content == "いぇｓ" or user_input_6.content == "いぇs":
-                kazu = 3
-                await ctx.channel.purge(limit=kazu)
+
+            input_confirm = await self.bot.wait_for('message', check=check)
+            if input_confirm.content.lower() in ("yes", "いぇｓ", "いぇs"):
+                await ctx.channel.purge(limit=3)
                 await asyncio.sleep(0.3)
                 embed = discord.Embed(title="取引内容", color=0xffaf60)
-                embed.add_field(name="出品者", value=f'\n\n{ctx.author.display_name}', inline=True)
-                embed.add_field(name="出品物", value=f'\n\n{user_input_1.content}', inline=False)
-                embed.add_field(name="希望価格", value=f'\n\n{unit}{user_input_2}', inline=True)
-                embed.add_field(name="終了日時", value=f'\n\n{user_input_3.content}', inline=True)
-                embed.add_field(name="特記事項", value=f'\n\n{user_input_4.content}', inline=False)
+                embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
+                embed.add_field(name="出品物", value=f'{input_item.content}', inline=False)
+                embed.add_field(name="希望価格", value=f'{unit}{hope_price}', inline=True)
+                embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
+                embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=False)
                 await ctx.channel.send(
                     "<:shiina_balance:558175954686705664>取引を開始します<:shiina_balance:558175954686705664>")
                 deal_embed = await ctx.channel.send(embed=embed)
                 await deal_embed.pin()
 
-                # 24:00だとSQL突っ込むと詰むのでここで変える
-                if hour_min_list == [24, 00]:
-                    user_input_3.content = finish_time.strftime('%Y/%m/%d-%H:%M')
-
-                user_input_2 = self.bot.stack_check(user_input_2)
                 cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
                             "deal_hope_price = %s, deal_end_time = %s, unit = %s, notice = %s WHERE ch_id = %s",
-                            (ctx.author.id, deal_embed.id, user_input_1.content, str(user_input_2),
-                             user_input_3.content, unit, user_input_4.content, ctx.channel.id))
+                            (ctx.author.id, deal_embed.id, input_item.content, str(hope_price),
+                             end_time_sql, unit, input_notice.content, ctx.channel.id))
                 db.commit()
 
                 try:
@@ -428,20 +465,17 @@ class AuctionDael(commands.Cog):
                     pass
 
             else:
-                kazu = 2
-                await ctx.channel.purge(limit=kazu)
+                await ctx.channel.purge(limit=2)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
     @commands.command(aliases=["Tend"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
-    async def tend(self, ctx, price):
+    async def tend(self, ctx, *, price):
         if not self.bot.is_auction_category(ctx):
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
             return
 
-        # priceのスタイルを調整
-        price = f"{price}".replace(" ", "").replace("　", "")
         # そもそもオークションが開催してなかったらreturn
         if '☆' in ctx.channel.name:
             embed = discord.Embed(
@@ -450,18 +484,8 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             return
 
-        # 少数は可能。
-        def check_style(m: str) -> bool:
-            """入札額の表記を確認する"""
-            style_list = m.lower().replace("st", "").replace("lc", "").split("+")
-            for style in style_list:
-                try:
-                    float(style)
-                except ValueError:
-                    return False
-            return True
-
-        if check_style(price):
+        price = self.bot.stack_check(price)
+        if price is not None or price == 0:
             # 開始価格、即決価格、現在の入札額を取り寄せ
             # auction[0] - auction[7]が各種auctionDBのデータとなる
             cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
@@ -479,26 +503,26 @@ class AuctionDael(commands.Cog):
                 await ctx.send(embed=embed)
                 return
 
-            elif ctx.author.id == tend[1][-1] and (not self.bot.stack_check(price) >= int(auction[5])):
+            elif ctx.author.id == tend[1][-1] and not price >= int(auction[5]):
                 embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
 
             # 入札価格の判定
-            if self.bot.stack_check(price) < int(auction[4]) or self.bot.stack_check(price) <= int(tend[2][-1]):
+            if price < int(auction[4]) or price <= int(tend[2][-1]):
                 embed = discord.Embed(description="入札価格が現在の入札価格、もしくは開始価格より低いです。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
 
             elif auction[5] != "なし":
-                if self.bot.stack_check(price) >= int(auction[5]):
+                if price >= int(auction[5]):
                     embed = discord.Embed(description=f"即決価格と同額以上の価格が入札されました。{ctx.author.display_name}さんの落札です。",
                                           color=0x4259fb)
                     await ctx.send(embed=embed)
                     # オークション情報を取る
                     cur.execute(f"SELECT * FROM auction where ch_id = {ctx.channel.id}")
                     auction_data = cur.fetchone()
-                    tend_price = f"{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(price))}"
+                    tend_price = f"{auction_data[7]}{self.bot.stack_check_reverse(price)}"
 
                     embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
                     embed.add_field(name="落札日", value=f'\n\n{datetime.now().strftime("%Y/%m/%d")}', inline=False)
@@ -522,7 +546,7 @@ class AuctionDael(commands.Cog):
                     if "椎名" in ctx.channel.name:
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
-                                    (ctx.author.display_name, auction_data[3], self.bot.stack_check(price),
+                                    (ctx.author.display_name, auction_data[3], price,
                                      self.bot.get_user(id=auction_data[1]).display_name))
                         db.commit()
                         await self.bot.get_channel(832956663908007946).purge(limit=10)
@@ -547,7 +571,7 @@ class AuctionDael(commands.Cog):
                         pass
                     return
 
-            elif self.bot.stack_check(price) == 0:
+            elif price == 0 or price is None:
                 embed = discord.Embed(description="不正な値です。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
@@ -565,8 +589,8 @@ class AuctionDael(commands.Cog):
                 embed = discord.Embed(title="オークション内容", color=0xffaf60)
                 embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(auction[1]).display_name}')
                 embed.add_field(name="出品物", value=f'\n\n{auction[3]}')
-                value = "なし" if auction[5] == "なし" else f"{auction[7]}{self.bot.stack_check_reverse(auction[5])}"
-                embed.add_field(name="開始価格", value=f'\n\n{auction[7]}{self.bot.stack_check_reverse(auction[4])}',
+                value = "なし" if auction[5] == "なし" else f"{auction[7]}{self.bot.stack_check_reverse(int(auction[5]))}"
+                embed.add_field(name="開始価格", value=f'\n\n{auction[7]}{self.bot.stack_check_reverse(int(auction[4]))}',
                                 inline=False)
                 embed.add_field(name="即決価格", value=f'\n\n{value}', inline=False)
                 finish_time = (finish_time + timedelta(days=1)).strftime("%Y/%m/%d-%H:%M")
@@ -663,13 +687,13 @@ class AuctionDael(commands.Cog):
             return
 
         add_price = self.bot.stack_check(add_price)
-        if add_price == 0:
+        if add_price is None or add_price <= 0:
             await ctx.send("入力値が不正です。")
             return
 
         price = tend_data[2][-1] + add_price
         tend = self.bot.get_command("tend")
-        await ctx.invoke(tend, price)
+        await ctx.invoke(tend, str(price))
 
     @commands.command()
     async def remand(self, ctx):
