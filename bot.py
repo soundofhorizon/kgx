@@ -245,7 +245,7 @@ class KGX(commands.Bot):
         UNITS = {"lc": 3456, "st": 64} # 単位と対応する値
         value = str(value).lower()
 
-        if not re.fullmatch(r"\s*\d+(\.\d+)?(st|lc)?(\s*\+\s*\d+(\.\d+)?(st|lc)?)*\s*", value):
+        if not re.fullmatch(r"\s*\d+((\.\d+)?(st|lc))?(\s*\+\s*\d+((\.\d+)?(st|lc))?)*\s*", value):
             return
 
         value = re.sub(r"\s", "", value) # 空白文字を削除
