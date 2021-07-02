@@ -358,11 +358,8 @@ class AuctionDael(commands.Cog):
                 if input_hope_price.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
-                if input_hope_price.content == "なし":
-                    bin_price = "なし"
-                    break
                 hope_price = self.bot.stack_check(input_hope_price.content)
-                if bin_price is None:
+                if hope_price is None:
                     await ctx.send("価格の形式が正しくありません\n**"
                         "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
                 elif hope_price == 0:
