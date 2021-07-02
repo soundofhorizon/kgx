@@ -269,7 +269,7 @@ class KGX(commands.Bot):
             return str(value)
         else:
             st, single = divmod(value, 64)
-            lc, st= divmod(st, 54)
+            lc, st = divmod(st, 54)
             calc_result = []
             if lc != 0:
                 calc_result.append(f"{lc}LC")
