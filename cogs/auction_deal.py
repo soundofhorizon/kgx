@@ -159,7 +159,7 @@ class AuctionDael(commands.Cog):
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
-            while True: # 正しい入力が来るまでwhile
+            while not self.bot.is_closed(): # 正しい入力が来るまでwhile
                 user_start_price = await self.bot.wait_for('message', check=check)
                 start_price = self.bot.stack_check(user_start_price.content)
                 if user_start_price.content.lower() == "cancel":
@@ -180,7 +180,7 @@ class AuctionDael(commands.Cog):
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
-            while True:
+            while not self.bot.is_closed():
                 input_bin_price = await self.bot.wait_for('message', check=check)
                 if input_bin_price.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
@@ -206,7 +206,7 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
-            while True:
+            while not self.bot.is_closed():
                 input_end_time = await self.bot.wait_for('message', check=check)
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
@@ -353,7 +353,7 @@ class AuctionDael(commands.Cog):
                                               "終了したい場合は`cancel`と入力してください",
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            while True:
+            while not self.bot.is_closed():
                 input_hope_price = await self.bot.wait_for('message', check=check)
                 if input_hope_price.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
@@ -377,7 +377,7 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
-            while True:
+            while not self.bot.is_closed():
                 input_end_time = await self.bot.wait_for('message', check=check)
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
