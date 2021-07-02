@@ -78,15 +78,23 @@ class AdminOnly(commands.Cog):
         if ">" in ctx.channel.category.name:
             cur.execute("SELECT embed_message_id FROM auction where ch_id = %s", (ctx.channel.id,))
             embed_message_id, = cur.fetchone()
+            if embed_message_id == 0:
+                await ctx.send("このチャンネルではオークションが行われていません")
+                return
             auction_embed = await ctx.fetch_message(embed_message_id)
             await auction_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "a")
         elif "*" in ctx.channel.category.name:
             cur.execute("SELECT embed_message_id FROM deal where ch_id = %s", (ctx.channel.id,))
             embed_message_id, = cur.fetchone()
+            if embed_message_id == 0:
+                await ctx.send("このチャンネルでは取引が行われていません")
+                return
             deal_embed = await ctx.fetch_message(embed_message_id)
             await deal_embed.unpin()
             self.bot.reset_ch_db(ctx.channel.id, "d")
+        else:
+            await ctx.send("オークションチャンネルまたは取引チャンネルで実行してください")
 
         embed = discord.Embed(
             description=f"{ctx.author.display_name}によりこのフローは停止させられました。",
@@ -229,10 +237,12 @@ class AdminOnly(commands.Cog):
             cur.execute("INSERT INTO tend (ch_id) values (%s)", (ctx.channel.id,))
             db.commit()
             self.bot.reset_ch_db(ctx.channel.id, set_type)
+            await ctx.send(f"{ctx.channel.name}をオークションチャンネルとしてデータベースに登録しました")
         elif set_type == "d":
             cur.execute("INSERT INTO deal (ch_id) values (%s)", (ctx.channel.id,))
             db.commit()
             self.bot.reset_ch_db(ctx.channel.id, set_type)
+            await ctx.send(f"{ctx.channel.name}を取引チャンネルとしてデータベースに登録しました")
         else:
             await ctx.send(f"{ctx.prefix}dbsetup [a, d]")
 

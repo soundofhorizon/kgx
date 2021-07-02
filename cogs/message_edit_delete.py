@@ -12,7 +12,7 @@ class MessageEditDelete(commands.Cog):
         if message.author.bot:
             return
 
-        if message.content.startswith("!tend"):
+        if message.content.lower().startswith(("!tend", "!add")):
             return
 
         d = datetime.now()  # 現在時刻の取得
