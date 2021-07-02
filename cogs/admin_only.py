@@ -66,7 +66,7 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def show_bid_ranking(self, ctx):
-        await self.bot.get_channel(832956663908007946).purge(limit=10)
+        await self.bot.get_channel(832956663908007946).purge(limit=20)
         await asyncio.sleep(1)
         embeds = self.bot.create_high_bid_ranking()
         for embed in embeds:
