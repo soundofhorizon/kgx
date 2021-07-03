@@ -75,9 +75,9 @@ class Loops(commands.Cog):
                 await auction_data_channel.send(embed=embed)
                 return
 
-            auctions_description = []
+            auction_info_list = []
             for ch_id, owner_id, auction_item, tender_id, unit, tend_price, end_time in auctions:
-                auction_description = []
+                auction_info = []
                 channel = self.bot.get_channel(ch_id)
                 owner = self.bot.get_user(owner_id)
 
@@ -89,30 +89,24 @@ class Loops(commands.Cog):
                 diff_minites = diff.seconds % 3600 // 60
                 diff_seconds = diff.seconds % 60
 
-                auction_description.append(f"{channel.mention}:")
-                auction_description.append(f"出品者 → {owner.display_name}")
-                auction_description.append(f"商品名 → {auction_item}")
+                auction_info.append(f"{channel.mention}:")
+                auction_info.append(f"出品者 → {owner.display_name}")
+                auction_info.append(f"商品名 → {auction_item}")
                 # 多分no bidで更新すると死ぬ気がするので分岐
                 if tender_id[-1] == 0:
-                    auction_description.append("入札者はまだいません！")
+                    auction_info.append("入札者はまだいません！")
                 else:
                     highest_tender = self.bot.get_user(id=tender_id[-1])
-                    auction_description.append(f"最高額入札者 → {highest_tender.display_name}")
-                    auction_description.append(f"入札額 → {unit}{self.bot.stack_check_reverse(tend_price[-1])}")
+                    auction_info.append(f"最高額入札者 → {highest_tender.display_name}")
+                    auction_info.append(f"入札額 → {unit}{self.bot.stack_check_reverse(tend_price[-1])}")
                 if diff.days == 0: # 残り1日を切っていたら太字にする
-                    auction_description.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
+                    auction_info.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
                 else:
-                    auction_description.append(f"終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒")
+                    auction_info.append(f"終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒")
                 
-                auctions_description.append("\n".join(auction_description))
+                auction_info_list.append("\n".join(auction_info))
 
-                # 文字数制限回避。多分足りない
-                if len(description := "\n\n--------\n\n".join(auctions_description)) >= 1800:
-                    embed = discord.Embed(description=description, color=0x59a5e3)
-                    await auction_data_channel.send(embed=embed)
-                    auctions_description.clear()
-
-            if auctions_description:
+            for description in self.bot.join_within_limit(auction_info_list, sep="\n\n--------\n\n"):
                 embed = discord.Embed(description=description, color=0x59a5e3)
                 await auction_data_channel.send(embed=embed)
 
@@ -176,9 +170,9 @@ class Loops(commands.Cog):
                 await deal_data_channel.send(embed=embed)
                 return
 
-            deals_description = []
+            deal_info_list = []
             for ch_id, owner_id, deal_item, hope_price, end_time, unit in deals:
-                deal_description = []
+                deal_info = []
                 channel = self.bot.get_channel(ch_id)
                 owner = self.bot.get_user(owner_id)
 
@@ -190,24 +184,19 @@ class Loops(commands.Cog):
                 diff_minites = diff.seconds % 3600 // 60
                 diff_seconds = diff.seconds % 60
 
-                deal_description.append(f"{channel.mention}:")
-                deal_description.append(f"出品者 → {owner.display_name}")
-                deal_description.append(f"商品名 → {deal_item}")
-                deal_description.append(f"希望価格 → {unit}{self.bot.stack_check_reverse(int(hope_price))}")
+                deal_info.append(f"{channel.mention}:")
+                deal_info.append(f"出品者 → {owner.display_name}")
+                deal_info.append(f"商品名 → {deal_item}")
+                deal_info.append(f"希望価格 → {unit}{self.bot.stack_check_reverse(int(hope_price))}")
                 if diff.days == 0: # 残り1日を切っていたら太字にする
-                    deal_description.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
+                    deal_info.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
                 else:
-                    deal_description.append(f"終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒")
+                    deal_info.append(f"終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒")
                 
-                deals_description.append("\n".join(deal_description))
+                deal_info_list.append("\n".join(deal_info))
 
-                # 文字数制限回避。多分足りない
-                if len(description := "\n\n--------\n\n".join(deals_description)) >= 1800:
-                    embed = discord.Embed(description=description, color=0x59a5e3)
-                    await deal_data_channel.send(embed=embed)
-                    deals_description.clear()
 
-            if deals_description:
+            for description in self.bot.join_within_limit(deal_info_list, sep="\n\n--------\n\n"):
                 embed = discord.Embed(description=description, color=0x59a5e3)
                 await deal_data_channel.send(embed=embed)
         
