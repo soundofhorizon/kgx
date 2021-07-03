@@ -52,10 +52,7 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def bidscore_ranking(self, ctx):
-        channel = self.bot.get_channel(677905288665235475)
-        # とりあえず、ランキングチャンネルの中身を消す
-        await channel.purge(limit=1)
-        await channel.send(embed=self.bot.create_ranking_embed())
+        await self.bot.update_bidscore_ranking()
         await asyncio.sleep(0.3)
         embed = discord.Embed(
             description=f"このサーバーの全メンバーの落札ポイントの照会が終わりました。"
@@ -66,11 +63,8 @@ class AdminOnly(commands.Cog):
 
     @commands.command()
     async def show_bid_ranking(self, ctx):
-        await self.bot.get_channel(832956663908007946).purge(limit=20)
-        await asyncio.sleep(1)
-        embeds = self.bot.create_high_bid_ranking()
-        for embed in embeds:
-            await self.bot.get_channel(832956663908007946).send(embed=embed)
+        await self.bot.update_high_bid_ranking()
+        await ctx.send("落札額ランキングを更新しました")
 
     @commands.command()
     async def stop_deal(self, ctx):
@@ -219,10 +213,7 @@ class AdminOnly(commands.Cog):
         db.commit()
         await ctx.send(f'{user.display_name}の落札ポイントを{n}にセットしました')
 
-        channel = self.bot.get_channel(677905288665235475)
-        # とりあえず、ランキングチャンネルの中身を消す
-        await channel.purge(limit=1)
-        await channel.send(embed=self.bot.create_ranking_embed())
+        await self.bot.update_bidscore_ranking()
         channel = self.bot.get_channel(602197766218973185)
         embed = discord.Embed(
             description=f"{ctx.author.display_name}により、{user.display_name}"
