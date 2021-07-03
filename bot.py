@@ -170,6 +170,35 @@ class KGX(commands.Bot):
             raise TypeError("wrong value has passed")
 
         return before, after
+    
+    @staticmethod
+    def join_within_limit(texts: List[str], sep: str ="\n", limit: int =4096) -> Generator[str, None, None]:
+        """
+        sep.join(texts)のような文字列を生成するジェネレータを返す。各要素はの長さは必ずlimit以下になるようにしている
+        textsの1要素がlimitよりも長ければTypeError。
+        for description in join_within_limit(text): のような使われ方を想定している
+        """
+        if not texts: # 空のリストが与えらたらreturn
+            return
+        
+        length_sum = len(texts[0])
+        before = 0
+
+        if length_sum > limit:
+            raise ValueError("one element is too long")
+
+        for i, text in enumerate(texts[1:], 1):
+            length_sum += len(sep) + len(text)
+
+            if length_sum > limit:
+                yield sep.join(texts[before:i])
+                before = i
+                length_sum = len(text)
+
+                if length_sum > limit:
+                    raise ValueError("one element is too long")
+
+        yield sep.join(texts[before:])
 
     def create_ranking_embed(self) -> discord.Embed:
         """落札ランキングのemebedを作成"""
