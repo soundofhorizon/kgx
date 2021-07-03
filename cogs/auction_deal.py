@@ -669,7 +669,7 @@ class AuctionDael(commands.Cog):
 
     @commands.command(aliases=["Add"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
-    async def add(self, ctx: commands.Context, add_price: str):
+    async def add(self, ctx: commands.Context, *, add_price: str):
         if not self.bot.is_auction_category(ctx):
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
@@ -690,7 +690,7 @@ class AuctionDael(commands.Cog):
 
         price = tend_data[2][-1] + add_price
         tend = self.bot.get_command("tend")
-        await ctx.invoke(tend, str(price))
+        await ctx.invoke(tend, price=str(price))
 
     @commands.command()
     async def remand(self, ctx):
