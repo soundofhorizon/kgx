@@ -82,11 +82,7 @@ class CheckEndTime(commands.Cog):
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
                                     (tender.display_name, item, tend_prices[-1], owner.display_name))
                         db.commit()
-                        await self.bot.get_channel(832956663908007946).purge(limit=20)
-                        await asyncio.sleep(1)
-                        embed = self.bot.create_high_bid_ranking()
-                        for i in range(len(embed)):
-                            await self.bot.get_channel(832956663908007946).send(embed=embed[i])
+                        await self.bot.update_high_bid_ranking()
 
                     embed = discord.Embed(description=f"{owner.display_name}が出品した{item}を{tender.display_name}が{tend_price}で落札しました！", color=0xffaf60)
                     await ch.send(embed=embed)

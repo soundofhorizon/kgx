@@ -67,10 +67,7 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             await asyncio.sleep(0.5)
             # ランキングを出力する
-            channel = self.bot.get_channel(677905288665235475)
-            # とりあえず、ランキングチャンネルの中身を消す
-            await channel.purge(limit=1)
-            await channel.send(embed=self.bot.create_ranking_embed())
+            await self.bot.update_bidscore_ranking()
 
     @commands.command()
     async def start(self, ctx):
@@ -546,11 +543,7 @@ class AuctionDael(commands.Cog):
                                     (ctx.author.display_name, auction_data[3], price,
                                      self.bot.get_user(id=auction_data[1]).display_name))
                         db.commit()
-                        await self.bot.get_channel(832956663908007946).purge(limit=20)
-                        await asyncio.sleep(1)
-                        embeds = self.bot.create_high_bid_ranking()
-                        for embed in embeds:
-                            await self.bot.get_channel(832956663908007946).send(embed=embed)
+                        await self.bot.update_high_bid_ranking()
 
                     embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                     await ctx.channel.send(embed=embed)

@@ -200,8 +200,8 @@ class KGX(commands.Bot):
 
         yield sep.join(texts[before:])
 
-    def create_ranking_embed(self) -> discord.Embed:
-        """落札ランキングのemebedを作成"""
+    async def update_bidscore_ranking(self) -> None:
+        """落札ポイントランキングを更新"""
         # user_dataテーブルには「0:ユーザーID bigint, 1:落札ポイント smallint, 2:警告レベル smallint」で格納されているので(0, 1)を、落札ポイント降順になるように出す
         kgx_server = self.get_guild(558125111081697300)
         members_id = tuple(member.id for member in kgx_server.members) # メンバー全員のid
@@ -224,44 +224,47 @@ class KGX(commands.Bot):
             title='**落札ポイントランキング**',
             description=description,
             color=0x48d1cc)  # 発言内容をdescriptionにセット
-        embed.set_footer(text=f'UpdateTime：{time}')  # チャンネル名,時刻,鯖のアイコンをセット
-        return embed
+        embed.set_footer(text=f'UpdateTime：{time}')  # 時刻をセット
+        bidscore_ranking_channel = self.get_channel(677905288665235475)
+        await bidscore_ranking_channel.purge(limit=10)
+        await bidscore_ranking_channel.send(embed=embed)
 
-    @staticmethod
-    def create_high_bid_ranking() -> List[discord.Embed]:
-        """落札額ランキングembed作成 複数のembed情報を詰め込んだリストを返す"""
+    async def update_high_bid_ranking(self) -> None:
+        """落札額ランキングの更新"""
         # bid_rankingテーブルには「0:落札者の名前 text, 1:落札物 text, 2:落札額 bigint, 3:出品者の名前 text」で格納されているのでこれを全部、落札額降順になるように出す
         cur.execute("SELECT * FROM bid_ranking ORDER BY bid_price desc;")
         data = cur.fetchall()
 
         # embed保管リスト
         embed_list = []
-        # データ毎に取り出す
-        description = ""
+        bid_ranking = []
 
         for i, (bidder_name, item_name, bid_price, seller_id) in enumerate(data[:300], 1):
             # 気持ち程度のレイアウト合わせ。1桁と2桁の違い
+            bid_info = ""
             if i <= 9:
-                description += " "
-            # listの中身は[落札者,落札物,落札額,出品者ID]
-            description += f"{i}位: 出品者->{seller_id}\n" \
-                           f"  　　出品物->{item_name}\n" \
-                           f"  　　落札額->椎名{bot.stack_check_reverse(bid_price)}\n" \
-                           f"  　　落札者->{bidder_name}\n\n"
+                bid_info += " "
+            bid_info += f"{i}位: 出品者->{seller_id}\n" \
+                        f"  　　出品物->{item_name}\n" \
+                        f"  　　落札額->椎名{bot.stack_check_reverse(bid_price)}\n" \
+                        f"  　　落札者->{bidder_name}"
+            bid_ranking.append(bid_info)
 
-            # descriptionの長さが2000を超えるとエラーになる。吐き出してリセット案件
-            if len(description) > 1800:
-                embed = discord.Embed(title="**落札額ランキング**", description=description, color=0xddc7ff)
-                embed_list.append(embed)
-                description = ""
+        for description in self.bot.join_within_limit(bid_ranking, sep="\n\n"):
+            embed = discord.Embed(description=description, color=0xddc7ff)
+            embed_list.append(embed)
 
-        # 表示する
-        embed = discord.Embed(description=description, color=0xddc7ff)
+        embed_list[0].title= " **落札額ランキング**"
+
+        embed_list[-1].color = 0xddc7ff
         d = datetime.now()  # 現在時刻の取得
         time = d.strftime("%Y/%m/%d %H:%M:%S")
-        embed.set_footer(text=f"UpdateTime: {time}")
-        embed_list.append(embed)
-        return embed_list
+        embed_list[-1].set_footer(text=f"UpdateTime: {time}")
+
+        bid_price_ranking_channel = self.get_channel(832956663908007946)
+        await bid_price_ranking_channel.purge(limit=10)
+        for embed in embed_list:
+            await bid_price_ranking_channel.send(embed=embed)
 
     @staticmethod
     def stack_check(value) -> Optional[int]:
