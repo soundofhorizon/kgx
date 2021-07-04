@@ -6,7 +6,7 @@ import os
 import traceback
 import re
 from datetime import datetime
-from typing import Union, List, Optional
+from typing import Union, List, Generator, Optional
 
 import bs4
 import discord
