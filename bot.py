@@ -250,7 +250,7 @@ class KGX(commands.Bot):
                         f"  　　落札者->{bidder_name}"
             bid_ranking.append(bid_info)
 
-        for description in self.bot.join_within_limit(bid_ranking, sep="\n\n"):
+        for description in self.join_within_limit(bid_ranking, sep="\n\n"):
             embed = discord.Embed(description=description, color=0xddc7ff)
             embed_list.append(embed)
 
