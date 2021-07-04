@@ -253,18 +253,20 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             input_notice = await self.bot.wait_for('message', check=check)
 
+            display_start_price = f"{unit}{self.bot.stack_check_reverse(start_price)}"
+            # 即決価格なしなら単位は付与しない
+            if bin_price == "なし":
+                display_bin_price = "なし"
+            else:
+                display_bin_price = f"{unit}{self.bot.stack_check_reverse(bin_price)}"
+            
             await self.bot.delete_to(ctx, first_message_object.id)
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
             embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
             embed.add_field(name="出品物", value=f'{input_item.content}', inline=True)
-            embed.add_field(name="開始価格", value=f'{unit}{start_price}', inline=False)
+            embed.add_field(name="開始価格", value=f'{display_start_price}', inline=False)
 
-            # 即決価格なしなら単位は付与しない
-            if bin_price == "なし":
-                display_bin_price = "なし"
-            else:
-                display_bin_price = f"{unit}{bin_price}"
             
             embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
             embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
@@ -278,7 +280,7 @@ class AuctionDael(commands.Cog):
                 embed = discord.Embed(title="オークション内容", color=0xffaf60)
                 embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
                 embed.add_field(name="出品物", value=f'{input_item.content}', inline=True)
-                embed.add_field(name="開始価格", value=f'{unit}{start_price}', inline=False)
+                embed.add_field(name="開始価格", value=f'{display_start_price}', inline=False)
                 embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
                 embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
                 embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
@@ -422,12 +424,13 @@ class AuctionDael(commands.Cog):
             input_notice = await self.bot.wait_for('message', check=check)
 
             await self.bot.delete_to(ctx, first_message_object.id)
+            display_hope_price = f"{unit}{self.bot.stack_check_reverse(hope_price)}"
 
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
             embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
             embed.add_field(name="出品物", value=f'{input_item.content}', inline=False)
-            embed.add_field(name="希望価格", value=f'{unit}{hope_price}', inline=True)
+            embed.add_field(name="希望価格", value=f'{display_hope_price}', inline=True)
             embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
             embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=False)
             await ctx.channel.send(embed=embed)
@@ -439,7 +442,7 @@ class AuctionDael(commands.Cog):
                 embed = discord.Embed(title="取引内容", color=0xffaf60)
                 embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
                 embed.add_field(name="出品物", value=f'{input_item.content}', inline=False)
-                embed.add_field(name="希望価格", value=f'{unit}{hope_price}', inline=True)
+                embed.add_field(name="希望価格", value=f'{display_hope_price}', inline=True)
                 embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
                 embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=False)
                 await ctx.channel.send(
