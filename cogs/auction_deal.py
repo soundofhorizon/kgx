@@ -528,8 +528,8 @@ class AuctionDael(commands.Cog):
     
     @start.after_invoke
     async def after_start(self, ctx):
-        if ctx.author in self.bot.starting_users:
-            self.bot.starting_users.pop(ctx.author)
+        if ctx.channel == self.bot.starting_users.get(ctx.author, None): # そのチャンネルでstartが行われていれば
+            self.bot.starting_users.pop(ctx.author) # start実行状態ではなくする
 
 
     @commands.command(aliases=["Tend"])
