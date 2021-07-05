@@ -109,6 +109,16 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
             await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
             return
+        
+        if ctx.author in self.bot.starting_users:
+            channel = self.bot.starting_users[ctx.author]
+            await ctx.send(f"{channel.mention}の登録を終了させてから実行してください\n--------ｷﾘﾄﾘ線--------")
+            return
+        if ctx.channel in self.bot.starting_channels:
+            await ctx.send(f"1つのチャンネルで複数のユーザーがstartコマンドを実行することはできません\n--------ｷﾘﾄﾘ線--------")
+            return
+        self.bot.starting_users[ctx.author] = ctx.channel
+        self.bot.starting_channels.add(ctx.channel)
 
         first_message_object = None
         # オークション系
@@ -131,7 +141,11 @@ class AuctionDael(commands.Cog):
                 embed = discord.Embed(description="何によるオークションですか？単位を入力してください。(ex.GTギフト券, がちゃりんご, エメラルド etc)",
                                       color=0xffaf60)
                 first_message_object = await ctx.channel.send(embed=embed)
-                input_unit = await self.bot.wait_for("message", check=check)
+                try:
+                    input_unit = await self.bot.wait_for('message', check=check, timeout=120.0)
+                except asyncio.TimeoutError:
+                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
                 unit = input_unit.content
 
             # ALLにおいて
@@ -148,7 +162,11 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send(embed=embed)
             else:
                 first_message_object = await ctx.channel.send(embed=embed)
-            input_item = await self.bot.wait_for('message', check=check)
+            try:
+                input_item = await self.bot.wait_for('message', check=check, timeout=120.0)
+            except asyncio.TimeoutError:
+                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                return
 
             embed = discord.Embed(description="開始価格を入力してください。\n**※次のように入力してください。"
                                               "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
@@ -157,7 +175,11 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
 
             while not self.bot.is_closed(): # 正しい入力が来るまでwhile
-                user_start_price = await self.bot.wait_for('message', check=check)
+                try:
+                    user_start_price = await self.bot.wait_for('message', check=check, timeout=120.0)
+                except asyncio.TimeoutError:
+                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
                 start_price = self.bot.stack_check(user_start_price.content)
                 if user_start_price.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
@@ -178,7 +200,11 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
 
             while not self.bot.is_closed():
-                input_bin_price = await self.bot.wait_for('message', check=check)
+                try:
+                    input_bin_price = await self.bot.wait_for('message', check=check, timeout=120.0)
+                except asyncio.TimeoutError:
+                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
                 if input_bin_price.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -204,7 +230,11 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
 
             while not self.bot.is_closed():
-                input_end_time = await self.bot.wait_for('message', check=check)
+                try:
+                    input_end_time = await self.bot.wait_for('message', check=check, timeout=120.0)
+                except asyncio.TimeoutError:
+                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -251,26 +281,36 @@ class AuctionDael(commands.Cog):
                             "何も無ければ「なし」で構いません。",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            input_notice = await self.bot.wait_for('message', check=check)
+            try:
+                input_notice = await self.bot.wait_for('message', check=check, timeout=120.0)
+            except asyncio.TimeoutError:
+                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                return
 
+            display_start_price = f"{unit}{self.bot.stack_check_reverse(start_price)}"
+            # 即決価格なしなら単位は付与しない
+            if bin_price == "なし":
+                display_bin_price = "なし"
+            else:
+                display_bin_price = f"{unit}{self.bot.stack_check_reverse(bin_price)}"
+            
             await self.bot.delete_to(ctx, first_message_object.id)
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
             embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
             embed.add_field(name="出品物", value=f'{input_item.content}', inline=True)
-            embed.add_field(name="開始価格", value=f'{unit}{start_price}', inline=False)
+            embed.add_field(name="開始価格", value=f'{display_start_price}', inline=False)
 
-            # 即決価格なしなら単位は付与しない
-            if bin_price == "なし":
-                display_bin_price = "なし"
-            else:
-                display_bin_price = f"{unit}{bin_price}"
             
             embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
             embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
             embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
             await ctx.channel.send(embed=embed)
-            input_confirm = await self.bot.wait_for('message', check=check)
+            try:
+                input_confirm = await self.bot.wait_for('message', check=check, timeout=120.0)
+            except asyncio.TimeoutError:
+                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                return
 
             if input_confirm.content.lower() in ("yes", "いぇｓ", "いぇs"):
                 await ctx.channel.purge(limit=3)
@@ -278,7 +318,7 @@ class AuctionDael(commands.Cog):
                 embed = discord.Embed(title="オークション内容", color=0xffaf60)
                 embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
                 embed.add_field(name="出品物", value=f'{input_item.content}', inline=True)
-                embed.add_field(name="開始価格", value=f'{unit}{start_price}', inline=False)
+                embed.add_field(name="開始価格", value=f'{display_start_price}', inline=False)
                 embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
                 embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
                 embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
@@ -324,7 +364,11 @@ class AuctionDael(commands.Cog):
                 embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, がちゃりんご, エメラルド etc)",
                                       color=0xffaf60)
                 first_message_object = await ctx.channel.send(embed=embed)
-                input_unit = await self.bot.wait_for("message", check=check)
+                try:
+                    input_unit = await self.bot.wait_for('message', check=check, timeout=120.0)
+                except asyncio.TimeoutError:
+                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
                 unit = input_unit.content
 
             # ALLにおいて
@@ -343,7 +387,11 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send(embed=embed)
             else:
                 first_message_object = await ctx.channel.send(embed=embed)
-            input_item = await self.bot.wait_for('message', check=check)
+            try:
+                input_item = await self.bot.wait_for('message', check=check, timeout=120.0)
+            except asyncio.TimeoutError:
+                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                return
 
             embed = discord.Embed(description="希望価格を入力してください。\n**※次のように入力してください。"
                                               "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
@@ -351,7 +399,11 @@ class AuctionDael(commands.Cog):
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
             while not self.bot.is_closed():
-                input_hope_price = await self.bot.wait_for('message', check=check)
+                try:
+                    input_hope_price = await self.bot.wait_for('message', check=check, timeout=120.0)
+                except asyncio.TimeoutError:
+                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
                 if input_hope_price.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -372,7 +424,11 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
 
             while not self.bot.is_closed():
-                input_end_time = await self.bot.wait_for('message', check=check)
+                try:
+                    input_end_time = await self.bot.wait_for('message', check=check, timeout=120.0)
+                except asyncio.TimeoutError:
+                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    return
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -419,27 +475,36 @@ class AuctionDael(commands.Cog):
                             "何も無ければ「なし」で構いません。",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
-            input_notice = await self.bot.wait_for('message', check=check)
+            try:
+                input_notice = await self.bot.wait_for('message', check=check, timeout=120.0)
+            except asyncio.TimeoutError:
+                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                return
 
             await self.bot.delete_to(ctx, first_message_object.id)
+            display_hope_price = f"{unit}{self.bot.stack_check_reverse(hope_price)}"
 
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
             embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
             embed.add_field(name="出品物", value=f'{input_item.content}', inline=False)
-            embed.add_field(name="希望価格", value=f'{unit}{hope_price}', inline=True)
+            embed.add_field(name="希望価格", value=f'{display_hope_price}', inline=True)
             embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
             embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=False)
             await ctx.channel.send(embed=embed)
 
-            input_confirm = await self.bot.wait_for('message', check=check)
+            try:
+                input_confirm = await self.bot.wait_for('message', check=check, timeout=120.0)
+            except asyncio.TimeoutError:
+                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                return
             if input_confirm.content.lower() in ("yes", "いぇｓ", "いぇs"):
                 await ctx.channel.purge(limit=3)
                 await asyncio.sleep(0.3)
                 embed = discord.Embed(title="取引内容", color=0xffaf60)
                 embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
                 embed.add_field(name="出品物", value=f'{input_item.content}', inline=False)
-                embed.add_field(name="希望価格", value=f'{unit}{hope_price}', inline=True)
+                embed.add_field(name="希望価格", value=f'{display_hope_price}', inline=True)
                 embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
                 embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=False)
                 await ctx.channel.send(
@@ -461,6 +526,12 @@ class AuctionDael(commands.Cog):
             else:
                 await ctx.channel.purge(limit=2)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
+    
+    @start.after_invoke
+    async def after_start(self, ctx):
+        self.bot.starting_channels.remove(ctx.channel)
+        self.bot.starting_users.pop(ctx.author)
+
 
     @commands.command(aliases=["Tend"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
