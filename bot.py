@@ -92,8 +92,7 @@ class KGX(commands.Bot):
         self.embed_2 = discord.Embed(description=description_2, color=0x66cdaa)
 
         self.cur = cur
-        self.starting_channels = set() # オークション/取引登録中のチャンネルの集合
-        self.starting_users = {} # 登録中の{ユーザー: チャンネル}の辞書
+        self.starting_users = {} # startコマンド実行中の{ユーザー: チャンネル}の辞書
 
         for cog in os.listdir(f"./cogs"):  # cogの読み込み
             if cog.endswith(".py"):

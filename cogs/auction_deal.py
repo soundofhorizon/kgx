@@ -112,13 +112,12 @@ class AuctionDael(commands.Cog):
         
         if ctx.author in self.bot.starting_users:
             channel = self.bot.starting_users[ctx.author]
-            await ctx.send(f"{channel.mention}の登録を終了させてから実行してください\n--------ｷﾘﾄﾘ線--------")
+            await ctx.send(f"{channel.mention}の入力を完了させてから実行してください\n--------ｷﾘﾄﾘ線--------")
             return
-        if ctx.channel in self.bot.starting_channels:
+        if ctx.channel in self.bot.starting_users.values():
             await ctx.send(f"1つのチャンネルで複数のユーザーがstartコマンドを実行することはできません\n--------ｷﾘﾄﾘ線--------")
             return
         self.bot.starting_users[ctx.author] = ctx.channel
-        self.bot.starting_channels.add(ctx.channel)
 
         first_message_object = None
         # オークション系
@@ -529,8 +528,8 @@ class AuctionDael(commands.Cog):
     
     @start.after_invoke
     async def after_start(self, ctx):
-        self.bot.starting_channels.remove(ctx.channel)
-        self.bot.starting_users.pop(ctx.author)
+        if ctx.author in self.bot.starting_users:
+            self.bot.starting_users.pop(ctx.author)
 
 
     @commands.command(aliases=["Tend"])
