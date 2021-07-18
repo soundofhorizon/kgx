@@ -551,7 +551,7 @@ class AuctionDael(commands.Cog):
         price = self.bot.stack_check(price)
 
         # [TEMP]: This should be delete after patched.
-        if price <= 640:
+        if price >= 640:
             embed = discord.Embed(description="現在10st以上の入札は出来ません。", color=0x4259fb)
             await ctx.send(embed=embed)
             return
