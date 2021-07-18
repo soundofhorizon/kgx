@@ -141,7 +141,7 @@ class AuctionDael(commands.Cog):
                                       color=0xffaf60)
                 first_message_object = await ctx.channel.send(embed=embed)
                 try:
-                    input_unit = await self.bot.wait_for('message', check=check, timeout=120.0)
+                    input_unit = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
                     await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -162,7 +162,7 @@ class AuctionDael(commands.Cog):
             else:
                 first_message_object = await ctx.channel.send(embed=embed)
             try:
-                input_item = await self.bot.wait_for('message', check=check, timeout=120.0)
+                input_item = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
                 await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
@@ -175,7 +175,7 @@ class AuctionDael(commands.Cog):
 
             while not self.bot.is_closed(): # 正しい入力が来るまでwhile
                 try:
-                    user_start_price = await self.bot.wait_for('message', check=check, timeout=120.0)
+                    user_start_price = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
                     await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -200,7 +200,7 @@ class AuctionDael(commands.Cog):
 
             while not self.bot.is_closed():
                 try:
-                    input_bin_price = await self.bot.wait_for('message', check=check, timeout=120.0)
+                    input_bin_price = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
                     await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -230,7 +230,7 @@ class AuctionDael(commands.Cog):
 
             while not self.bot.is_closed():
                 try:
-                    input_end_time = await self.bot.wait_for('message', check=check, timeout=120.0)
+                    input_end_time = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
                     await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -281,7 +281,7 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
             try:
-                input_notice = await self.bot.wait_for('message', check=check, timeout=120.0)
+                input_notice = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
                 await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
@@ -306,7 +306,7 @@ class AuctionDael(commands.Cog):
             embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
             await ctx.channel.send(embed=embed)
             try:
-                input_confirm = await self.bot.wait_for('message', check=check, timeout=120.0)
+                input_confirm = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
                 await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
@@ -364,7 +364,7 @@ class AuctionDael(commands.Cog):
                                       color=0xffaf60)
                 first_message_object = await ctx.channel.send(embed=embed)
                 try:
-                    input_unit = await self.bot.wait_for('message', check=check, timeout=120.0)
+                    input_unit = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
                     await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -387,7 +387,7 @@ class AuctionDael(commands.Cog):
             else:
                 first_message_object = await ctx.channel.send(embed=embed)
             try:
-                input_item = await self.bot.wait_for('message', check=check, timeout=120.0)
+                input_item = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
                 await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
@@ -399,7 +399,7 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
             while not self.bot.is_closed():
                 try:
-                    input_hope_price = await self.bot.wait_for('message', check=check, timeout=120.0)
+                    input_hope_price = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
                     await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -424,7 +424,7 @@ class AuctionDael(commands.Cog):
 
             while not self.bot.is_closed():
                 try:
-                    input_end_time = await self.bot.wait_for('message', check=check, timeout=120.0)
+                    input_end_time = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
                     await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
@@ -475,7 +475,7 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
             try:
-                input_notice = await self.bot.wait_for('message', check=check, timeout=120.0)
+                input_notice = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
                 await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
@@ -493,7 +493,7 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=embed)
 
             try:
-                input_confirm = await self.bot.wait_for('message', check=check, timeout=120.0)
+                input_confirm = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
                 await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
