@@ -192,7 +192,7 @@ class AdminOnly(commands.Cog):
         await ctx.send(f"{user}の警告レベルは{caution_level}です")
 
     @warn.command()
-    async def set(self, ctx, user: discord.Member, n: int):
+    async def add(self, ctx, user: discord.Member, n: int):
         cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (user.id,))
         before_caution_level, = cur.fetchone()
         after_caution_level = before_caution_level + n
