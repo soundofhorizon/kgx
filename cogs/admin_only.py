@@ -182,20 +182,26 @@ class AdminOnly(commands.Cog):
         db.commit()
 
     @commands.group(invoke_without_command=True)
-    async def user_caution(self, ctx):
-        await ctx.send(f'{ctx.prefix}user_caution [set, get]')
+    async def warn(self, ctx):
+        await ctx.send(f'{ctx.prefix}warn [add, get]')
 
-    @user_caution.command()
+    @warn.command()
     async def get(self, ctx, user: discord.Member):
         cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (user.id,))
         caution_level, = cur.fetchone()
         await ctx.send(f"{user}の警告レベルは{caution_level}です")
 
-    @user_caution.command()
+    @warn.command()
     async def set(self, ctx, user: discord.Member, n: int):
-        cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (n, user.id))
+        cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (user.id,))
+        before_caution_level, = cur.fetchone()
+        after_caution_level = before_caution_level + n
+        cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (after_caution_level, user.id))
         db.commit()
-        await ctx.send(f'{user}に警告レベル{n}を付与しました')
+        await ctx.send(f'{user}に警告レベル{after_caution_level}を付与しました')
+        if after_caution_level >= 3:
+            await user.guild.ban(user, reason="警告Lv3")
+            await ctx.send(f"{user}は警告Lvが3を超えたのでBANされました")
 
     @commands.group(invoke_without_command=True)
     async def bidGS(self, ctx):
