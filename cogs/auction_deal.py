@@ -549,6 +549,13 @@ class AuctionDael(commands.Cog):
             return
 
         price = self.bot.stack_check(price)
+
+        # [TEMP]: This should be delete after patched.
+        if price <= 640:
+            embed = discord.Embed(description="現在10st以上の入札は出来ません。", color=0x4259fb)
+            await ctx.send(embed=embed)
+            return
+
         if price is not None or price == 0:
             # 開始価格、即決価格、現在の入札額を取り寄せ
             # auction[0] - auction[7]が各種auctionDBのデータとなる
