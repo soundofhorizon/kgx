@@ -200,6 +200,26 @@ class AdminOnly(commands.Cog):
         db.commit()
         await ctx.send(f'{user}に警告レベル{after_caution_level}を付与しました')
         if after_caution_level >= 3:
+            embed = discord.Embed(
+                title="BANの確認",
+                description=f"{user}の警告Lvが{after_caution_level}になりました。BANしますか？\nはい(BANする): 👍\nいいえ(しない): 👎",
+                color=0xff0000
+            )
+            embed.set_thumbnail(url=user.avatar_url)
+            msg = await ctx.send(embed=embed)
+            await msg.add_reaction("👍")
+            await msg.add_reaction("👎")
+            def check(reaction, user):
+                return user == ctx.author and (str(reaction.emoji) == "👍" or str(reaction.emoji) == "👎")
+            try:
+                reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=600)
+            except asyncio.TimeoutError:
+                await ctx.send("タイムアウトしました。")
+                return
+            else:
+                if str(reaction.emoji) == "👎":
+                    await ctx.send("キャンセルしました")
+                    return
             await user.guild.ban(user, reason="警告Lv3")
             await ctx.send(f"{user}は警告Lvが3を超えたのでBANされました")
 
