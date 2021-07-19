@@ -198,7 +198,7 @@ class AdminOnly(commands.Cog):
         after_caution_level = before_caution_level + n
         cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (after_caution_level, user.id))
         db.commit()
-        await ctx.send(f'{user}に警告レベル{after_caution_level}を付与しました')
+        await ctx.send(f'{user}に警告レベル{n}を付与し、合計{after_caution_level}になりました')
         if after_caution_level >= 3:
             embed = discord.Embed(
                 title="BANの確認",
