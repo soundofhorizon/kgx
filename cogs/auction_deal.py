@@ -293,7 +293,7 @@ class AuctionDael(commands.Cog):
                     if month_u:
                         end_time += relativedelta(months=int(month_n))
                     end_time += diff_time
-                    year, month, day, hour, minute = end_time.year, end_time.month, end_time.hour, end_time.minute # 表示用に属性を展開しておく
+                    year, month, day, hour, minute = end_time.year, end_time.month, end_time.day, end_time.hour, end_time.minute # 表示用に属性を展開しておく
                 
                 else: # 正しくない入力の場合
                     await ctx.send("時間の書式が正しくありません\n\n"
@@ -526,7 +526,7 @@ class AuctionDael(commands.Cog):
                     if month_u:
                         end_time += relativedelta(months=int(month_n))
                     end_time += diff_time
-                    year, month, day, hour, minute = end_time.year, end_time.month, end_time.hour, end_time.minute # 表示用に属性を展開しておく
+                    year, month, day, hour, minute = end_time.year, end_time.month, end_time.day, end_time.hour, end_time.minute # 表示用に属性を展開しておく
                 
                 else: # 正しくない入力の場合
                     await ctx.send("時間の書式が正しくありません\n\n"
