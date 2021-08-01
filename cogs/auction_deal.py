@@ -3,6 +3,7 @@ import io
 import os
 import re
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from bisect import bisect
 
 import discord
@@ -78,7 +79,8 @@ class AuctionDael(commands.Cog):
                 return
             return m.channel == ctx.channel and m.author == ctx.author
         
-        datetime_pattern = re.compile(r"(\d{1,4})/(\d{1,2})/(\d{1,2})-(\d{1,2}):(\d{1,2})")
+        abs_datetime_pattern = re.compile(r"(\d{1,4})/(\d{1,2})/(\d{1,2})-(\d{1,2}):(\d{1,2})")
+        rel_datetime_pattern = re.compile(r"(?i)(?=.+)((\d+)(month|m))?((\d+(\.\d+)?)(week|w))?((\d+(\.\d+)?)(day|d))?((\d+(\.\d+)?)(hour|h))?((\d+(\.\d+)?)(minute|m))?")
         
         def is_exist_date(year, month, day):
             """
@@ -224,7 +226,8 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(
                 description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
                             f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
-                            "終了したい場合は`cancel`と入力してください",
+                            "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n"
+                            "終了したい場合は**cancel**と入力してください",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
@@ -237,29 +240,66 @@ class AuctionDael(commands.Cog):
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
-                if not datetime_pattern.fullmatch(input_end_time.content):
-                    await ctx.send("時刻の書式が正しくありません")
-                    continue
-
-                year, month, day, hour, minute = map(int, datetime_pattern.fullmatch(input_end_time.content).groups())
-
-                if not 2000 <= year <= 3000:
-                    await ctx.send("年は2000~3000の間で指定してください")
-                    continue
-                if is_exist_date(year, month, day) == 1:
-                    await ctx.send("月は1~12の間で指定してください")
-                    continue
-                if is_exist_date(year, month, day) == 2:
-                    await ctx.send(f"{year}年{month}月に{day}日は存在しません")
-                    continue
                 
-                if (hour, minute) == (24, 00):
-                    end_time = datetime(year, month, day) + timedelta(days=1)
-                elif hour not in range(24) or minute not in range(60):
-                    await ctx.send(f"{hour}時{minute}分は存在しません")
+                if abs_datetime_pattern.fullmatch(input_end_time.content): # 絶対時刻の書式の場合
+                    year, month, day, hour, minute = map(int, abs_datetime_pattern.fullmatch(input_end_time.content).groups())
+
+                    if not 2000 <= year <= 3000:
+                        await ctx.send("年は2000~3000の間で指定してください")
+                        continue
+                    if is_exist_date(year, month, day) == 1:
+                        await ctx.send("月は1~12の間で指定してください")
+                        continue
+                    if is_exist_date(year, month, day) == 2:
+                        await ctx.send(f"{year}年{month}月に{day}日は存在しません")
+                        continue
+                    
+                    if (hour, minute) == (24, 00):
+                        end_time = datetime(year, month, day) + timedelta(days=1)
+                    elif hour not in range(24) or minute not in range(60):
+                        await ctx.send(f"{hour}時{minute}分は存在しません")
+                        continue
+                    else:
+                        end_time = datetime(year, month, day, hour, minute)
+                
+                elif rel_datetime_pattern.fullmatch(input_end_time.content): # 相対時刻の書式の場合
+                    """
+                    入力が"1m1.5w"の場合のマッチオブジェクトに対してMatch.groups()した場合は('1m', '1', 'm', '1.5w', '1.5', '.5', 'w',…)となるため、
+                    (0-indexedで)7番目が単位、4番目が数値となる
+                    ただし、monthの部分は小数を受け付けないため、別で処理をする
+                    """
+                    groups = rel_datetime_pattern.fullmatch(input_end_time.content).groups()
+                    week_u, day_u, hour_u, minute_u = groups[6::4] # 単位部分
+                    week_n, day_n, hour_n, minute_n = groups[4::4] # 数値部分
+                    month_u, month_n = groups[2], groups[1]
+
+                    if month_u=="m" and not any((week_u, day_u, hour_u, minute_u)):
+                        # month_uが"m"、かつweek~minuteが指定されていないとき ("1m"のような入力)
+                        minute_u, minute_n = month_u, month_n # monthの内容をminuteに移動する
+                        month_u = None # monthを指定されていないことにする
+                    
+                    diff_time = timedelta()
+                    # month以外の各単位について、単位部分がNoneでなければdiff_timeに加算
+                    if week_u:
+                        diff_time += timedelta(weeks=float(week_n))
+                    if day_u:
+                        diff_time += timedelta(days=float(day_n))
+                    if hour_u:
+                        diff_time += timedelta(hours=float(hour_n))
+                    if minute_u:
+                        diff_time += timedelta(minutes=float(minute_n))
+                    
+                    end_time = datetime.now()
+                    if month_u:
+                        end_time += relativedelta(months=int(month_n))
+                    end_time += diff_time
+                
+                else: # 正しくない入力の場合
+                    await ctx.send("時間の書式が正しくありません\n"
+                                  f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
+                                   "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n"
+                                   "終了したい場合は**cancel**と入力してください")
                     continue
-                else:
-                    end_time = datetime(year, month, day, hour, minute)
 
                 now = datetime.now()
                 if end_time <= now:
@@ -418,7 +458,8 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(
                 description="取引終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
                             f"例　5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
-                            "終了したい場合は`cancel`と入力してください",
+                            "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n"
+                            "終了したい場合は**cancel**と入力してください",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
@@ -431,29 +472,66 @@ class AuctionDael(commands.Cog):
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
-                if not datetime_pattern.fullmatch(input_end_time.content):
-                    await ctx.send("時刻の書式が正しくありません")
-                    continue
-
-                year, month, day, hour, minute = map(int, datetime_pattern.fullmatch(input_end_time.content).groups())
-
-                if not 2000 <= year <= 3000:
-                    await ctx.send("年は2000~3000の間で指定してください")
-                    continue
-                if is_exist_date(year, month, day) == 1:
-                    await ctx.send("月は1~12の間で指定してください")
-                    continue
-                if is_exist_date(year, month, day) == 2:
-                    await ctx.send(f"{year}年{month}月に{day}日は存在しません")
-                    continue
                 
-                if (hour, minute) == (24, 00):
-                    end_time = datetime(year, month, day) + timedelta(days=1)
-                elif hour not in range(24) or minute not in range(60):
-                    await ctx.send(f"{hour}時{minute}分は存在しません")
+                if abs_datetime_pattern.fullmatch(input_end_time.content): # 絶対時刻の書式の場合
+                    year, month, day, hour, minute = map(int, abs_datetime_pattern.fullmatch(input_end_time.content).groups())
+
+                    if not 2000 <= year <= 3000:
+                        await ctx.send("年は2000~3000の間で指定してください")
+                        continue
+                    if is_exist_date(year, month, day) == 1:
+                        await ctx.send("月は1~12の間で指定してください")
+                        continue
+                    if is_exist_date(year, month, day) == 2:
+                        await ctx.send(f"{year}年{month}月に{day}日は存在しません")
+                        continue
+                    
+                    if (hour, minute) == (24, 00):
+                        end_time = datetime(year, month, day) + timedelta(days=1)
+                    elif hour not in range(24) or minute not in range(60):
+                        await ctx.send(f"{hour}時{minute}分は存在しません")
+                        continue
+                    else:
+                        end_time = datetime(year, month, day, hour, minute)
+                
+                elif rel_datetime_pattern.fullmatch(input_end_time.content): # 相対時刻の書式の場合
+                    """
+                    入力が"1m1.5w"の場合のマッチオブジェクトに対してMatch.groups()した場合は('1m', '1', 'm', '1.5w', '1.5', '.5', 'w',…)となるため、
+                    (0-indexedで)7番目が単位、4番目が数値となる
+                    ただし、monthの部分は小数を受け付けないため、別で処理をする
+                    """
+                    groups = rel_datetime_pattern.fullmatch(input_end_time.content).groups()
+                    week_u, day_u, hour_u, minute_u = groups[6::4] # 単位部分
+                    week_n, day_n, hour_n, minute_n = groups[4::4] # 数値部分
+                    month_u, month_n = groups[2], groups[1]
+
+                    if month_u=="m" and not any((week_u, day_u, hour_u, minute_u)):
+                        # month_uが"m"、かつweek~minuteが指定されていないとき ("1m"のような入力)
+                        minute_u, minute_n = month_u, month_n # monthの内容をminuteに移動する
+                        month_u = None # monthを指定されていないことにする
+                    
+                    diff_time = timedelta()
+                    # month以外の各単位について、単位部分がNoneでなければdiff_timeに加算
+                    if week_u:
+                        diff_time += timedelta(weeks=float(week_n))
+                    if day_u:
+                        diff_time += timedelta(days=float(day_n))
+                    if hour_u:
+                        diff_time += timedelta(hours=float(hour_n))
+                    if minute_u:
+                        diff_time += timedelta(minutes=float(minute_n))
+                    
+                    end_time = datetime.now()
+                    if month_u:
+                        end_time += relativedelta(months=int(month_n))
+                    end_time += diff_time
+                
+                else: # 正しくない入力の場合
+                    await ctx.send("時間の書式が正しくありません\n"
+                                  f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
+                                   "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n"
+                                   "終了したい場合は**cancel**と入力してください")
                     continue
-                else:
-                    end_time = datetime(year, month, day, hour, minute)
 
                 now = datetime.now()
                 if end_time <= now:
