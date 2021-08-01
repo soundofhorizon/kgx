@@ -145,7 +145,7 @@ class AuctionDael(commands.Cog):
                 try:
                     input_unit = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
-                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
                 unit = input_unit.content
 
@@ -166,7 +166,7 @@ class AuctionDael(commands.Cog):
             try:
                 input_item = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
-                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
 
             embed = discord.Embed(description="開始価格を入力してください。\n**※次のように入力してください。"
@@ -179,7 +179,7 @@ class AuctionDael(commands.Cog):
                 try:
                     user_start_price = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
-                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
                 start_price = self.bot.stack_check(user_start_price.content)
                 if user_start_price.content.lower() == "cancel":
@@ -204,7 +204,7 @@ class AuctionDael(commands.Cog):
                 try:
                     input_bin_price = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
-                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
                 if input_bin_price.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
@@ -235,7 +235,7 @@ class AuctionDael(commands.Cog):
                 try:
                     input_end_time = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
-                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
@@ -323,7 +323,7 @@ class AuctionDael(commands.Cog):
             try:
                 input_notice = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
-                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
 
             display_start_price = f"{unit}{self.bot.stack_check_reverse(start_price)}"
@@ -348,7 +348,7 @@ class AuctionDael(commands.Cog):
             try:
                 input_confirm = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
-                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
 
             if input_confirm.content.lower() in ("yes", "いぇｓ", "いぇs"):
@@ -406,7 +406,7 @@ class AuctionDael(commands.Cog):
                 try:
                     input_unit = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
-                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
                 unit = input_unit.content
 
@@ -429,7 +429,7 @@ class AuctionDael(commands.Cog):
             try:
                 input_item = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
-                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
 
             embed = discord.Embed(description="希望価格を入力してください。\n**※次のように入力してください。"
@@ -441,7 +441,7 @@ class AuctionDael(commands.Cog):
                 try:
                     input_hope_price = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
-                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
                 if input_hope_price.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
@@ -467,7 +467,7 @@ class AuctionDael(commands.Cog):
                 try:
                     input_end_time = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
-                    await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                    await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
@@ -555,7 +555,7 @@ class AuctionDael(commands.Cog):
             try:
                 input_notice = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
-                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
 
             await self.bot.delete_to(ctx, first_message_object.id)
@@ -573,7 +573,7 @@ class AuctionDael(commands.Cog):
             try:
                 input_confirm = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
-                await ctx.send("120秒間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+                await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
             if input_confirm.content.lower() in ("yes", "いぇｓ", "いぇs"):
                 await ctx.channel.purge(limit=3)
