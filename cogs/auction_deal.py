@@ -224,9 +224,9 @@ class AuctionDael(commands.Cog):
                     break
 
             embed = discord.Embed(
-                description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
-                            f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
-                            "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n"
+                description="オークション終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n\n"
+                            f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
+                            "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n\n"
                             "終了したい場合は**cancel**と入力してください",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
@@ -296,9 +296,9 @@ class AuctionDael(commands.Cog):
                     year, month, day, hour, minute = end_time.year, end_time.month, end_time.hour, end_time.minute # 表示用に属性を展開しておく
                 
                 else: # 正しくない入力の場合
-                    await ctx.send("時間の書式が正しくありません\n"
-                                  f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
-                                   "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n"
+                    await ctx.send("時間の書式が正しくありません\n\n"
+                                  f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
+                                   "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n\n"
                                    "終了したい場合は**cancel**と入力してください")
                     continue
 
@@ -457,9 +457,9 @@ class AuctionDael(commands.Cog):
                     break
             
             embed = discord.Embed(
-                description="取引終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n"
-                            f"例　5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
-                            "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n"
+                description="取引終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n\n"
+                            f"例　5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
+                            "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n\n"
                             "終了したい場合は**cancel**と入力してください",
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
@@ -529,9 +529,9 @@ class AuctionDael(commands.Cog):
                     year, month, day, hour, minute = end_time.year, end_time.month, end_time.hour, end_time.minute # 表示用に属性を展開しておく
                 
                 else: # 正しくない入力の場合
-                    await ctx.send("時間の書式が正しくありません\n"
-                                  f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n"
-                                   "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n"
+                    await ctx.send("時間の書式が正しくありません\n\n"
+                                  f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
+                                   "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n\n"
                                    "終了したい場合は**cancel**と入力してください")
                     continue
 
