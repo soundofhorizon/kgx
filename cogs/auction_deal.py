@@ -189,7 +189,7 @@ class AuctionDael(commands.Cog):
                     await ctx.send("価格の形式が正しくありません\n**"
                         "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
                 elif start_price == 0:
-                    await ctx.send("開始価格を0にすることはできません")
+                    await ctx.send("開始価格を0にすることはできません。入力しなおしてください。")
                 else: # 正しい入力ならbreak
                     break
 
@@ -217,9 +217,9 @@ class AuctionDael(commands.Cog):
                     await ctx.send("価格の形式が正しくありません\n**"
                         "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
                 elif bin_price < start_price:
-                    await ctx.send("即決価格が開始価格より低いです。")
+                    await ctx.send("即決価格が開始価格より低いです。入力しなおしてください。")
                 elif bin_price  == start_price:
-                    await ctx.send("即決価格が開始価格と等しいです。価格が決まっているのであれば、取引チャンネルをお使いください。")
+                    await ctx.send("即決価格が開始価格と等しいです。入力しなおしてください。\n価格が決まっているのであれば、取引チャンネルをお使いください。")
                 else:
                     break
 
@@ -246,19 +246,19 @@ class AuctionDael(commands.Cog):
                     year, month, day, hour, minute = map(int, abs_datetime_pattern.fullmatch(input_end_time.content).groups())
 
                     if not 2000 <= year <= 3000:
-                        await ctx.send("年は2000~3000の間で指定してください")
+                        await ctx.send("年は2000~3000の範囲のみ指定可能です。入力しなおしてください。")
                         continue
                     if is_exist_date(year, month, day) == 1:
-                        await ctx.send("月は1~12の間で指定してください")
+                        await ctx.send(f"{month}月は存在しません。入力しなおしてください。")
                         continue
                     if is_exist_date(year, month, day) == 2:
-                        await ctx.send(f"{year}年{month}月に{day}日は存在しません")
+                        await ctx.send(f"{year}年{month}月に{day}日は存在しません。入力しなおしてください。")
                         continue
                     
                     if (hour, minute) == (24, 00):
                         end_time = datetime(year, month, day) + timedelta(days=1)
                     elif hour not in range(24) or minute not in range(60):
-                        await ctx.send(f"{hour}時{minute}分は存在しません")
+                        await ctx.send(f"{hour}時{minute}分は存在しません。入力しなおしてください。")
                         continue
                     else:
                         end_time = datetime(year, month, day, hour, minute)
@@ -302,13 +302,13 @@ class AuctionDael(commands.Cog):
                     continue
 
                 if end_time <= now:
-                    await ctx.channel.send("終了時刻を現在時刻以前にすることはできません")
+                    await ctx.channel.send("終了時刻を現在時刻以前にすることはできません。入力しなおしてください。")
                     continue
                 elif end_time - now <= timedelta(hours=12):
-                    await ctx.send("開催期間を12時間以下にすることはできません")
+                    await ctx.send("開催期間を12時間以下にすることはできません。入力しなおしてください。")
                     continue
                 elif end_time - now >= timedelta(weeks=8):
-                    await ctx.channel.send("2ヶ月以上にわたるオークションはできません")
+                    await ctx.channel.send("2ヶ月以上にわたるオークションはできません。入力しなおしてください。")
                     continue
                 break
             end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
@@ -450,7 +450,7 @@ class AuctionDael(commands.Cog):
                     await ctx.send("価格の形式が正しくありません\n**"
                         "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
                 elif hope_price == 0:
-                    await ctx.send("希望価格を0にすることはできません")
+                    await ctx.send("希望価格を0にすることはできません。入力しなおしてください。")
                 else:
                     break
             
@@ -477,19 +477,19 @@ class AuctionDael(commands.Cog):
                     year, month, day, hour, minute = map(int, abs_datetime_pattern.fullmatch(input_end_time.content).groups())
 
                     if not 2000 <= year <= 3000:
-                        await ctx.send("年は2000~3000の間で指定してください")
+                        await ctx.send("年は2000~3000の範囲のみ指定可能です。入力しなおしてください。")
                         continue
                     if is_exist_date(year, month, day) == 1:
-                        await ctx.send("月は1~12の間で指定してください")
+                        await ctx.send(f"{month}月は存在しません。入力しなおしてください。")
                         continue
                     if is_exist_date(year, month, day) == 2:
-                        await ctx.send(f"{year}年{month}月に{day}日は存在しません")
+                        await ctx.send(f"{year}年{month}月に{day}日は存在しません。入力しなおしてください。")
                         continue
                     
                     if (hour, minute) == (24, 00):
                         end_time = datetime(year, month, day) + timedelta(days=1)
                     elif hour not in range(24) or minute not in range(60):
-                        await ctx.send(f"{hour}時{minute}分は存在しません")
+                        await ctx.send(f"{hour}時{minute}分は存在しません。入力しなおしてください。")
                         continue
                     else:
                         end_time = datetime(year, month, day, hour, minute)
@@ -533,13 +533,13 @@ class AuctionDael(commands.Cog):
                     continue
 
                 if end_time <= now:
-                    await ctx.channel.send("終了時刻を現在時刻以前にすることはできません")
+                    await ctx.channel.send("終了時刻を現在時刻以前にすることはできません。入力しなおしてください。")
                     continue
                 elif end_time - now <= timedelta(hours=12):
-                    await ctx.send("開催期間を12時間以下にすることはできません")
+                    await ctx.send("開催期間を12時間以下にすることはできません。入力しなおしてください。")
                     continue
                 elif end_time - now >= timedelta(weeks=8):
-                    await ctx.channel.send("2ヶ月以上にわたる取引はできません")
+                    await ctx.channel.send("2ヶ月以上にわたる取引はできません。入力しなおしてください。")
                     continue
                 break
             end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
