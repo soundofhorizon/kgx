@@ -231,6 +231,7 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
+            now = datetime.now() # 都度生成するとタイムラグが生じてしまうため、あらかじめ取得した値を使いまわす
             while not self.bot.is_closed():
                 try:
                     input_end_time = await self.bot.wait_for('message', check=check, timeout=600.0)
@@ -278,21 +279,19 @@ class AuctionDael(commands.Cog):
                         minute_u, minute_n = month_u, month_n # monthの内容をminuteに移動する
                         month_u = None # monthを指定されていないことにする
                     
-                    diff_time = timedelta()
-                    # month以外の各単位について、単位部分がNoneでなければdiff_timeに加算
-                    if week_u:
-                        diff_time += timedelta(weeks=float(week_n))
-                    if day_u:
-                        diff_time += timedelta(days=float(day_n))
-                    if hour_u:
-                        diff_time += timedelta(hours=float(hour_n))
-                    if minute_u:
-                        diff_time += timedelta(minutes=float(minute_n))
-                    
-                    end_time = datetime.now()
+                    end_time = now
                     if month_u:
                         end_time += relativedelta(months=int(month_n))
-                    end_time += diff_time
+                    # month以外の各単位について、単位部分がNoneでなければend_timeに加算
+                    if week_u:
+                        end_time += timedelta(weeks=float(week_n))
+                    if day_u:
+                        end_time += timedelta(days=float(day_n))
+                    if hour_u:
+                        end_time += timedelta(hours=float(hour_n))
+                    if minute_u:
+                        end_time += timedelta(minutes=float(minute_n))
+
                     year, month, day, hour, minute = end_time.year, end_time.month, end_time.day, end_time.hour, end_time.minute # 表示用に属性を展開しておく
                 
                 else: # 正しくない入力の場合
@@ -302,7 +301,6 @@ class AuctionDael(commands.Cog):
                                    "終了したい場合は**cancel**と入力してください")
                     continue
 
-                now = datetime.now()
                 if end_time <= now:
                     await ctx.channel.send("終了時刻を現在時刻以前にすることはできません")
                     continue
@@ -464,6 +462,7 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
+            now = datetime.now() # 都度生成するとタイムラグが生じてしまうため、あらかじめ取得した値を使いまわす
             while not self.bot.is_closed():
                 try:
                     input_end_time = await self.bot.wait_for('message', check=check, timeout=600.0)
@@ -511,21 +510,19 @@ class AuctionDael(commands.Cog):
                         minute_u, minute_n = month_u, month_n # monthの内容をminuteに移動する
                         month_u = None # monthを指定されていないことにする
                     
-                    diff_time = timedelta()
-                    # month以外の各単位について、単位部分がNoneでなければdiff_timeに加算
-                    if week_u:
-                        diff_time += timedelta(weeks=float(week_n))
-                    if day_u:
-                        diff_time += timedelta(days=float(day_n))
-                    if hour_u:
-                        diff_time += timedelta(hours=float(hour_n))
-                    if minute_u:
-                        diff_time += timedelta(minutes=float(minute_n))
-                    
-                    end_time = datetime.now()
+                    end_time = now
                     if month_u:
                         end_time += relativedelta(months=int(month_n))
-                    end_time += diff_time
+                    # month以外の各単位について、単位部分がNoneでなければend_timeに加算
+                    if week_u:
+                        end_time += timedelta(weeks=float(week_n))
+                    if day_u:
+                        end_time += timedelta(days=float(day_n))
+                    if hour_u:
+                        end_time += timedelta(hours=float(hour_n))
+                    if minute_u:
+                        end_time += timedelta(minutes=float(minute_n))
+                    
                     year, month, day, hour, minute = end_time.year, end_time.month, end_time.day, end_time.hour, end_time.minute # 表示用に属性を展開しておく
                 
                 else: # 正しくない入力の場合
@@ -535,7 +532,6 @@ class AuctionDael(commands.Cog):
                                    "終了したい場合は**cancel**と入力してください")
                     continue
 
-                now = datetime.now()
                 if end_time <= now:
                     await ctx.channel.send("終了時刻を現在時刻以前にすることはできません")
                     continue
