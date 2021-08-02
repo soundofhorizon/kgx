@@ -266,7 +266,7 @@ class AuctionDael(commands.Cog):
                 elif rel_datetime_pattern.fullmatch(input_end_time.content): # 相対時刻の書式の場合
                     """
                     入力が"1m1.5w"の場合のマッチオブジェクトに対してMatch.groups()した場合は('1m', '1', 'm', '1.5w', '1.5', '.5', 'w',…)となるため、
-                    (0-indexedで)7番目が単位、4番目が数値となる
+                    (0-indexedで)6番目が単位、4番目が数値となる
                     ただし、monthの部分は小数を受け付けないため、別で処理をする
                     """
                     groups = rel_datetime_pattern.fullmatch(input_end_time.content).groups()
@@ -497,7 +497,7 @@ class AuctionDael(commands.Cog):
                 elif rel_datetime_pattern.fullmatch(input_end_time.content): # 相対時刻の書式の場合
                     """
                     入力が"1m1.5w"の場合のマッチオブジェクトに対してMatch.groups()した場合は('1m', '1', 'm', '1.5w', '1.5', '.5', 'w',…)となるため、
-                    (0-indexedで)7番目が単位、4番目が数値となる
+                    (0-indexedで)6番目が単位、4番目が数値となる
                     ただし、monthの部分は小数を受け付けないため、別で処理をする
                     """
                     groups = rel_datetime_pattern.fullmatch(input_end_time.content).groups()
