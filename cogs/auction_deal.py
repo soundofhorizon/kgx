@@ -772,8 +772,10 @@ class AuctionDael(commands.Cog):
                 await self.bot.dm_send(auction[1], embed)
 
             time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-            avatar_url = ctx.author.avatar_url_as(format="png")
-            image = requests.get(avatar_url)
+            cur.execute(f"SELECT * FROM user_data where user_id = {ctx.author.id}")
+            sql_data = cur.fetchone()
+            player_head_avatarurl = f"https://cravatar.eu/helmhead/{sql_data[3][0]}"  # uuidのカラムがなーぜかlistで保管されているため[0]で取り出し
+            image = requests.get(player_head_avatarurl)
             image = io.BytesIO(image.content)
             image.seek(0)
             image = Image.open(image)
@@ -874,8 +876,10 @@ class AuctionDael(commands.Cog):
                 # await delete_to(ctx, auction_data[2])
 
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-                avatar_url = self.bot.get_user(id=int(tend_data[1][-1])).avatar_url_as(format="png")
-                image = requests.get(avatar_url)
+                cur.execute(f"SELECT * FROM user_data where user_id = {ctx.author.id}")
+                sql_data = cur.fetchone()
+                player_head_avatarurl = f"https://cravatar.eu/helmhead/{sql_data[3][0]}"  # uuidのカラムがなーぜかlistで保管されているため[0]で取り出し
+                image = requests.get(player_head_avatarurl)
                 image = io.BytesIO(image.content)
                 image.seek(0)
                 image = Image.open(image)
