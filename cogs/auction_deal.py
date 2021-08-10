@@ -78,10 +78,10 @@ class AuctionDael(commands.Cog):
             if m.author.bot:
                 return
             return m.channel == ctx.channel and m.author == ctx.author
-        
-        abs_datetime_pattern = re.compile(r"(\d{1,4})/(\d{1,2})/(\d{1,2})-(\d{1,2}):(\d{1,2})")
-        rel_datetime_pattern = re.compile(r"(?i)(?=.+)((\d+)(month|m))?((\d+(\.\d+)?)(week|w))?((\d+(\.\d+)?)(day|d))?((\d+(\.\d+)?)(hour|h))?((\d+(\.\d+)?)(minute|m))?")
-        
+
+        abs_datetime_pattern = re.compile(r'(\d{1,4})/(\d{1,2})/(\d{1,2})-(\d{1,2}):(\d{1,2})')
+        rel_datetime_pattern = re.compile(r'(?i)(?=.+)((\d+)(month|m))?((\d+(\.\d+)?)(week|w))?((\d+(\.\d+)?)(day|d))?((\d+(\.\d+)?)(hour|h))?((\d+(\.\d+)?)(minute|m))?')
+
         def is_exist_date(year, month, day):
             """
             存在しない月なら1、存在しない日なら2を返す
@@ -93,7 +93,7 @@ class AuctionDael(commands.Cog):
                 if not 1 <= day <= 30:
                     return 2
             elif month == 2:
-                if year%400==0 or year%4==0 and year%100!=0: # 閏年なら
+                if year % 400 == 0 or year % 4 == 0 and year % 100 != 0:  # 閏年なら
                     if not 1 <= day <= 29:
                         return 2
                 else:
@@ -111,7 +111,7 @@ class AuctionDael(commands.Cog):
             await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
             await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
             return
-        
+
         if ctx.author in self.bot.starting_users:
             channel = self.bot.starting_users[ctx.author]
             await ctx.send(f"{channel.mention}の入力を完了させてから実行してください\n--------ｷﾘﾄﾘ線--------")
@@ -175,7 +175,7 @@ class AuctionDael(commands.Cog):
                                   color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
-            while not self.bot.is_closed(): # 正しい入力が来るまでwhile
+            while not self.bot.is_closed():  # 正しい入力が来るまでwhile
                 try:
                     user_start_price = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
@@ -187,10 +187,10 @@ class AuctionDael(commands.Cog):
                     return
                 if start_price is None:
                     await ctx.send("価格の形式が正しくありません\n**"
-                        "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
+                                   "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
                 elif start_price == 0:
                     await ctx.send("開始価格を0にすることはできません。入力しなおしてください。")
-                else: # 正しい入力ならbreak
+                else:  # 正しい入力ならbreak
                     break
 
             embed = discord.Embed(description="即決価格を入力してください。\n**※次のように入力してください。"
@@ -215,10 +215,10 @@ class AuctionDael(commands.Cog):
                 bin_price = self.bot.stack_check(input_bin_price.content)
                 if bin_price is None:
                     await ctx.send("価格の形式が正しくありません\n**"
-                        "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
+                                   "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
                 elif bin_price < start_price:
                     await ctx.send("即決価格が開始価格より低いです。入力しなおしてください。")
-                elif bin_price  == start_price:
+                elif bin_price == start_price:
                     await ctx.send("即決価格が開始価格と等しいです。入力しなおしてください。\n価格が決まっているのであれば、取引チャンネルをお使いください。")
                 else:
                     break
@@ -231,7 +231,7 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
-            now = datetime.now() # 都度生成するとタイムラグが生じてしまうため、あらかじめ取得した値を使いまわす
+            now = datetime.now()  # 都度生成するとタイムラグが生じてしまうため、あらかじめ取得した値を使いまわす
             while not self.bot.is_closed():
                 try:
                     input_end_time = await self.bot.wait_for('message', check=check, timeout=600.0)
@@ -241,8 +241,8 @@ class AuctionDael(commands.Cog):
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
-                
-                if abs_datetime_pattern.fullmatch(input_end_time.content): # 絶対時刻の書式の場合
+
+                if abs_datetime_pattern.fullmatch(input_end_time.content):  # 絶対時刻の書式の場合
                     year, month, day, hour, minute = map(int, abs_datetime_pattern.fullmatch(input_end_time.content).groups())
 
                     if not 2000 <= year <= 3000:
@@ -254,7 +254,7 @@ class AuctionDael(commands.Cog):
                     if is_exist_date(year, month, day) == 2:
                         await ctx.send(f"{year}年{month}月に{day}日は存在しません。入力しなおしてください。")
                         continue
-                    
+
                     if (hour, minute) == (24, 00):
                         end_time = datetime(year, month, day) + timedelta(days=1)
                     elif hour not in range(24) or minute not in range(60):
@@ -262,23 +262,23 @@ class AuctionDael(commands.Cog):
                         continue
                     else:
                         end_time = datetime(year, month, day, hour, minute)
-                
-                elif rel_datetime_pattern.fullmatch(input_end_time.content): # 相対時刻の書式の場合
+
+                elif rel_datetime_pattern.fullmatch(input_end_time.content):  # 相対時刻の書式の場合
                     """
                     入力が"1m1.5w"の場合のマッチオブジェクトに対してMatch.groups()した場合は('1m', '1', 'm', '1.5w', '1.5', '.5', 'w',…)となるため、
                     (0-indexedで)6番目が単位、4番目が数値となる
                     ただし、monthの部分は小数を受け付けないため、別で処理をする
                     """
                     groups = rel_datetime_pattern.fullmatch(input_end_time.content).groups()
-                    week_u, day_u, hour_u, minute_u = groups[6::4] # 単位部分
-                    week_n, day_n, hour_n, minute_n = groups[4::4] # 数値部分
+                    week_u, day_u, hour_u, minute_u = groups[6::4]  # 単位部分
+                    week_n, day_n, hour_n, minute_n = groups[4::4]  # 数値部分
                     month_u, month_n = groups[2], groups[1]
 
-                    if month_u=="m" and not any((week_u, day_u, hour_u, minute_u)):
+                    if month_u == "m" and not any((week_u, day_u, hour_u, minute_u)):
                         # month_uが"m"、かつweek~minuteが指定されていないとき ("1m"のような入力)
-                        minute_u, minute_n = month_u, month_n # monthの内容をminuteに移動する
-                        month_u = None # monthを指定されていないことにする
-                    
+                        minute_u, minute_n = month_u, month_n  # monthの内容をminuteに移動する
+                        month_u = None  # monthを指定されていないことにする
+
                     end_time = now
                     if month_u:
                         end_time += relativedelta(months=int(month_n))
@@ -292,11 +292,11 @@ class AuctionDael(commands.Cog):
                     if minute_u:
                         end_time += timedelta(minutes=float(minute_n))
 
-                    year, month, day, hour, minute = end_time.year, end_time.month, end_time.day, end_time.hour, end_time.minute # 表示用に属性を展開しておく
-                
-                else: # 正しくない入力の場合
+                    year, month, day, hour, minute = end_time.year, end_time.month, end_time.day, end_time.hour, end_time.minute  # 表示用に属性を展開しておく
+
+                else:  # 正しくない入力の場合
                     await ctx.send("時間の書式が正しくありません\n\n"
-                                  f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
+                                   f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
                                    "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n\n"
                                    "終了したい場合は**cancel**と入力してください")
                     continue
@@ -312,7 +312,7 @@ class AuctionDael(commands.Cog):
                     continue
                 break
             end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
-            end_time_text = f"{year}/{month:0>2}/{day:0>2}-{hour:0>2}:{minute:0>2}" # 24:00の場合はそのまま表示
+            end_time_text = f"{year}/{month:0>2}/{day:0>2}-{hour:0>2}:{minute:0>2}"  # 24:00の場合はそのまま表示
 
             embed = discord.Embed(
                 description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
@@ -331,7 +331,7 @@ class AuctionDael(commands.Cog):
                 display_bin_price = "なし"
             else:
                 display_bin_price = f"{unit}{self.bot.stack_check_reverse(bin_price)}"
-            
+
             await self.bot.delete_to(ctx, first_message_object.id)
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
@@ -339,7 +339,6 @@ class AuctionDael(commands.Cog):
             embed.add_field(name="出品物", value=f'{input_item.content}', inline=True)
             embed.add_field(name="開始価格", value=f'{display_start_price}', inline=False)
 
-            
             embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
             embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
             embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
@@ -363,7 +362,6 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
                 auction_embed = await ctx.channel.send(embed=embed)
                 await auction_embed.pin()
-
 
                 # SQLにデータ登録
                 cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, "
@@ -448,12 +446,12 @@ class AuctionDael(commands.Cog):
                 hope_price = self.bot.stack_check(input_hope_price.content)
                 if hope_price is None:
                     await ctx.send("価格の形式が正しくありません\n**"
-                        "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
+                                   "※次のように入力してください。【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**")
                 elif hope_price == 0:
                     await ctx.send("希望価格を0にすることはできません。入力しなおしてください。")
                 else:
                     break
-            
+
             embed = discord.Embed(
                 description="取引終了日時を入力してください。\n**注意！**時間の書式に注意してください！\n\n"
                             f"例　5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
@@ -462,7 +460,7 @@ class AuctionDael(commands.Cog):
                 color=0xffaf60)
             await ctx.channel.send(embed=embed)
 
-            now = datetime.now() # 都度生成するとタイムラグが生じてしまうため、あらかじめ取得した値を使いまわす
+            now = datetime.now()  # 都度生成するとタイムラグが生じてしまうため、あらかじめ取得した値を使いまわす
             while not self.bot.is_closed():
                 try:
                     input_end_time = await self.bot.wait_for('message', check=check, timeout=600.0)
@@ -472,8 +470,8 @@ class AuctionDael(commands.Cog):
                 if input_end_time.content.lower() == "cancel":
                     await ctx.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
                     return
-                
-                if abs_datetime_pattern.fullmatch(input_end_time.content): # 絶対時刻の書式の場合
+
+                if abs_datetime_pattern.fullmatch(input_end_time.content):  # 絶対時刻の書式の場合
                     year, month, day, hour, minute = map(int, abs_datetime_pattern.fullmatch(input_end_time.content).groups())
 
                     if not 2000 <= year <= 3000:
@@ -485,7 +483,7 @@ class AuctionDael(commands.Cog):
                     if is_exist_date(year, month, day) == 2:
                         await ctx.send(f"{year}年{month}月に{day}日は存在しません。入力しなおしてください。")
                         continue
-                    
+
                     if (hour, minute) == (24, 00):
                         end_time = datetime(year, month, day) + timedelta(days=1)
                     elif hour not in range(24) or minute not in range(60):
@@ -493,23 +491,23 @@ class AuctionDael(commands.Cog):
                         continue
                     else:
                         end_time = datetime(year, month, day, hour, minute)
-                
-                elif rel_datetime_pattern.fullmatch(input_end_time.content): # 相対時刻の書式の場合
+
+                elif rel_datetime_pattern.fullmatch(input_end_time.content):  # 相対時刻の書式の場合
                     """
                     入力が"1m1.5w"の場合のマッチオブジェクトに対してMatch.groups()した場合は('1m', '1', 'm', '1.5w', '1.5', '.5', 'w',…)となるため、
                     (0-indexedで)6番目が単位、4番目が数値となる
                     ただし、monthの部分は小数を受け付けないため、別で処理をする
                     """
                     groups = rel_datetime_pattern.fullmatch(input_end_time.content).groups()
-                    week_u, day_u, hour_u, minute_u = groups[6::4] # 単位部分
-                    week_n, day_n, hour_n, minute_n = groups[4::4] # 数値部分
+                    week_u, day_u, hour_u, minute_u = groups[6::4]  # 単位部分
+                    week_n, day_n, hour_n, minute_n = groups[4::4]  # 数値部分
                     month_u, month_n = groups[2], groups[1]
 
-                    if month_u=="m" and not any((week_u, day_u, hour_u, minute_u)):
+                    if month_u == "m" and not any((week_u, day_u, hour_u, minute_u)):
                         # month_uが"m"、かつweek~minuteが指定されていないとき ("1m"のような入力)
-                        minute_u, minute_n = month_u, month_n # monthの内容をminuteに移動する
-                        month_u = None # monthを指定されていないことにする
-                    
+                        minute_u, minute_n = month_u, month_n  # monthの内容をminuteに移動する
+                        month_u = None  # monthを指定されていないことにする
+
                     end_time = now
                     if month_u:
                         end_time += relativedelta(months=int(month_n))
@@ -522,12 +520,12 @@ class AuctionDael(commands.Cog):
                         end_time += timedelta(hours=float(hour_n))
                     if minute_u:
                         end_time += timedelta(minutes=float(minute_n))
-                    
-                    year, month, day, hour, minute = end_time.year, end_time.month, end_time.day, end_time.hour, end_time.minute # 表示用に属性を展開しておく
-                
-                else: # 正しくない入力の場合
+
+                    year, month, day, hour, minute = end_time.year, end_time.month, end_time.day, end_time.hour, end_time.minute  # 表示用に属性を展開しておく
+
+                else:  # 正しくない入力の場合
                     await ctx.send("時間の書式が正しくありません\n\n"
-                                  f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
+                                   f"例 {datetime.now().year}年5月14日の午後8時に終了したい場合：\n**{datetime.now().year}/05/14-20:00**と入力してください。\n\n"
                                    "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n\n"
                                    "終了したい場合は**cancel**と入力してください")
                     continue
@@ -543,7 +541,7 @@ class AuctionDael(commands.Cog):
                     continue
                 break
             end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
-            end_time_text = f"{year}/{month:0>2}/{day:0>2}-{hour:0>2}:{minute:0>2}" # 24:00の場合はそのまま表示
+            end_time_text = f"{year}/{month:0>2}/{day:0>2}-{hour:0>2}:{minute:0>2}"  # 24:00の場合はそのまま表示
 
             embed = discord.Embed(
                 description="その他、出品物の詳細等などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
@@ -601,12 +599,11 @@ class AuctionDael(commands.Cog):
             else:
                 await ctx.channel.purge(limit=2)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
-    
+
     @start.after_invoke
     async def after_start(self, ctx):
-        if ctx.channel == self.bot.starting_users.get(ctx.author, None): # そのチャンネルでstartが行われていれば
-            self.bot.starting_users.pop(ctx.author) # start実行状態ではなくする
-
+        if ctx.channel == self.bot.starting_users.get(ctx.author, None):  # そのチャンネルでstartが行われていれば
+            self.bot.starting_users.pop(ctx.author)  # start実行状態ではなくする
 
     @commands.command(aliases=["Tend"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
