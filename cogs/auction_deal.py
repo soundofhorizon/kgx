@@ -873,7 +873,7 @@ class AuctionDael(commands.Cog):
                 # await delete_to(ctx, auction_data[2])
 
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-                cur.execute(f"SELECT * FROM user_data where user_id = {ctx.author.id}")
+                cur.execute(f"SELECT * FROM user_data where user_id = {tend_data[1][-1]}")
                 sql_data = cur.fetchone()
                 player_head_avatarurl = f"https://cravatar.eu/helmhead/{sql_data[3][0]}"  # uuidのカラムがなーぜかlistで保管されているため[0]で取り出し
                 image = requests.get(player_head_avatarurl)
