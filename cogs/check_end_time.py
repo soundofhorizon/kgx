@@ -46,6 +46,10 @@ class CheckEndTime(commands.Cog):
                         await self.bot.dm_send(auction_owner_id, embed)
                         embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                         await ch.send(embed=embed)
+
+                        deal_embed = await ch.fetch_message(embed_message_id)
+                        await deal_embed.unpin()
+
                         # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
                         self.bot.reset_ch_db(ch.id, "a")
                         await ch.send('--------ｷﾘﾄﾘ線--------')
@@ -87,7 +91,6 @@ class CheckEndTime(commands.Cog):
                     embed = discord.Embed(description=f"{owner.display_name}が出品した{item}を{tender.display_name}が{tend_price}で落札しました！", color=0xffaf60)
                     await ch.send(embed=embed)
 
-                    ch = self.bot.get_channel(id=ch_id)
                     auction_embed = await ch.fetch_message(embed_message_id)
                     await auction_embed.unpin()
 
@@ -116,7 +119,6 @@ class CheckEndTime(commands.Cog):
                     embed = discord.Embed(description="取引が終了しました", color=0xffaf60)
                     await ch.send(embed=embed)
 
-                    ch = self.bot.get_channel(id=ch_id)
                     deal_embed = await ch.fetch_message(embed_message_id)
                     await deal_embed.unpin()
 
