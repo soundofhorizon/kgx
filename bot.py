@@ -29,7 +29,6 @@ class KGX(commands.Bot):
         intents = discord.Intents.all()
         super().__init__(command_prefix=prefix, help_command=None, intents=intents)
         self.cur = cur
-        self.starting_users = {}  # startコマンド実行中の{ユーザー: チャンネル}の辞書
         slash = SlashCommand(self, sync_commands=True)  # SlashCommandの初期化
 
         for cog in os.listdir(f"./cogs"):  # cogの読み込み

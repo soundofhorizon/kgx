@@ -140,15 +140,6 @@ class AuctionDael(commands.Cog):
             await ctx.send("--------ｷﾘﾄﾘ線--------")
             return
 
-        if ctx.author in self.bot.starting_users:
-            channel = self.bot.starting_users[ctx.author]
-            await ctx.send(f"{channel.mention}の入力を完了させてから実行してください\n--------ｷﾘﾄﾘ線--------")
-            return
-        if ctx.channel in self.bot.starting_users.values():
-            await ctx.send(f"1つのチャンネルで複数のユーザーがstartコマンドを実行することはできません\n--------ｷﾘﾄﾘ線--------")
-            return
-        self.bot.starting_users[ctx.author] = ctx.channel
-
         first_message_object = None
         # オークション系
         if self.bot.is_auction_category(ctx):
@@ -627,11 +618,6 @@ class AuctionDael(commands.Cog):
             else:
                 await ctx.channel.purge(limit=2)
                 await ctx.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
-
-    #@start.after_invoke
-    #async def after_start(self, ctx):
-        #if ctx.channel == self.bot.starting_users.get(ctx.author, None):  # そのチャンネルでstartが行われていれば
-            #self.bot.starting_users.pop(ctx.author)  # start実行状態ではなくする
 
     @cog_ext.cog_slash(name="tend",
                        guild_ids=guild_id,
