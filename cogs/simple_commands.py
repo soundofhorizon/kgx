@@ -1,6 +1,8 @@
 from discord.ext import commands
 import discord
 from discord_slash import cog_ext
+from discord_slash.model import SlashCommandPermissionType
+from discord_slash.utils.manage_commands import create_permission
 
 from kgx.bot import KGX
 
@@ -10,13 +12,29 @@ class SimpleCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    guild_id = [558125111081697300]
+
+    permisson_verified = {
+        558125111081697300: [
+            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, True),
+            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, False)
+        ]
+    }
+
+    permisson_not_verified = {
+        558125111081697300: [
+            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, False),
+            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, True)
+        ]
+    }
+
     async def cog_check(self, ctx):
         return ctx.message.content == ctx.prefix + ctx.invoked_with
 
     @cog_ext.cog_slash(name="version",
-                       guild_ids=KGX.guild_id,
+                       guild_ids=guild_id,
                        description="現在のbotのバージョンを返します。",
-                       permissions=KGX.permisson_verified
+                       permissions=permisson_verified
                        )
     async def version(self, ctx):
         if not self.bot.is_normal_category(ctx) and not self.bot.is_auction_category(ctx):
@@ -24,9 +42,9 @@ class SimpleCommand(commands.Cog):
             await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(name="invite",
-                       guild_ids=KGX.guild_id,
+                       guild_ids=guild_id,
                        description="KGxサーバーへの招待リンクを表示します。",
-                       permissions=KGX.permisson_verified
+                       permissions=permisson_verified
                        )
     async def invite(self, ctx):
         if not self.bot.is_normal_category(ctx) and not self.bot.is_auction_category(ctx):

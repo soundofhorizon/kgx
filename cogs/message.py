@@ -12,7 +12,8 @@ import requests
 from discord import Embed
 from discord.ext import commands
 from discord_slash import cog_ext
-from discord_slash.utils.manage_commands import create_option
+from discord_slash.model import SlashCommandPermissionType
+from discord_slash.utils.manage_commands import create_option, create_permission
 
 from kgx.bot import KGX
 
@@ -26,6 +27,22 @@ auction_notice_ch_id = 727333695450775613
 class Message(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    guild_id = [558125111081697300]
+
+    permisson_verified = {
+        558125111081697300: [
+            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, True),
+            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, False)
+        ]
+    }
+
+    permisson_not_verified = {
+        558125111081697300: [
+            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, False),
+            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, True)
+        ]
+    }
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -143,7 +160,7 @@ class Message(commands.Cog):
             await ch.send(embed=embed)
 
     @cog_ext.cog_slash(name="qr",
-                       guild_ids=KGX.guild_id,
+                       guild_ids=guild_id,
                        description="文字列をQRコードに変換し、そのQR画像を出力します。(それだけです)",
                        options=[
                            create_option(
@@ -153,7 +170,7 @@ class Message(commands.Cog):
                                required=True
                            )
                        ],
-                       permissions=KGX.permisson_verified
+                       permissions=permisson_verified
                        )
     async def qr(self, ctx, qrcode_context: str):
         try:
@@ -169,7 +186,7 @@ class Message(commands.Cog):
             await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
     @cog_ext.cog_slash(name="uuid_report",
-                       guild_ids=KGX.guild_id,
+                       guild_ids=guild_id,
                        description="uuidを報告するためのコマンドです。(一度報告すると使えなくなります。)",
                        options=[
                            create_option(
@@ -179,7 +196,7 @@ class Message(commands.Cog):
                                required=True
                            )
                        ],
-                       permissions=KGX.permisson_not_verified
+                       permissions=permisson_not_verified
                        )
     async def uuid_report(self, ctx, mcid: str):
         if discord.utils.get(ctx.author.roles, name="uuid未チェック"):

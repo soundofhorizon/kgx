@@ -24,79 +24,13 @@ cur = db.cursor()  # なんか操作する時に使うやつ
 
 
 class KGX(commands.Bot):
+
     def __init__(self, prefix):
         intents = discord.Intents.all()
         super().__init__(command_prefix=prefix, help_command=None, intents=intents)
-
-        description_1 = "<:shiina_balance:558175954686705664>!start\n\n" \
-                        "オークションを始めるためのコマンドです。オークションチャンネルでのみ使用可能です。\n\n" \
-                        "-------\n" \
-                        "<:siina:558251559394213888>!tend 入札する量\n\n" \
-                        "\n\n" \
-                        "-------\n" \
-                        "<:shiina_balance:558175954686705664>!end\n\n" \
-                        "取引を終了するためのコマンドです。\n\n" \
-                        "-------\n" \
-                        "<:siina:558251559394213888>!bidscore 申請する落札ポイント\n\n" \
-                        "落札ポイントを申請します。 <#558265536430211083> に入力すると申請できます。\n" \
-                        "<#602197766218973185> に現在の落札ポイントが通知されます。\n" \
-                        "<#677905288665235475> に現在の落札ポイントのランキングが表示されます。\n\n" \
-                        "(例)!bidscore 2 {これで、自分の落札ポイントが2ポイント加算される。}\n\n" \
-                        "-------\n" \
-                        "<:shiina_balance:558175954686705664>!version\n\n" \
-                        "現在のBotのバージョンを表示します。\n\n" \
-                        "-------\n" \
-                        "<:siina:558251559394213888>!help\n\n" \
-                        "このBotのヘルプを表示します。\n\n" \
-                        "-------\n"
-
-        description_2 = "**ここから以下は運営専用**\n--------\n" \
-                        "<:shiina_balance:558175954686705664>!del 消去するメッセージの数(int)\n\n" \
-                        "メッセージを指定した数、コマンドを打ったチャンネルの最新のメッセージから消します。\n\n" \
-                        "-------\n" \
-                        "<:siina:558251559394213888>!check_all_user_ID\n\n" \
-                        "<#642052474672250880> に、現在このサーバーにいるメンバーのニックネームとユーザーIDをセットで照会します。\n\n" \
-                        "-------\n" \
-                        "<:shiina_balance:558175954686705664>!bidscoreGS モード ユーザーID 落札ポイント(setモードのみ)\n\n" \
-                        "特定の人の落札ポイントを調べたり、変更するために使用します。\n\n" \
-                        "<mode:GET>　getモードでは、特定の人の落札ポイントを調べられます。\nコマンドは以下のように使用します。\n\n" \
-                        "(例)!bidscoreGS get 251365193127297024\n{これで、EternalHorizonの落札ポイントがわかる}\n\n" \
-                        "<mode:SET>　setモードでは、特定の人の落札ポイントを変更できます。\nコマンドは以下のように使用します。\n\n" \
-                        "(例)!bidscore_gs set 251365193127297024 10\n{これで、EternalHorizonの落札ポイントが10ポイントに変更される。}\n\n" \
-                        "-------\n" \
-                        "<:siina:558251559394213888>!bidscore_ranking\n\n" \
-                        "<#677905288665235475>を更新します\n\n" \
-                        "-------\n" \
-                        "<:shiina_balance:558175954686705664>!stop_deal\n\n" \
-                        "問答無用で取引を停止します。オークションでも通常取引でも適用されます。\n\n" \
-                        "-------\n" \
-                        "<:siina:558251559394213888>!check_role\n\n" \
-                        "全員の役職が落札ポイントと正しいものになってるかを照合します。\n\n" \
-                        "-------\n" \
-                        "<:shiina_balance:558175954686705664>!insert_ranking_data\n\n" \
-                        "ランキングデータ送信用。落札者,落札物,落札金額,出品者ID\n\n" \
-                        "-------\n" \
-                        "<:siina:558251559394213888>!set_user_auction_count USER_ID 開催個数\n\n" \
-                        "そのユーザーの現在のオークションの開催個数を指定します。\n\n" \
-                        "-------\n" \
-                        "<:shiina_balance:558251559394213888>!show_bid_ranking\n\n" \
-                        "<#832956663908007946>の更新\n\n" \
-                        "-------\n" \
-                        "<:shiina:558175954686705664>!star_delete\n\n" \
-                        "星を強制的に取り外す\n\n" \
-                        "-------\n" \
-                        "<:shiina_balance:558251559394213888>!execute_sql\n\n" \
-                        "引数のSQL文を実行する\n\n" \
-                        "-------\n" \
-                        "<:siina:558251559394213888>!dbsetup\n\n" \
-                        "実行チャンネルをデータベースに登録する\n\n" \
-                        "-------\n"
-        self.embed_1 = discord.Embed(description=description_1, color=0x66cdaa)
-        self.embed_2 = discord.Embed(description=description_2, color=0x66cdaa)
-
         self.cur = cur
         self.starting_users = {}  # startコマンド実行中の{ユーザー: チャンネル}の辞書
-        slash = SlashCommand(self, sync_commands=True) # SlashCommandの初期化
+        slash = SlashCommand(self, sync_commands=True)  # SlashCommandの初期化
 
         for cog in os.listdir(f"./cogs"):  # cogの読み込み
             if cog.endswith(".py"):
@@ -105,27 +39,8 @@ class KGX(commands.Bot):
                 except Exception:
                     traceback.print_exc()
 
-    guild_id = [558125111081697300]
-
-    permisson_verified = {
-        558125111081697300: [
-            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, True),
-            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, False)
-        ]
-    }
-
-    permisson_not_verified = {
-        558125111081697300: [
-            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, False),
-            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, True)
-        ]
-    }
-
     async def on_ready(self):
         color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
-        await self.get_channel(678083611697872910).purge(limit=10)
-        await self.get_channel(678083611697872910).send(embed=self.embed_1)
-        await self.get_channel(678083611697872910).send(embed=self.embed_2)
         await self.get_channel(722092542249795679).send(
             embed=discord.Embed(description="起動しました。", color=random.choice(color)))
 
