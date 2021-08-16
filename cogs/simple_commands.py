@@ -47,7 +47,7 @@ class SimpleCommand(commands.Cog):
                        )
     async def invite(self, ctx):
         if not self.bot.is_normal_category(ctx) and not self.bot.is_auction_category(ctx):
-            await ctx.send('招待用URL:https://discord.gg/Syp85R4', hidden=True)
+            await ctx.send('招待用URL:https://discord.gg/4UXtw5hB9K', hidden=True)
 
 
 def setup(bot):

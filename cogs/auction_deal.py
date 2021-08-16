@@ -351,7 +351,6 @@ class AuctionDael(commands.Cog):
             else:
                 display_bin_price = f"{unit}{self.bot.stack_check_reverse(bin_price)}"
 
-            await self.bot.delete_to(ctx, first_message_object.id)
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
                                   color=0xffaf60)
             embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
@@ -573,7 +572,6 @@ class AuctionDael(commands.Cog):
                 await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
                 return
 
-            await self.bot.delete_to(ctx, first_message_object.id)
             display_hope_price = f"{unit}{self.bot.stack_check_reverse(hope_price)}"
 
             embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
@@ -911,8 +909,6 @@ class AuctionDael(commands.Cog):
                     f"UPDATE tend SET tender_id = '{tend_data_str_1}', tend_price = '{tend_data_str_2}' WHERE ch_id = %s",
                     (ctx.channel.id,))
                 db.commit()
-                # 1つ戻した状態で入札状態を出力
-                # await delete_to(ctx, auction_data[2])
 
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 cur.execute(f"SELECT * FROM user_data where user_id = {tend_data[1][-1]}")
