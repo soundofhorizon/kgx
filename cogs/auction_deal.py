@@ -628,10 +628,10 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 await ctx.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
-    @start.after_invoke
-    async def after_start(self, ctx):
-        if ctx.channel == self.bot.starting_users.get(ctx.author, None):  # そのチャンネルでstartが行われていれば
-            self.bot.starting_users.pop(ctx.author)  # start実行状態ではなくする
+    #@start.after_invoke
+    #async def after_start(self, ctx):
+        #if ctx.channel == self.bot.starting_users.get(ctx.author, None):  # そのチャンネルでstartが行われていれば
+            #self.bot.starting_users.pop(ctx.author)  # start実行状態ではなくする
 
     @cog_ext.cog_slash(name="tend",
                        guild_ids=guild_id,
