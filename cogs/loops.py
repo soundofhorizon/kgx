@@ -42,13 +42,14 @@ class Loops(commands.Cog):
                 """
                 ch_id, owner_id = record[:2]
                 if ch_id == 747728655735586876:
-                    return False # 椎名debug
+                    return False  # 椎名debug
                 elif owner_id == 0:
-                    return False # 開催していない
+                    return False  # 開催していない
                 else:
                     return True
 
-            AUCTION_TYPES = ["椎名", "ガチャ券", "all", "闇取引"] # オークションの種類一覧
+            AUCTION_TYPES = ["椎名", "ガチャ券", "all", "闇取引"]  # オークションの種類一覧
+
             def order_func(record):
                 """
                 チャンネル名に対応したタプルを返す
@@ -58,15 +59,15 @@ class Loops(commands.Cog):
                 channel_name = self.bot.get_channel(id=ch_id).name
 
                 for type_order, type_name in enumerate(AUCTION_TYPES):
-                    if type_name in channel_name: 
+                    if type_name in channel_name:
                         # 該当すればtype_orderを確定させる
                         break
                 else:
-                    type_order = len(AUCTION_TYPES) # いずれにも該当しなければ他よりも大きい値にする
-                
+                    type_order = len(AUCTION_TYPES)  # いずれにも該当しなければ他よりも大きい値にする
+
                 ch_num = int(re.search(r"\d+", channel_name).group())
-                return (type_order, ch_num) # type_order,ch_numの順に比較される
-            
+                return type_order, ch_num  # type_order,ch_numの順に比較される
+
             auctions = list(filter(active_filter, sql_data))
             auctions.sort(key=order_func)
 
@@ -99,11 +100,11 @@ class Loops(commands.Cog):
                     highest_tender = self.bot.get_user(id=tender_id[-1])
                     auction_info.append(f"最高額入札者 → {highest_tender.display_name}")
                     auction_info.append(f"入札額 → {unit}{self.bot.stack_check_reverse(tend_price[-1])}")
-                if diff.days == 0: # 残り1日を切っていたら太字にする
+                if diff.days == 0:  # 残り1日を切っていたら太字にする
                     auction_info.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
                 else:
                     auction_info.append(f"終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒")
-                
+
                 auction_info_list.append("\n".join(auction_info))
 
             for description in self.bot.join_within_limit(auction_info_list, sep="\n\n--------\n\n"):
@@ -121,7 +122,6 @@ class Loops(commands.Cog):
             embed.set_footer(text=f'channel:on_check_time_loop\ntime:{time}\nuser:None')
             await ch.send(embed=embed)
 
-
     @tasks.loop(seconds=60)
     async def show_all_deal_channel_info(self):
         try:
@@ -137,13 +137,14 @@ class Loops(commands.Cog):
                 """
                 ch_id, owner_id = record[:2]
                 if ch_id == 858158727576027146:
-                    return False # 取引debug
+                    return False  # 取引debug
                 elif owner_id == 0:
-                    return False # 開催していない
+                    return False  # 開催していない
                 else:
                     return True
 
-            DEAL_TYPES = ["椎名", "ガチャ券", "all"] # 取引の種類一覧
+            DEAL_TYPES = ["椎名", "ガチャ券", "all"]  # 取引の種類一覧
+
             def order_func(record):
                 """
                 チャンネル名に対応したタプルを返す
@@ -153,15 +154,15 @@ class Loops(commands.Cog):
                 channel_name = self.bot.get_channel(id=ch_id).name
 
                 for type_order, type_name in enumerate(DEAL_TYPES):
-                    if type_name in channel_name: 
+                    if type_name in channel_name:
                         # 該当すればtype_orderを確定させる
                         break
                 else:
-                    type_order = len(DEAL_TYPES) # いずれにも該当しなければ他よりも大きい値にする
-                
+                    type_order = len(DEAL_TYPES)  # いずれにも該当しなければ他よりも大きい値にする
+
                 ch_num = int(re.search(r"\d+", channel_name).group())
-                return (type_order, ch_num) # type_order,ch_numの順に比較される
-            
+                return type_order, ch_num  # type_order,ch_numの順に比較される
+
             deals = list(filter(active_filter, sql_data))
             deals.sort(key=order_func)
 
@@ -188,18 +189,17 @@ class Loops(commands.Cog):
                 deal_info.append(f"出品者 → {owner.display_name}")
                 deal_info.append(f"商品名 → {deal_item}")
                 deal_info.append(f"希望価格 → {unit}{self.bot.stack_check_reverse(int(hope_price))}")
-                if diff.days == 0: # 残り1日を切っていたら太字にする
+                if diff.days == 0:  # 残り1日を切っていたら太字にする
                     deal_info.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
                 else:
                     deal_info.append(f"終了まで残り → {diff.days}日{diff_hours}時間{diff_minites}分{diff_seconds}秒")
-                
-                deal_info_list.append("\n".join(deal_info))
 
+                deal_info_list.append("\n".join(deal_info))
 
             for description in self.bot.join_within_limit(deal_info_list, sep="\n\n--------\n\n"):
                 embed = discord.Embed(description=description, color=0x59a5e3)
                 await deal_data_channel.send(embed=embed)
-        
+
         except Exception as e:
             orig_error = getattr(e, "original", e)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())

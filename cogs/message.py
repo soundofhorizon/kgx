@@ -68,12 +68,12 @@ class Message(commands.Cog):
 
                             # SQLのuser_dataに新規登録
                             uuid = res["players"][0]["uuid"].replace("-", "")
-                            cur.execute( "INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);", (message.author.id, 0, 0, uuid))
+                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);", (message.author.id, 0, 0, uuid))
                             db.commit()
                         else:
                             embed = discord.Embed(
                                 description=f'{message.author} さん。\n入力されたMCIDは実在しないか、又はまだ一度も整地鯖にログインしていません。\n'
-                                '続けて間違った入力を行うと規定によりBANの対象になることがあります。',
+                                            '続けて間違った入力を行うと規定によりBANの対象になることがあります。',
                                 color=0xff0000)
                             await message.channel.send(embed=embed)
                     except requests.exceptions.HTTPError:
@@ -148,7 +148,7 @@ class Message(commands.Cog):
                                   color=0x4259fb
                                   )
             embed.set_image(url="attachment://icon.png")
-            await ctx.channel.send(file=image, embed=embed)
+            await ctx.send(file=image, embed=embed)
         except Exception:
             await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
@@ -159,26 +159,26 @@ class Message(commands.Cog):
             if uuid:
                 cur.execute(f"update  user_data set uuid = ARRAY['{uuid}'] where user_id = {ctx.author.id}")
                 db.commit()
-                await ctx.channel.send(f"{mcid}さんのuuid: {uuid}をシステムに登録しました。")
+                await ctx.send(f"{mcid}さんのuuid: {uuid}をシステムに登録しました。")
                 role = discord.utils.get(ctx.guild.roles, name="uuid未チェック")
                 await ctx.author.remove_roles(role)
-                role = discord.utils.get(ctx.guild.roles, id=558999306204479499) #MCID報告済み
+                role = discord.utils.get(ctx.guild.roles, id=558999306204479499)  # MCID報告済み
                 await ctx.author.add_roles(role)
             else:
-                await ctx.channel.send(f"MCID:{mcid}は存在しません。もう一度確認してください。")
+                await ctx.send(f"MCID:{mcid}は存在しません。もう一度確認してください。")
         else:
-            await ctx.channel.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
+            await ctx.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
 
     @commands.command()
     async def stack_check(self, ctx, *, amount):
         # 数値かどうかで渡す関数を変更する
         if amount.isdecimal():
-            await ctx.channel.send(f"{amount}はスタック表記で{self.bot.stack_check_reverse(int(amount))}です。")
+            await ctx.send(f"{amount}はスタック表記で{self.bot.stack_check_reverse(int(amount))}です。")
         else:
             if self.bot.stack_check(amount) is None:
-                await ctx.channel.send(f"入力した値が不正な値です。")
+                await ctx.send(f"入力した値が不正な値です。")
             else:
-                await ctx.channel.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
+                await ctx.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
 
     @commands.command()
     async def dm_setting(self, ctx, dm_boolean):
@@ -189,19 +189,19 @@ class Message(commands.Cog):
 
             dm_flag, = cur.fetchone()
             if (dm_boolean.lower() == "true" and dm_flag) or (dm_boolean.lower() == "false" and (not dm_flag)):
-                await ctx.channel.send("既に設定された値に変更されています。")
+                await ctx.send("既に設定された値に変更されています。")
                 return
 
             cur.execute(f"update user_data set dm_flag = {dm_boolean} where user_id = {ctx.author.id}")
             db.commit()
 
             if dm_boolean.lower() == "true":
-                await ctx.channel.send("botからのDMを受け取る設定にしました。")
+                await ctx.send("botからのDMを受け取る設定にしました。")
             else:
-                await ctx.channel.send("botからのDMを拒否する設定にしました。")
+                await ctx.send("botからのDMを拒否する設定にしました。")
 
         else:
-            await ctx.channel.send("設定の値が違います。以下のように設定してください。 ``!dm_setting True/False``")
+            await ctx.send("設定の値が違います。以下のように設定してください。 ``!dm_setting True/False``")
 
 
 def setup(bot):

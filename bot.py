@@ -26,73 +26,73 @@ class KGX(commands.Bot):
         super().__init__(command_prefix=prefix, help_command=None, intents=intents)
 
         description_1 = "<:shiina_balance:558175954686705664>!start\n\n" \
-                      "オークションを始めるためのコマンドです。オークションチャンネルでのみ使用可能です。\n\n" \
-                      "-------\n" \
-                      "<:siina:558251559394213888>!tend 入札する量\n\n" \
-                      "\n\n" \
-                      "-------\n" \
-                      "<:shiina_balance:558175954686705664>!end\n\n" \
-                      "取引を終了するためのコマンドです。\n\n" \
-                      "-------\n" \
-                      "<:siina:558251559394213888>!bidscore 申請する落札ポイント\n\n" \
-                      "落札ポイントを申請します。 <#558265536430211083> に入力すると申請できます。\n" \
-                      "<#602197766218973185> に現在の落札ポイントが通知されます。\n" \
-                      "<#677905288665235475> に現在の落札ポイントのランキングが表示されます。\n\n" \
-                      "(例)!bidscore 2 {これで、自分の落札ポイントが2ポイント加算される。}\n\n" \
-                      "-------\n" \
-                      "<:shiina_balance:558175954686705664>!version\n\n" \
-                      "現在のBotのバージョンを表示します。\n\n" \
-                      "-------\n" \
-                      "<:siina:558251559394213888>!help\n\n" \
-                      "このBotのヘルプを表示します。\n\n" \
-                      "-------\n"
+                        "オークションを始めるためのコマンドです。オークションチャンネルでのみ使用可能です。\n\n" \
+                        "-------\n" \
+                        "<:siina:558251559394213888>!tend 入札する量\n\n" \
+                        "\n\n" \
+                        "-------\n" \
+                        "<:shiina_balance:558175954686705664>!end\n\n" \
+                        "取引を終了するためのコマンドです。\n\n" \
+                        "-------\n" \
+                        "<:siina:558251559394213888>!bidscore 申請する落札ポイント\n\n" \
+                        "落札ポイントを申請します。 <#558265536430211083> に入力すると申請できます。\n" \
+                        "<#602197766218973185> に現在の落札ポイントが通知されます。\n" \
+                        "<#677905288665235475> に現在の落札ポイントのランキングが表示されます。\n\n" \
+                        "(例)!bidscore 2 {これで、自分の落札ポイントが2ポイント加算される。}\n\n" \
+                        "-------\n" \
+                        "<:shiina_balance:558175954686705664>!version\n\n" \
+                        "現在のBotのバージョンを表示します。\n\n" \
+                        "-------\n" \
+                        "<:siina:558251559394213888>!help\n\n" \
+                        "このBotのヘルプを表示します。\n\n" \
+                        "-------\n"
 
         description_2 = "**ここから以下は運営専用**\n--------\n" \
-                      "<:shiina_balance:558175954686705664>!del 消去するメッセージの数(int)\n\n" \
-                      "メッセージを指定した数、コマンドを打ったチャンネルの最新のメッセージから消します。\n\n" \
-                      "-------\n" \
-                      "<:siina:558251559394213888>!check_all_user_ID\n\n" \
-                      "<#642052474672250880> に、現在このサーバーにいるメンバーのニックネームとユーザーIDをセットで照会します。\n\n" \
-                      "-------\n" \
-                      "<:shiina_balance:558175954686705664>!bidscoreGS モード ユーザーID 落札ポイント(setモードのみ)\n\n" \
-                      "特定の人の落札ポイントを調べたり、変更するために使用します。\n\n" \
-                      "<mode:GET>　getモードでは、特定の人の落札ポイントを調べられます。\nコマンドは以下のように使用します。\n\n" \
-                      "(例)!bidscoreGS get 251365193127297024\n{これで、EternalHorizonの落札ポイントがわかる}\n\n" \
-                      "<mode:SET>　setモードでは、特定の人の落札ポイントを変更できます。\nコマンドは以下のように使用します。\n\n" \
-                      "(例)!bidscore_gs set 251365193127297024 10\n{これで、EternalHorizonの落札ポイントが10ポイントに変更される。}\n\n" \
-                      "-------\n" \
-                      "<:siina:558251559394213888>!bidscore_ranking\n\n" \
-                      "<#677905288665235475>を更新します\n\n" \
-                      "-------\n" \
-                      "<:shiina_balance:558175954686705664>!stop_deal\n\n" \
-                      "問答無用で取引を停止します。オークションでも通常取引でも適用されます。\n\n" \
-                      "-------\n" \
-                      "<:siina:558251559394213888>!check_role\n\n" \
-                      "全員の役職が落札ポイントと正しいものになってるかを照合します。\n\n" \
-                      "-------\n" \
-                      "<:shiina_balance:558175954686705664>!insert_ranking_data\n\n" \
-                      "ランキングデータ送信用。落札者,落札物,落札金額,出品者ID\n\n" \
-                      "-------\n" \
-                      "<:siina:558251559394213888>!set_user_auction_count USER_ID 開催個数\n\n" \
-                      "そのユーザーの現在のオークションの開催個数を指定します。\n\n" \
-                      "-------\n" \
-                      "<:shiina_balance:558251559394213888>!show_bid_ranking\n\n" \
-                      "<#832956663908007946>の更新\n\n" \
-                      "-------\n" \
-                      "<:shiina:558175954686705664>!star_delete\n\n" \
-                      "星を強制的に取り外す\n\n" \
-                      "-------\n" \
-                      "<:shiina_balance:558251559394213888>!execute_sql\n\n" \
-                      "引数のSQL文を実行する\n\n" \
-                      "-------\n" \
-                      "<:siina:558251559394213888>!dbsetup\n\n" \
-                      "実行チャンネルをデータベースに登録する\n\n" \
-                      "-------\n" 
+                        "<:shiina_balance:558175954686705664>!del 消去するメッセージの数(int)\n\n" \
+                        "メッセージを指定した数、コマンドを打ったチャンネルの最新のメッセージから消します。\n\n" \
+                        "-------\n" \
+                        "<:siina:558251559394213888>!check_all_user_ID\n\n" \
+                        "<#642052474672250880> に、現在このサーバーにいるメンバーのニックネームとユーザーIDをセットで照会します。\n\n" \
+                        "-------\n" \
+                        "<:shiina_balance:558175954686705664>!bidscoreGS モード ユーザーID 落札ポイント(setモードのみ)\n\n" \
+                        "特定の人の落札ポイントを調べたり、変更するために使用します。\n\n" \
+                        "<mode:GET>　getモードでは、特定の人の落札ポイントを調べられます。\nコマンドは以下のように使用します。\n\n" \
+                        "(例)!bidscoreGS get 251365193127297024\n{これで、EternalHorizonの落札ポイントがわかる}\n\n" \
+                        "<mode:SET>　setモードでは、特定の人の落札ポイントを変更できます。\nコマンドは以下のように使用します。\n\n" \
+                        "(例)!bidscore_gs set 251365193127297024 10\n{これで、EternalHorizonの落札ポイントが10ポイントに変更される。}\n\n" \
+                        "-------\n" \
+                        "<:siina:558251559394213888>!bidscore_ranking\n\n" \
+                        "<#677905288665235475>を更新します\n\n" \
+                        "-------\n" \
+                        "<:shiina_balance:558175954686705664>!stop_deal\n\n" \
+                        "問答無用で取引を停止します。オークションでも通常取引でも適用されます。\n\n" \
+                        "-------\n" \
+                        "<:siina:558251559394213888>!check_role\n\n" \
+                        "全員の役職が落札ポイントと正しいものになってるかを照合します。\n\n" \
+                        "-------\n" \
+                        "<:shiina_balance:558175954686705664>!insert_ranking_data\n\n" \
+                        "ランキングデータ送信用。落札者,落札物,落札金額,出品者ID\n\n" \
+                        "-------\n" \
+                        "<:siina:558251559394213888>!set_user_auction_count USER_ID 開催個数\n\n" \
+                        "そのユーザーの現在のオークションの開催個数を指定します。\n\n" \
+                        "-------\n" \
+                        "<:shiina_balance:558251559394213888>!show_bid_ranking\n\n" \
+                        "<#832956663908007946>の更新\n\n" \
+                        "-------\n" \
+                        "<:shiina:558175954686705664>!star_delete\n\n" \
+                        "星を強制的に取り外す\n\n" \
+                        "-------\n" \
+                        "<:shiina_balance:558251559394213888>!execute_sql\n\n" \
+                        "引数のSQL文を実行する\n\n" \
+                        "-------\n" \
+                        "<:siina:558251559394213888>!dbsetup\n\n" \
+                        "実行チャンネルをデータベースに登録する\n\n" \
+                        "-------\n"
         self.embed_1 = discord.Embed(description=description_1, color=0x66cdaa)
         self.embed_2 = discord.Embed(description=description_2, color=0x66cdaa)
 
         self.cur = cur
-        self.starting_users = {} # startコマンド実行中の{ユーザー: チャンネル}の辞書
+        self.starting_users = {}  # startコマンド実行中の{ユーザー: チャンネル}の辞書
 
         for cog in os.listdir(f"./cogs"):  # cogの読み込み
             if cog.endswith(".py"):
@@ -122,8 +122,8 @@ class KGX(commands.Bot):
 
     async def on_command_error(self, ctx, error):
         """すべてのコマンドで発生したエラーを拾う"""
-        if isinstance(error, commands.CommandInvokeError): # コマンド実行時にエラーが発生したら
-            if hasattr(ctx.command, "on_error"): # コマンド別のエラーハンドラが定義されていれば
+        if isinstance(error, commands.CommandInvokeError):  # コマンド実行時にエラーが発生したら
+            if hasattr(ctx.command, "on_error"):  # コマンド別のエラーハンドラが定義されていれば
                 return
             orig_error = getattr(error, "original", error)
             error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
@@ -171,17 +171,17 @@ class KGX(commands.Bot):
             raise TypeError("wrong value has passed")
 
         return before, after
-    
+
     @staticmethod
-    def join_within_limit(texts: List[str], sep: str ="\n", limit: int =4096) -> Generator[str, None, None]:
+    def join_within_limit(texts: List[str], sep: str = "\n", limit: int = 4096) -> Generator[str, None, None]:
         """
         sep.join(texts)のような文字列を生成するジェネレータを返す。各要素はの長さは必ずlimit以下になるようにしている
         textsの1要素がlimitよりも長ければTypeError。
         for description in join_within_limit(text): のような使われ方を想定している
         """
-        if not texts: # 空のリストが与えらたらreturn
+        if not texts:  # 空のリストが与えらたらreturn
             return
-        
+
         length_sum = len(texts[0])
         before = 0
 
@@ -205,8 +205,8 @@ class KGX(commands.Bot):
         """落札ポイントランキングを更新"""
         # user_dataテーブルには「0:ユーザーID bigint, 1:落札ポイント smallint, 2:警告レベル smallint」で格納されているので(0, 1)を、落札ポイント降順になるように出す
         kgx_server = self.get_guild(558125111081697300)
-        members_id = tuple(member.id for member in kgx_server.members) # メンバー全員のid
-        cur.execute("SELECT user_id, bid_score FROM user_data where user_id in %s ORDER BY bid_score desc;", (members_id,)) # メンバーの情報だけ取得
+        members_id = tuple(member.id for member in kgx_server.members)  # メンバー全員のid
+        cur.execute("SELECT user_id, bid_score FROM user_data where user_id in %s ORDER BY bid_score desc;", (members_id,))  # メンバーの情報だけ取得
         data = cur.fetchall()
 
         # ランキングを出力する。まずは辞書型の落札ポイントを基準として降順ソートする。メンバーをmem,スコアをscoreとする
@@ -255,7 +255,7 @@ class KGX(commands.Bot):
             embed = discord.Embed(description=description, color=0xddc7ff)
             embed_list.append(embed)
 
-        embed_list[0].title= " **落札額ランキング**"
+        embed_list[0].title = " **落札額ランキング**"
 
         embed_list[-1].color = 0xddc7ff
         d = datetime.now()  # 現在時刻の取得
@@ -275,22 +275,21 @@ class KGX(commands.Bot):
         :param value: [a lc + b st + c…]の形の価格
         :return: 価格をn個にしたもの(小数は丸め込む)。またはNone
         """
-        UNITS = {"lc": 3456, "st": 64} # 単位と対応する値
+        UNITS = {"lc": 3456, "st": 64}  # 単位と対応する値
         value = str(value).lower()
 
         if not re.fullmatch(r"\s*\d+((\.\d+)?(st|lc))?(\s*\+\s*\d+((\.\d+)?(st|lc))?)*\s*", value):
             return
 
-        value = re.sub(r"\s", "", value) # 空白文字を削除
+        value = re.sub(r"\s", "", value)  # 空白文字を削除
         result = 0
 
-        for term in value.split("+"): # 項ごとに分割
+        for term in value.split("+"):  # 項ごとに分割
             unit_match = re.search(r"(st|lc)?$", term)
             unit = UNITS.get(unit_match.group(), 1)
             result += float(term[:unit_match.start()]) * unit
 
         return int(result)
-
 
     @staticmethod
     def stack_check_reverse(value: int) -> str:
