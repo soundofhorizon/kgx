@@ -386,11 +386,11 @@ class KGX(commands.Bot):
         else:
             return await msg.edit(content=content, embed=embed)
 
-    # @staticmethod
-    # async def delete_to(ctx, msg_id: int) -> None:
-        # """特定のメッセージまでのメッセージを削除する"""
-        # msg = await ctx.fetch_message(msg_id)
-        # await ctx.channel.purge(limit=None, after=msg)
+    @staticmethod
+    async def delete_to(ctx, msg_id: int) -> None:
+        """特定のメッセージまでのメッセージを削除する"""
+        msg = await ctx.channel.fetch_message(msg_id)
+        await ctx.channel.purge(limit=None, after=msg)
 
 
 if __name__ == '__main__':

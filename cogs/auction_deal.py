@@ -716,7 +716,7 @@ class AuctionDael(commands.Cog):
                     embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
                     await ctx.send(embed=embed)
 
-                    auction_embed = await ctx.fetch_message(auction[2])
+                    auction_embed = await ctx.channel.fetch_message(auction[2])
                     await auction_embed.unpin()
 
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
@@ -754,7 +754,7 @@ class AuctionDael(commands.Cog):
                 finish_time = (finish_time + timedelta(days=1)).strftime("%Y/%m/%d-%H:%M")
                 embed.add_field(name="終了日時", value=f'\n\n{finish_time}')
                 embed.add_field(name="特記事項", value=f'\n\n{auction[8]}')
-                msg = await ctx.fetch_message(auction[2])
+                msg = await ctx.channel.fetch_message(auction[2])
                 await msg.edit(embed=embed)  # メッセージの更新で対応する
                 # 変更点をUPDATE
                 cur.execute("UPDATE auction SET embed_message_id = %s, auction_end_time = %s WHERE ch_id = %s",
@@ -957,7 +957,7 @@ class AuctionDael(commands.Cog):
         owner = self.bot.get_user(int(dael_data[1]))
         await owner.send(f"{ctx.author.name}が{ctx.channel.mention}の取引を承諾しました")
 
-        deal_embed = await ctx.fetch_message(dael_data[2])
+        deal_embed = await ctx.channel.fetch_message(dael_data[2])
         await deal_embed.unpin()
 
         self.bot.reset_ch_db(ctx.channel.id, "d")
