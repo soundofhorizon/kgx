@@ -262,12 +262,12 @@ class Message(commands.Cog):
             db.commit()
 
             if dm_boolean.lower() == "true":
-                await ctx.send("botからのDMを受け取る設定にしました。")
+                await ctx.send("botからのDMを受け取る設定にしました。", hidden=True)
             else:
-                await ctx.send("botからのDMを拒否する設定にしました。")
+                await ctx.send("botからのDMを拒否する設定にしました。", hidden=True)
 
         else:
-            await ctx.send("設定の値が違います。以下のように設定してください。 ``!dm_setting True/False``")
+            await ctx.send("設定の値が違います。以下のように設定してください。 ``!dm_setting True/False``", hidden=True)
 
 
 def setup(bot):
