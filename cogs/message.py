@@ -178,9 +178,9 @@ class Message(commands.Cog):
                                   color=0x4259fb
                                   )
             embed.set_image(url="attachment://icon.png")
-            await ctx.send(file=image, embed=embed)
+            await ctx.send(file=image, embed=embed, hidden=True)
         except Exception:
-            await ctx.send("QRコードに含めるデータ量が大きすぎます")
+            await ctx.send("QRコードに含めるデータ量が大きすぎます", hidden=True)
 
     @cog_ext.cog_slash(name="uuid_report",
                        guild_ids=guild_id,
@@ -209,7 +209,7 @@ class Message(commands.Cog):
             else:
                 await ctx.send(f"MCID:{mcid}は存在しません。もう一度確認してください。")
         else:
-            await ctx.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
+            await ctx.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。", hidden=True)
 
     @cog_ext.cog_slash(name="cs",
                        guild_ids=guild_id,
@@ -222,7 +222,7 @@ class Message(commands.Cog):
                                required=True
                            )
                        ],
-                       permissions=permisson_not_verified
+                       permissions=permisson_verified
                        )
     async def cs(self, ctx, amount: str):
         # 数値かどうかで渡す関数を変更する
@@ -230,7 +230,7 @@ class Message(commands.Cog):
             await ctx.send(f"{amount}はスタック表記で{self.bot.stack_check_reverse(int(amount))}です。")
         else:
             if self.bot.stack_check(amount) is None:
-                await ctx.send(f"入力した値が不正な値です。")
+                await ctx.send(f"入力した値が不正な値です。", hidden=True)
             else:
                 await ctx.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
 
