@@ -245,7 +245,7 @@ class Message(commands.Cog):
                                required=True
                            )
                        ],
-                       permissions=permisson_not_verified
+                       permissions=permisson_verified
                        )
     async def dm_setting(self, ctx, dm_boolean: str):
         # 数値かどうかで渡す関数を変更する
