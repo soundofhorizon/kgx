@@ -14,6 +14,9 @@ import psycopg2
 import requests
 from discord import Embed
 from discord.ext import commands
+from discord_slash import SlashCommand
+from discord_slash.model import SlashCommandPermissionType
+from discord_slash.utils.manage_commands import create_permission
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
@@ -93,6 +96,7 @@ class KGX(commands.Bot):
 
         self.cur = cur
         self.starting_users = {}  # startコマンド実行中の{ユーザー: チャンネル}の辞書
+        slash = SlashCommand(self, sync_commands=True) # SlashCommandの初期化
 
         for cog in os.listdir(f"./cogs"):  # cogの読み込み
             if cog.endswith(".py"):
@@ -100,6 +104,22 @@ class KGX(commands.Bot):
                     self.load_extension(f"cogs.{cog[:-3]}")
                 except Exception:
                     traceback.print_exc()
+
+    guild_id = [558125111081697300]
+
+    permisson_verified = {
+        558125111081697300: [
+            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, True),
+            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, False)
+        ]
+    }
+
+    permisson_not_verified = {
+        558125111081697300: [
+            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, False),
+            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, True)
+        ]
+    }
 
     async def on_ready(self):
         color = [0x126132, 0x82fc74, 0xfea283, 0x009497, 0x08fad4, 0x6ed843, 0x8005c0]
