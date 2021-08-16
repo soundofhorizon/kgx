@@ -178,7 +178,7 @@ class Message(commands.Cog):
                                   color=0x4259fb
                                   )
             embed.set_image(url="attachment://icon.png")
-            await ctx.send(file=image, embed=embed, hidden=True)
+            await ctx.send(file=image, embed=embed)
         except Exception:
             await ctx.send("QRコードに含めるデータ量が大きすぎます", hidden=True)
 
