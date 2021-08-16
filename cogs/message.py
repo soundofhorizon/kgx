@@ -4,7 +4,6 @@ import re
 import traceback
 from datetime import datetime
 
-import bs4
 import discord
 import psycopg2
 import qrcode
@@ -14,8 +13,6 @@ from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_option, create_permission
-
-from kgx.bot import KGX
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
@@ -215,7 +212,7 @@ class Message(commands.Cog):
             await ctx.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
 
     @cog_ext.cog_slash(name="cs",
-                       guild_ids=KGX.guild_id,
+                       guild_ids=guild_id,
                        description="スタック表記⇔数字表記の相互変換が可能です。How to use: !cs [検索語] : ex.!cs 128 / !cs 8st+23 / !cs 9LC+82st+1",
                        options=[
                            create_option(
@@ -225,7 +222,7 @@ class Message(commands.Cog):
                                required=True
                            )
                        ],
-                       permissions=KGX.permisson_not_verified
+                       permissions=permisson_not_verified
                        )
     async def cs(self, ctx, amount: str):
         # 数値かどうかで渡す関数を変更する
@@ -238,7 +235,7 @@ class Message(commands.Cog):
                 await ctx.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
 
     @cog_ext.cog_slash(name="dm_setting",
-                       guild_ids=KGX.guild_id,
+                       guild_ids=guild_id,
                        description="botからのDMの受信設定を行えます。基本Trueとなっています。FalseにするとbotからDMが飛んでこなくなります",
                        options=[
                            create_option(
@@ -248,7 +245,7 @@ class Message(commands.Cog):
                                required=True
                            )
                        ],
-                       permissions=KGX.permisson_not_verified
+                       permissions=permisson_not_verified
                        )
     async def dm_setting(self, ctx, dm_boolean: str):
         # 数値かどうかで渡す関数を変更する

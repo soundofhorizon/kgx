@@ -2,20 +2,18 @@ import asyncio
 import io
 import os
 import re
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 from bisect import bisect
+from datetime import datetime, timedelta
 
 import discord
 import psycopg2
 import requests
 from PIL import Image
+from dateutil.relativedelta import relativedelta
 from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_option, create_permission
-
-from kgx.bot import KGX
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続

@@ -1,10 +1,8 @@
-from discord.ext import commands
 import discord
+from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandPermissionType
 from discord_slash.utils.manage_commands import create_permission
-
-from kgx.bot import KGX
 
 
 class SimpleCommand(commands.Cog):
