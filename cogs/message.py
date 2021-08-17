@@ -151,7 +151,7 @@ class Message(commands.Cog):
             embed.set_image(url="attachment://icon.png")
             await ctx.send(file=image, embed=embed)
         except Exception:
-            await ctx.send("QRコードに含めるデータ量が大きすぎます", hidden=True)
+            await ctx.send("QRコードに含めるデータ量が大きすぎます")
 
     @commands.command()
     async def uuid_report(self, ctx, mcid: str):
@@ -168,7 +168,7 @@ class Message(commands.Cog):
             else:
                 await ctx.send(f"MCID:{mcid}は存在しません。もう一度確認してください。")
         else:
-            await ctx.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。", hidden=True)
+            await ctx.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
 
     @commands.command()
     async def cs(self, ctx, amount: str):
@@ -177,7 +177,7 @@ class Message(commands.Cog):
             await ctx.send(f"{amount}はスタック表記で{self.bot.stack_check_reverse(int(amount))}です。")
         else:
             if self.bot.stack_check(amount) is None:
-                await ctx.send(f"入力した値が不正な値です。", hidden=True)
+                await ctx.send(f"入力した値が不正な値です。")
             else:
                 await ctx.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
 
@@ -197,12 +197,12 @@ class Message(commands.Cog):
             db.commit()
 
             if dm_boolean.lower() == "true":
-                await ctx.send("botからのDMを受け取る設定にしました。", hidden=True)
+                await ctx.send("botからのDMを受け取る設定にしました。")
             else:
-                await ctx.send("botからのDMを拒否する設定にしました。", hidden=True)
+                await ctx.send("botからのDMを拒否する設定にしました。")
 
         else:
-            await ctx.send("設定の値が違います。以下のように設定してください。 ``!dm_setting True/False``", hidden=True)
+            await ctx.send("設定の値が違います。以下のように設定してください。 ``!dm_setting True/False``")
 
 
 def setup(bot):

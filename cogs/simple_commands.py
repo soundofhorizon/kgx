@@ -38,7 +38,7 @@ class SimpleCommand(commands.Cog):
     async def version(self, ctx):
         if not self.bot.is_normal_category(ctx) and not self.bot.is_auction_category(ctx):
             embed = discord.Embed(description="現在のバージョンは**6.0.0**です\nNow version **5.0.0** working.", color=0x4259fb)
-            await ctx.send(embed=embed, hidden=True)
+            await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(name="invite",
                        guild_ids=guild_id,
@@ -47,7 +47,7 @@ class SimpleCommand(commands.Cog):
                        )
     async def invite(self, ctx):
         if not self.bot.is_normal_category(ctx) and not self.bot.is_auction_category(ctx):
-            await ctx.send('招待用URL:https://discord.gg/4UXtw5hB9K', hidden=True)
+            await ctx.send('招待用URL:https://discord.gg/4UXtw5hB9K')
 
 
 def setup(bot):
