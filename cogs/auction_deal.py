@@ -85,11 +85,11 @@ class AuctionDael(commands.Cog):
                     description=f'**{ctx.author.display_name}**がランクアップ！``{before_name}⇒{after.name}``',
                     color=after.color)
                 embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
-                await ctx.send(embed=embed)
+                await ctx.channel.send(embed=embed)
 
             embed = discord.Embed(description=f'**{ctx.author.display_name}**に落札ポイントを付与しました。', color=0x9d9d9d)
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
             await asyncio.sleep(0.5)
             # ランキングを出力する
             await self.bot.update_bidscore_ranking()
@@ -136,8 +136,8 @@ class AuctionDael(commands.Cog):
         if self.bot.get_user_auction_count(user) >= 2 and ctx.author.id != 251365193127297024:
             description = "貴方はすでに取引を2つ以上行っているためこれ以上取引を始められません。\n" \
                           "行っている取引が2つ未満になってから再度行ってください。"
-            await ctx.send(embed=discord.Embed(description=description, color=0xf04747))
-            await ctx.send("--------ｷﾘﾄﾘ線--------")
+            await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
+            await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
             return
 
         first_message_object = None
@@ -147,7 +147,7 @@ class AuctionDael(commands.Cog):
             # 既にオークションが行われていたらreturn
             if "☆" not in ctx.channel.name:
                 description = "このチャンネルでは既にオークションが行われています。\n☆がついているチャンネルでオークションを始めてください。"
-                await ctx.send(embed=discord.Embed(description=description, color=0xf04747), delete_after=3)
+                await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747), delete_after=3)
                 await asyncio.sleep(3)
                 await ctx.message.delete()
                 return
@@ -160,7 +160,7 @@ class AuctionDael(commands.Cog):
             else:
                 embed = discord.Embed(description="何によるオークションですか？単位を入力してください。(ex.GTギフト券, がちゃりんご, エメラルド etc)",
                                       color=0xffaf60)
-                first_message_object = await ctx.send(embed=embed)
+                first_message_object = await ctx.channel.send(embed=embed)
                 try:
                     input_unit = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
@@ -172,16 +172,16 @@ class AuctionDael(commands.Cog):
             if "all" in ctx.channel.name.lower() and unit in ("椎名", "椎名林檎", "ガチャ券"):
                 embed = discord.Embed(description="椎名、ガチャ券のオークションは専用のチャンネルで行ってください。",
                                       color=0xffaf60)
-                await ctx.send(embed=embed)
+                await ctx.channel.send(embed=embed)
                 return
 
             embed = discord.Embed(
                 description="出品するものを入力してください。",
                 color=0xffaf60)
             if first_message_object is not None:
-                await ctx.send(embed=embed)
+                await ctx.channel.send(embed=embed)
             else:
-                first_message_object = await ctx.send(embed=embed)
+                first_message_object = await ctx.channel.send(embed=embed)
             try:
                 input_item = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
@@ -192,7 +192,7 @@ class AuctionDael(commands.Cog):
                                               "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
                                               "終了したい場合は`cancel`と入力してください",
                                   color=0xffaf60)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
 
             while not self.bot.is_closed():  # 正しい入力が来るまでwhile
                 try:
@@ -217,7 +217,7 @@ class AuctionDael(commands.Cog):
                                               "ない場合は`なし`とお書きください。\n"
                                               "終了したい場合は`cancel`と入力してください",
                                   color=0xffaf60)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
 
             while not self.bot.is_closed():
                 try:
@@ -248,7 +248,7 @@ class AuctionDael(commands.Cog):
                             "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n\n"
                             "終了したい場合は**cancel**と入力してください",
                 color=0xffaf60)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
 
             now = datetime.now()  # 都度生成するとタイムラグが生じてしまうため、あらかじめ取得した値を使いまわす
             while not self.bot.is_closed():
@@ -321,13 +321,13 @@ class AuctionDael(commands.Cog):
                     continue
 
                 if end_time <= now:
-                    await ctx.send("終了時刻を現在時刻以前にすることはできません。入力しなおしてください。")
+                    await ctx.channel.send("終了時刻を現在時刻以前にすることはできません。入力しなおしてください。")
                     continue
                 elif end_time - now <= timedelta(hours=12):
                     await ctx.send("開催期間を12時間以下にすることはできません。入力しなおしてください。")
                     continue
                 elif end_time - now >= timedelta(weeks=8):
-                    await ctx.send("2ヶ月以上にわたるオークションはできません。入力しなおしてください。")
+                    await ctx.channel.send("2ヶ月以上にわたるオークションはできません。入力しなおしてください。")
                     continue
                 break
             end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
@@ -337,7 +337,7 @@ class AuctionDael(commands.Cog):
                 description="その他、即決特典などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
                             "何も無ければ「なし」で構いません。",
                 color=0xffaf60)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
             try:
                 input_notice = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
@@ -360,7 +360,7 @@ class AuctionDael(commands.Cog):
             embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
             embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
             embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
             try:
                 input_confirm = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
@@ -377,8 +377,8 @@ class AuctionDael(commands.Cog):
                 embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
                 embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
                 embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=True)
-                await ctx.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
-                auction_embed = await ctx.send(embed=embed)
+                await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
+                auction_embed = await ctx.channel.send(embed=embed)
                 await auction_embed.pin()
 
                 # SQLにデータ登録
@@ -396,7 +396,7 @@ class AuctionDael(commands.Cog):
 
             else:
                 await ctx.channel.purge(limit=2)
-                await ctx.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
+                await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
         # 通常取引について
         elif self.bot.is_normal_category(ctx):
@@ -404,7 +404,7 @@ class AuctionDael(commands.Cog):
             # 既に取引が行われていたらreturn
             if "☆" not in ctx.channel.name:
                 description = "このチャンネルでは既に取引が行われています。\n☆がついているチャンネルで取引を始めてください。"
-                await ctx.send(embed=discord.Embed(description=description, color=0xf04747))
+                await ctx.channel.send(embed=discord.Embed(description=description, color=0xf04747))
                 await asyncio.sleep(3)
                 await ctx.channel.purge(limit=2)
                 return
@@ -417,7 +417,7 @@ class AuctionDael(commands.Cog):
             else:
                 embed = discord.Embed(description="何による取引ですか？単位を入力してください。(ex.GTギフト券, がちゃりんご, エメラルド etc)",
                                       color=0xffaf60)
-                first_message_object = await ctx.send(embed=embed)
+                first_message_object = await ctx.channel.send(embed=embed)
                 try:
                     input_unit = await self.bot.wait_for('message', check=check, timeout=600.0)
                 except asyncio.TimeoutError:
@@ -430,17 +430,17 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 embed = discord.Embed(description="椎名、ガチャ券の取引は専用のチャンネルで行ってください。",
                                       color=0xffaf60)
-                await ctx.send(embed=embed)
-                await ctx.send("--------ｷﾘﾄﾘ線--------")
+                await ctx.channel.send(embed=embed)
+                await ctx.channel.send("--------ｷﾘﾄﾘ線--------")
                 return
 
             embed = discord.Embed(
                 description="出品するものを入力してください。",
                 color=0xffaf60)
             if first_message_object is not None:
-                await ctx.send(embed=embed)
+                await ctx.channel.send(embed=embed)
             else:
-                first_message_object = await ctx.send(embed=embed)
+                first_message_object = await ctx.channel.send(embed=embed)
             try:
                 input_item = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
@@ -451,7 +451,7 @@ class AuctionDael(commands.Cog):
                                               "【〇LC+△ST+□】 or　【〇ST+△】 or 【△】 ex.1lc+1st+1 or 1st+1 or 32**\n"
                                               "終了したい場合は`cancel`と入力してください",
                                   color=0xffaf60)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
             while not self.bot.is_closed():
                 try:
                     input_hope_price = await self.bot.wait_for('message', check=check, timeout=600.0)
@@ -476,7 +476,7 @@ class AuctionDael(commands.Cog):
                             "例 1カ月2週間3日4時間5分後に終了したい場合:\n**1M2w3d4h5m**と入力してください。\n\n"
                             "終了したい場合は**cancel**と入力してください",
                 color=0xffaf60)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
 
             now = datetime.now()  # 都度生成するとタイムラグが生じてしまうため、あらかじめ取得した値を使いまわす
             while not self.bot.is_closed():
@@ -549,13 +549,13 @@ class AuctionDael(commands.Cog):
                     continue
 
                 if end_time <= now:
-                    await ctx.send("終了時刻を現在時刻以前にすることはできません。入力しなおしてください。")
+                    await ctx.channel.send("終了時刻を現在時刻以前にすることはできません。入力しなおしてください。")
                     continue
                 elif end_time - now <= timedelta(hours=12):
                     await ctx.send("開催期間を12時間以下にすることはできません。入力しなおしてください。")
                     continue
                 elif end_time - now >= timedelta(weeks=8):
-                    await ctx.send("2ヶ月以上にわたる取引はできません。入力しなおしてください。")
+                    await ctx.channel.send("2ヶ月以上にわたる取引はできません。入力しなおしてください。")
                     continue
                 break
             end_time_sql = end_time.strftime('%Y/%m/%d-%H:%M')
@@ -565,7 +565,7 @@ class AuctionDael(commands.Cog):
                 description="その他、出品物の詳細等などありましたらお書きください。\n長い場合、改行などをして**１回の送信**で書いてください。\n"
                             "何も無ければ「なし」で構いません。",
                 color=0xffaf60)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
             try:
                 input_notice = await self.bot.wait_for('message', check=check, timeout=600.0)
             except asyncio.TimeoutError:
@@ -581,7 +581,7 @@ class AuctionDael(commands.Cog):
             embed.add_field(name="希望価格", value=f'{display_hope_price}', inline=True)
             embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
             embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=False)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
 
             try:
                 input_confirm = await self.bot.wait_for('message', check=check, timeout=600.0)
@@ -597,9 +597,9 @@ class AuctionDael(commands.Cog):
                 embed.add_field(name="希望価格", value=f'{display_hope_price}', inline=True)
                 embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
                 embed.add_field(name="特記事項", value=f'{input_notice.content}', inline=False)
-                await ctx.send(
+                await ctx.channel.send(
                     "<:shiina_balance:558175954686705664>取引を開始します<:shiina_balance:558175954686705664>")
-                deal_embed = await ctx.send(embed=embed)
+                deal_embed = await ctx.channel.send(embed=embed)
                 await deal_embed.pin()
 
                 cur.execute("UPDATE deal SET deal_owner_id = %s, embed_message_id = %s, deal_item = %s, "
@@ -615,7 +615,7 @@ class AuctionDael(commands.Cog):
 
             else:
                 await ctx.channel.purge(limit=2)
-                await ctx.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
+                await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
     @cog_ext.cog_slash(name="tend",
                        guild_ids=guild_id,
@@ -642,7 +642,7 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(
                 description=f'{ctx.author.display_name}さん。このチャンネルではオークションは行われていません',
                 color=0xff0000)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
             return
 
         price = self.bot.stack_check(price)
@@ -714,14 +714,14 @@ class AuctionDael(commands.Cog):
                         await self.bot.update_high_bid_ranking()
 
                     embed = discord.Embed(description="オークションを終了しました", color=0xffaf60)
-                    await ctx.send(embed=embed)
+                    await ctx.channel.send(embed=embed)
 
                     auction_embed = await ctx.channel.fetch_message(auction[2])
                     await auction_embed.unpin()
 
                     # chのdbを消し去る。これをもってその人のオークション開催回数を減らしたことになる
                     self.bot.reset_ch_db(ctx.channel.id, "a")
-                    await ctx.send('--------ｷﾘﾄﾘ線--------')
+                    await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
                     await asyncio.sleep(0.3)
                     try:
                         await asyncio.wait_for(ctx.channel.edit(name=f"{ctx.channel.name}☆"), timeout=3.0)
@@ -928,7 +928,7 @@ class AuctionDael(commands.Cog):
                 )
                 embed.set_image(url="attachment://icon.png")
                 embed.set_footer(text=f"入札時刻: {time}")
-                await ctx.send(file=image, embed=embed)
+                await ctx.channel.send(file=image, embed=embed)
 
         else:
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
@@ -948,7 +948,7 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(
                 description=f'{ctx.author.display_name}さん。このチャンネルでは取引は行われていません',
                 color=0xff0000)
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
             return
 
         # chのdbを消し去る
@@ -962,7 +962,7 @@ class AuctionDael(commands.Cog):
 
         self.bot.reset_ch_db(ctx.channel.id, "d")
 
-        await ctx.send('--------ｷﾘﾄﾘ線--------')
+        await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
         try:
             await asyncio.wait_for(ctx.channel.edit(name=f"{ctx.channel.name}☆"), timeout=3.0)
         except asyncio.TimeoutError:
@@ -1001,7 +1001,7 @@ class AuctionDael(commands.Cog):
                 tend_info_list.append(f"{i}: {self.bot.get_user(id=tender_data).display_name}, {unit}{self.bot.stack_check_reverse(tend_price)}")
 
             for description in self.bot.join_within_limit(tend_info_list, sep="\n\n"):
-                await ctx.send(embed=discord.Embed(description=description, color=0xffaf60))
+                await ctx.channel.send(embed=discord.Embed(description=description, color=0xffaf60))
 
 
 def setup(bot):

@@ -95,12 +95,12 @@ class AdminOnly(commands.Cog):
             description=f"{ctx.author.display_name}によりこのフローは停止させられました。",
             color=0xf04747
         )
-        await ctx.send(embed=embed)
+        await ctx.channel.send(embed=embed)
         try:
             await asyncio.wait_for(ctx.channel.edit(name=f"{ctx.channel.name}☆"), timeout=3.0)
         except asyncio.TimeoutError:
             pass
-        await ctx.send('--------ｷﾘﾄﾘ線--------')
+        await ctx.channel.send('--------ｷﾘﾄﾘ線--------')
 
     @commands.command()
     async def star_delete(self, ctx):
@@ -108,7 +108,7 @@ class AdminOnly(commands.Cog):
             description=f"{ctx.author.display_name}により☆を強制的に取り外しました。",
             color=0xf04747
         )
-        await ctx.send(embed=embed)
+        await ctx.channel.send(embed=embed)
         try:
             await asyncio.wait_for(ctx.channel.edit(name=ctx.channel.name.split('☆')[0]), timeout=3.0)
         except asyncio.TimeoutError:
@@ -134,7 +134,7 @@ class AdminOnly(commands.Cog):
             react_list = ["\U000025c0\U0000fe0f", "\U000025b6\U0000fe0f"]
 
             page = 0
-            max_page = (len(result) - 1) // 10 + 1  # 切り上げ除算
+            max_page = (len(result)-1)//10+1 # 切り上げ除算
             embed = discord.Embed(title=f"SQL文の実行結果(1-10件目)",
                                   description="\n".join(result[:10]))
             msg = await ctx.send(embed=embed)
@@ -164,15 +164,15 @@ class AdminOnly(commands.Cog):
                         page -= 1
                     elif emoji == react_list[1]:  # 進むリアクションだったら
                         page += 1
-                    page %= max_page  # (0 <= page < max_page) を満たすように
+                    page %= max_page # (0 <= page < max_page) を満たすように
 
                     start_index = page * 10
                     if len(result) < start_index + 10:
-                        embed = discord.Embed(title=f"SQL文の実行結果({start_index + 1}-{len(result)}件目)",
+                        embed = discord.Embed(title=f"SQL文の実行結果({start_index+1}-{len(result)}件目)",
                                               description="\n".join(result[start_index:]))
                     else:
-                        embed = discord.Embed(title=f"SQL文の実行結果({start_index + 1}-{start_index + 10}件目)",
-                                              description="\n".join(result[start_index:start_index + 10]))
+                        embed = discord.Embed(title=f"SQL文の実行結果({start_index+1}-{start_index+10}件目)",
+                                              description="\n".join(result[start_index:start_index+10]))
                     await msg.edit(embed=embed)
 
     @execute_sql.error
@@ -209,10 +209,8 @@ class AdminOnly(commands.Cog):
             msg = await ctx.send(embed=embed)
             await msg.add_reaction("👍")
             await msg.add_reaction("👎")
-
             def check(reaction, user):
                 return user == ctx.author and (str(reaction.emoji) == "👍" or str(reaction.emoji) == "👎")
-
             try:
                 reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=600)
             except asyncio.TimeoutError:
@@ -277,7 +275,7 @@ class AdminOnly(commands.Cog):
         for mem in role.members:
             await mem.kick()
 
-        await ctx.send(f"{role.mention}持ちの{n}人を吹き飛ばしました")
+        await ctx.channel.send(f"{role.mention}持ちの{n}人を吹き飛ばしました")
 
 
 def setup(bot):
