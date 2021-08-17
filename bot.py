@@ -1,10 +1,10 @@
 # coding=utf-8
 import asyncio
 import json
-import random
 import os
-import traceback
+import random
 import re
+import traceback
 from datetime import datetime
 from typing import Union, List, Generator, Optional
 
@@ -14,9 +14,6 @@ import psycopg2
 import requests
 from discord import Embed
 from discord.ext import commands
-from discord_slash import SlashCommand
-from discord_slash.model import SlashCommandPermissionType
-from discord_slash.utils.manage_commands import create_permission
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
@@ -29,7 +26,6 @@ class KGX(commands.Bot):
         intents = discord.Intents.all()
         super().__init__(command_prefix=prefix, help_command=None, intents=intents)
         self.cur = cur
-        slash = SlashCommand(self, sync_commands=True)  # SlashCommandの初期化
 
         for cog in os.listdir(f"./cogs"):  # cogの読み込み
             if cog.endswith(".py"):

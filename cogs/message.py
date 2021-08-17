@@ -11,8 +11,7 @@ import requests
 from discord import Embed
 from discord.ext import commands
 from discord_slash import cog_ext
-from discord_slash.model import SlashCommandPermissionType
-from discord_slash.utils.manage_commands import create_option, create_permission
+from discord_slash.utils.manage_commands import create_option
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
@@ -24,22 +23,6 @@ auction_notice_ch_id = 727333695450775613
 class Message(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    guild_id = [558125111081697300]
-
-    permisson_verified = {
-        558125111081697300: [
-            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, True),
-            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, False)
-        ]
-    }
-
-    permisson_not_verified = {
-        558125111081697300: [
-            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, False),
-            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, True)
-        ]
-    }
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -156,19 +139,7 @@ class Message(commands.Cog):
             embed.set_footer(text=f'channel:{message.channel}\ntime:{time}\nuser:{message.author.display_name}')
             await ch.send(embed=embed)
 
-    @cog_ext.cog_slash(name="qr",
-                       guild_ids=guild_id,
-                       description="文字列をQRコードに変換し、そのQR画像を出力します。(それだけです)",
-                       options=[
-                           create_option(
-                               name="qrcode_context",
-                               description="お好きな文章を書いてください。長すぎるとエラーになります",
-                               option_type=3,
-                               required=True
-                           )
-                       ],
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     async def qr(self, ctx, qrcode_context: str):
         try:
             img = qrcode.make(f"{qrcode_context}")
@@ -182,19 +153,7 @@ class Message(commands.Cog):
         except Exception:
             await ctx.send("QRコードに含めるデータ量が大きすぎます", hidden=True)
 
-    @cog_ext.cog_slash(name="uuid_report",
-                       guild_ids=guild_id,
-                       description="uuidを報告するためのコマンドです。(一度報告すると使えなくなります。)",
-                       options=[
-                           create_option(
-                               name="mcid",
-                               description="あなたのMCIDを入力してください。",
-                               option_type=3,
-                               required=True
-                           )
-                       ],
-                       permissions=permisson_not_verified
-                       )
+    @commands.command()
     async def uuid_report(self, ctx, mcid: str):
         if discord.utils.get(ctx.author.roles, name="uuid未チェック"):
             uuid = self.bot.mcid_to_uuid(mcid)
@@ -211,19 +170,7 @@ class Message(commands.Cog):
         else:
             await ctx.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。", hidden=True)
 
-    @cog_ext.cog_slash(name="cs",
-                       guild_ids=guild_id,
-                       description="スタック表記⇔数字表記の相互変換が可能です。How to use: !cs [検索語] : ex.!cs 128 / !cs 8st+23 / !cs 9LC+82st+1",
-                       options=[
-                           create_option(
-                               name="amount",
-                               description="数字かStack表記に対応しています。Stack表記は、9LC+82st+1のように書いて下さい。",
-                               option_type=3,
-                               required=True
-                           )
-                       ],
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     async def cs(self, ctx, amount: str):
         # 数値かどうかで渡す関数を変更する
         if amount.isdecimal():
@@ -234,19 +181,7 @@ class Message(commands.Cog):
             else:
                 await ctx.send(f"{amount}は整数値で{self.bot.stack_check(amount)}です。")
 
-    @cog_ext.cog_slash(name="dm_setting",
-                       guild_ids=guild_id,
-                       description="botからのDMの受信設定を行えます。基本Trueとなっています。FalseにするとbotからDMが飛んでこなくなります",
-                       options=[
-                           create_option(
-                               name="dm_boolean",
-                               description="True: botからのDMを受信する / False: botからのDMを受信しない",
-                               option_type=3,
-                               required=True
-                           )
-                       ],
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     async def dm_setting(self, ctx, dm_boolean: str):
         # 数値かどうかで渡す関数を変更する
         if dm_boolean.lower() in ["true", "false"]:

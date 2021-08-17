@@ -11,9 +11,6 @@ import requests
 from PIL import Image
 from dateutil.relativedelta import relativedelta
 from discord.ext import commands
-from discord_slash import cog_ext
-from discord_slash.model import SlashCommandPermissionType
-from discord_slash.utils.manage_commands import create_option, create_permission
 
 SQLpath = os.environ["DATABASE_URL"]
 db = psycopg2.connect(SQLpath)  # sqlに接続
@@ -28,28 +25,7 @@ class AuctionDael(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    guild_id = [558125111081697300]
-
-    permisson_verified = {
-        558125111081697300: [
-            create_permission(558999306204479499, SlashCommandPermissionType.ROLE, True),
-            create_permission(678502401723990046, SlashCommandPermissionType.ROLE, False)
-        ]
-    }
-
-    @cog_ext.cog_slash(name="bidscore",
-                       guild_ids=guild_id,
-                       description="落札ポイントを申請します。「#落札申請所」に入力すると申請できます。",
-                       options=[
-                           create_option(
-                               name="pt",
-                               description="申請するポイント数",
-                               option_type=4,
-                               required=True
-                           )
-                       ],
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     async def bidscore(self, ctx, pt: int):  # カウントしてその数字に対応する役職を付与する
         if ctx.channel.id != 558265536430211083:
             return
@@ -94,11 +70,7 @@ class AuctionDael(commands.Cog):
             # ランキングを出力する
             await self.bot.update_bidscore_ranking()
 
-    @cog_ext.cog_slash(name="start",
-                       guild_ids=guild_id,
-                       description="オークションを始めるためのコマンドです。オークションチャンネルでのみ使用可能です。",
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     async def start(self, ctx):
 
         def check(m):
@@ -617,19 +589,7 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
-    @cog_ext.cog_slash(name="tend",
-                       guild_ids=guild_id,
-                       description="オークションで入札するためのコマンドです。オークションチャンネルでのみ使用可能です。",
-                       options=[
-                           create_option(
-                               name="price",
-                               description="入札額を入力してください。[1LC+2st+3]/[256]の書き方に対応しています。",
-                               option_type=3,
-                               required=True
-                           )
-                       ],
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def tend(self, ctx, price: str):
         if not self.bot.is_auction_category(ctx):
@@ -830,19 +790,7 @@ class AuctionDael(commands.Cog):
                                   color=0x4259fb)
             await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="add",
-                       guild_ids=guild_id,
-                       description="オークションで追加入札するためのコマンドです。",
-                       options=[
-                           create_option(
-                               name="add_price",
-                               description="追加する入札額を入力してください。[1LC+2st+3]/[256]の書き方に対応しています。",
-                               option_type=3,
-                               required=True
-                           )
-                       ],
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def add(self, ctx: commands.Context, add_price: str):
         if not self.bot.is_auction_category(ctx):
@@ -867,11 +815,7 @@ class AuctionDael(commands.Cog):
         tend = self.bot.get_command("tend")
         await ctx.invoke(tend, price=str(price))
 
-    @cog_ext.cog_slash(name="remand",
-                       guild_ids=guild_id,
-                       description="オークションで入札を差し戻すためのコマンドです。自分が主催するオークションのみ使用可能です。",
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     async def remand(self, ctx):
         if self.bot.is_auction_category(ctx):
 
@@ -934,11 +878,7 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="consent",
-                       guild_ids=guild_id,
-                       description="取引に合意するためのコマンドです。取引チャンネルでのみ使用可能です。",
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def consent(self, ctx):
         if not self.bot.is_normal_category(ctx):
@@ -968,11 +908,7 @@ class AuctionDael(commands.Cog):
         except asyncio.TimeoutError:
             pass
 
-    @cog_ext.cog_slash(name="tend_history",
-                       guild_ids=guild_id,
-                       description="入札履歴を表示するコマンドです。自分が主催するオークションのみ使用可能です。",
-                       permissions=permisson_verified
-                       )
+    @commands.command()
     async def tend_history(self, ctx):
         cur.execute("SELECT auction_owner_id, unit FROM auction where ch_id = %s", (ctx.channel.id,))
         auction_owner_id, unit = cur.fetchone()
