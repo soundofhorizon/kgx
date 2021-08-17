@@ -620,15 +620,18 @@ class AuctionDael(commands.Cog):
 
             # 条件に1つでも合致していたらreturn
             # 入札人物の判定
-            if ctx.author.id == auction[1]:
-                embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
-                await ctx.send(embed=embed)
-                return
+            try:
+                if ctx.author.id == auction[1]:
+                    embed = discord.Embed(description="出品者が入札は出来ません。", color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    return
 
-            elif ctx.author.id == tend[1][-1] and not price >= int(auction[5]):
-                embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
-                await ctx.send(embed=embed)
-                return
+                elif ctx.author.id == tend[1][-1] and not price >= int(auction[5]):
+                    embed = discord.Embed(description="同一人物による入札は出来ません。", color=0x4259fb)
+                    await ctx.send(embed=embed)
+                    return
+            except ValueError:  # 629行目にて、int(auction[5])で、即決価格が「なし」の場合、これがValueErrorを出す。とりあえず握りつぶす
+                pass
 
             # 入札価格の判定
             if price < int(auction[4]) or price <= int(tend[2][-1]):
