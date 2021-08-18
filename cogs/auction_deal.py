@@ -921,11 +921,6 @@ class AuctionDael(commands.Cog):
             embed = discord.Embed(description="このコマンドはオークション開催中のみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
             return
-        # オークション主催者じゃなければ警告して終了
-        elif ctx.author.id != auction_owner_id:
-            embed = discord.Embed(description="このコマンドはオークション主催者のみ使用可能です。", color=0x4259fb)
-            await ctx.send(embed=embed)
-            return
         else:
             cur.execute("select tender_id, tend_price from tend where ch_id = %s", (ctx.channel.id,))
             tenders_data, tend_prices = cur.fetchone()
