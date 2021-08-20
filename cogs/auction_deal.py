@@ -898,7 +898,7 @@ class AuctionDael(commands.Cog):
         cur.execute("SELECT * from deal WHERE ch_id = %s", (ctx.channel.id,))
         dael_data = cur.fetchone()
         owner = self.bot.get_user(int(dael_data[1]))
-        await owner.send(f"{ctx.author.name}が{ctx.channel.mention}の取引を承諾しました")
+        await owner.send(f"{ctx.author.display_name}が{ctx.channel.mention}の取引を承諾しました")
 
         deal_embed = await ctx.channel.fetch_message(dael_data[2])
         await deal_embed.unpin()
