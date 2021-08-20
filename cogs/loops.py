@@ -29,6 +29,7 @@ class Loops(commands.Cog):
     async def show_all_auction_channel_info(self):
         try:
             await self.bot.wait_until_ready()
+            kgx = self.bot.get_guild(558125111081697300)
             auction_data_channel = self.bot.get_channel(id=771034285352026162)
             await auction_data_channel.purge(limit=100)
             cur.execute("SELECT DISTINCT auction.ch_id, auction.auction_owner_id, auction.auction_item,"
@@ -79,7 +80,7 @@ class Loops(commands.Cog):
             for ch_id, owner_id, auction_item, tender_id, unit, tend_price, end_time in auctions:
                 auction_info = []
                 channel = self.bot.get_channel(ch_id)
-                owner = self.bot.get_user(owner_id)
+                owner = kgx.get_member(owner_id)
 
                 # 終了時刻までの残り時間を計算
                 now = datetime.datetime.now()
@@ -96,7 +97,7 @@ class Loops(commands.Cog):
                 if tender_id[-1] == 0:
                     auction_info.append("入札者はまだいません！")
                 else:
-                    highest_tender = self.bot.get_user(id=tender_id[-1])
+                    highest_tender = kgx.get_member(id=tender_id[-1])
                     auction_info.append(f"最高額入札者 → {highest_tender.display_name}")
                     auction_info.append(f"入札額 → {unit}{self.bot.stack_check_reverse(tend_price[-1])}")
                 if diff.days == 0: # 残り1日を切っていたら太字にする
@@ -126,6 +127,7 @@ class Loops(commands.Cog):
     async def show_all_deal_channel_info(self):
         try:
             await self.bot.wait_until_ready()
+            kgx = self.bot.get_guild(558125111081697300)
             deal_data_channel = self.bot.get_channel(id=771068489627861002)
             await deal_data_channel.purge(limit=100)
             cur.execute("SELECT ch_id, deal_owner_id, deal_item, deal_hope_price, deal_end_time, unit from deal")
@@ -174,7 +176,7 @@ class Loops(commands.Cog):
             for ch_id, owner_id, deal_item, hope_price, end_time, unit in deals:
                 deal_info = []
                 channel = self.bot.get_channel(ch_id)
-                owner = self.bot.get_user(owner_id)
+                owner = kgx.get_member(owner_id)
 
                 # 終了時刻までの残り時間を計算
                 now = datetime.datetime.now()
