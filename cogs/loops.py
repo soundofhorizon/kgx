@@ -97,7 +97,7 @@ class Loops(commands.Cog):
                 if tender_id[-1] == 0:
                     auction_info.append("入札者はまだいません！")
                 else:
-                    highest_tender = kgx.get_member(id=tender_id[-1])
+                    highest_tender = kgx.get_member(tender_id[-1])
                     auction_info.append(f"最高額入札者 → {highest_tender.display_name}")
                     auction_info.append(f"入札額 → {unit}{self.bot.stack_check_reverse(tend_price[-1])}")
                 if diff.days == 0: # 残り1日を切っていたら太字にする
