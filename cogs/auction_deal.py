@@ -932,7 +932,7 @@ class AuctionDael(commands.Cog):
             tend_info_list = []
 
             for i, (tenders_id, tend_price) in enumerate(zip(tenders_id[1:], tend_prices[1:]), 1):
-                tend_info_list.append(f"{i}: {self.bot.get_member(tenders_id).display_name}, {unit}{self.bot.stack_check_reverse(tend_price)}")
+                tend_info_list.append(f"{i}: {self.bot.get_guild(558125111081697300).get_member(tenders_id).display_name}, {unit}{self.bot.stack_check_reverse(tend_price)}")
 
             for description in self.bot.join_within_limit(tend_info_list, sep="\n\n"):
                 await ctx.channel.send(embed=discord.Embed(description=description, color=0xffaf60))
