@@ -923,16 +923,16 @@ class AuctionDael(commands.Cog):
             return
         else:
             cur.execute("select tender_id, tend_price from tend where ch_id = %s", (ctx.channel.id,))
-            tenders_data, tend_prices = cur.fetchone()
+            tenders_id, tend_prices = cur.fetchone()
 
-            if len(tenders_data) == 1:
+            if len(tenders_id) == 1:
                 await ctx.send("入札者はまだいません")
                 return
 
             tend_info_list = []
 
-            for i, (tender_data, tend_price) in enumerate(zip(tenders_data[1:], tend_prices[1:]), 1):
-                tend_info_list.append(f"{i}: {self.bot.get_user(id=tender_data).display_name}, {unit}{self.bot.stack_check_reverse(tend_price)}")
+            for i, (tender_id, tend_price) in enumerate(zip(tenders_data[1:], tend_prices[1:]), 1):
+                tend_info_list.append(f"{i}: {self.bot.get_member(tender_id).display_name}, {unit}{self.bot.stack_check_reverse(tend_price)}")
 
             for description in self.bot.join_within_limit(tend_info_list, sep="\n\n"):
                 await ctx.channel.send(embed=discord.Embed(description=description, color=0xffaf60))
