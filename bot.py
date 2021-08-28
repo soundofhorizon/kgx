@@ -146,8 +146,9 @@ class KGX(commands.Bot):
             # 落札ポイント0pt以下は表示しない
             if bid_score == 0:
                 break
-            user = self.get_user(user_id)
-            description += f"{rank}位: {user.display_name} - 落札ポイント -> {bid_score}\n"
+            user_name = self.get_user(user_id).display_name
+            user_name_formatted = user_name.replace("_", "\_")
+            description += f"{rank}位: {user_name_formatted} - 落札ポイント -> {bid_score}\n"
 
         # 表示する
         d = datetime.now()  # 現在時刻の取得
@@ -176,10 +177,12 @@ class KGX(commands.Bot):
             bid_info = ""
             if i <= 9:
                 bid_info += " "
-            bid_info += f"{i}位: 出品者->{seller_id}\n" \
+            seller_name_formatted = seller_id.replace("_", "\_")
+            bidder_name_formatted = bidder_name.replace("_", "\_")
+            bid_info += f"{i}位: 出品者->{seller_name_formatted}\n" \
                         f"  　　出品物->{item_name}\n" \
                         f"  　　落札額->椎名{bot.stack_check_reverse(bid_price)}\n" \
-                        f"  　　落札者->{bidder_name}"
+                        f"  　　落札者->{bidder_name_formatted}"
             bid_ranking.append(bid_info)
 
         for description in self.join_within_limit(bid_ranking, sep="\n\n"):
