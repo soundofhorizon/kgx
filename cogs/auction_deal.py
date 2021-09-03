@@ -25,7 +25,7 @@ class AuctionDael(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases=["bs"])
     async def bidscore(self, ctx, pt: int):  # カウントしてその数字に対応する役職を付与する
         if ctx.channel.id != 558265536430211083:
             return
@@ -589,7 +589,7 @@ class AuctionDael(commands.Cog):
                 await ctx.channel.purge(limit=2)
                 await ctx.channel.send("初めからやり直してください。\n--------ｷﾘﾄﾘ線--------")
 
-    @commands.command()
+    @commands.command(aliases=["Tend"])
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
     async def tend(self, ctx, price: str):
         if not self.bot.is_auction_category(ctx):
