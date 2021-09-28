@@ -15,7 +15,7 @@ multidict==5.1.0
 six~=1.16.0
 yarl==1.6.3
 attrs~=21.2.0
-aiohttp==3.7.4.post0
+aiohttp>=3.7.4
 chardet==4.0.0
 certifi==2021.5.30
 urllib3==1.26.6
