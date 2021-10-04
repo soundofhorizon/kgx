@@ -84,6 +84,34 @@ class Message(commands.Cog):
                                           color=0xff0000)
                     await message.channel.send(embed=embed)
 
+            #mcid変更申請chでspamが来るとmojangAPIに何度もアクセスさせてしまう
+            #一度変更したら何日間アクセスしないとかにすれば防げるがダルい
+            #ユーザーの良心を信じる
+            if message.channel.id == 591252285477093388: #mcid変更申請ch
+                #カラム名: uuid
+                cur.execute("SELECT * FROM user_data where user_id = %s", (message.author.id))
+                user_data = cur.fetchone()
+                uuid = user_data[3][0]
+                try:
+                    url = f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
+                    res = requests.get(url)
+                    player_data = res.json()
+                    new_mcid = player_data["name"]
+                except requests.exceptions.HTTPError:
+                    await message.channel.send("requests.exceptions.HTTPError")
+                    return
+
+                #変更後のmcidが既にニックネームに含まれているならニックネーム変更の必要はない
+                if new_mcid in message.author.display_name:
+                    return
+
+                try:
+                    await message.author.edit(nick=new_mcid)
+                except discord.errors.Forbidden:
+                    await message.channel.send(f"{message.author.mention}権限エラー\nニックネームを変更したMCIDに変更してください。")
+
+                
+
             # 引用機能
             url_filter = [msg.split("/")[1:] for msg in re.split(
                 "https://(ptb.|canary.|)discord(app|).com/channels/558125111081697300((/[0-9]+){2})", message.content)
