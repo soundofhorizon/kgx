@@ -52,6 +52,7 @@ class Message(commands.Cog):
                     color=0xff7700
                 )
                 await log_ch.send(embed=embed)
+                await message.delete()
 
             # MCID_check
             if message.channel.id == 558278443440275461:
