@@ -30,6 +30,20 @@ class Message(commands.Cog):
         if message.author.bot:
             return
         try:
+            #乗っ取りアカウントを釣る
+            #数行前の記述によりbotが乗っ取られても反応しないが仕様
+            if message.channel.id == 896270636656234517: #do not type here
+                cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (message.author.id,))
+                warn_level, = cur.fetchone()
+                warn_level += 2
+                cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (warn_level, message.author.id))
+                db.commit()
+
+                if warn_level >= 3:
+                    await message.guild.ban(message.author, reason="警告Lv3")
+                else:
+                    await message.guild.kick(message.author, reason=f"引っかかったな！ハニートラップだ！{datetime.now()}")
+
             # MCID_check
             if message.channel.id == 558278443440275461:
                 mcid = message.content.replace("\\", "")
@@ -89,7 +103,7 @@ class Message(commands.Cog):
             #ユーザーの良心を信じる
             if message.channel.id == 591252285477093388: #mcid変更申請ch
                 #カラム名: uuid
-                cur.execute("SELECT * FROM user_data where user_id = %s", (message.author.id))
+                cur.execute("SELECT * FROM user_data where user_id = %s", (message.author.id,))
                 user_data = cur.fetchone()
                 uuid = user_data[3][0]
                 try:
