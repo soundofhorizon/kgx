@@ -40,9 +40,18 @@ class Message(commands.Cog):
                 db.commit()
 
                 if warn_level >= 3:
+                    description=f"{message.author.display_name}、id:{message.author.id}を、ハニートラップでbanしました"
                     await message.guild.ban(message.author, reason="警告Lv3")
                 else:
+                    description=f"{message.author.display_name}、id:{message.author.id}を、ハニートラップでkickしました"
                     await message.guild.kick(message.author, reason=f"引っかかったな！ハニートラップだ！{datetime.now()}")
+
+                log_ch = self.bot.get_channel(628807266753183754) #log
+                embed = discord.Embed(
+                    description=description,
+                    color=0xff7700
+                )
+                await log_ch.send(embed=embed)
 
             # MCID_check
             if message.channel.id == 558278443440275461:
