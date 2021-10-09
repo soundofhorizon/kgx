@@ -41,10 +41,16 @@ class Message(commands.Cog):
 
                 if warn_level >= 3:
                     description=f"{message.author.display_name}、id:{message.author.id}を、ハニートラップでbanしました"
-                    await message.guild.ban(message.author, reason="警告Lv3")
+                    try:
+                        await message.guild.ban(message.author, reason="警告Lv3")
+                    except discord.errors.Forbidden:
+                        return #エラーは隠すな無視するなとは言うが管理者が乗っ取られるとかKGxの終わり
                 else:
                     description=f"{message.author.display_name}、id:{message.author.id}を、ハニートラップでkickしました"
-                    await message.guild.kick(message.author, reason=f"引っかかったな！ハニートラップだ！{datetime.now()}")
+                    try:
+                        await message.guild.kick(message.author, reason=f"引っかかったな！ハニートラップだ！{datetime.now()}")
+                    except discord.errors.Forbidden:
+                        return #エラーは隠すな無視するなとは言うが管理者が乗っ取られるとかKGxの終わり
 
                 log_ch = self.bot.get_channel(628807266753183754) #log
                 embed = discord.Embed(
