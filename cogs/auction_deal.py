@@ -868,11 +868,18 @@ class AuctionDael(commands.Cog):
                 image = image.resize((100, 100))
                 image.save("./icon.png")
                 image = discord.File("./icon.png", filename="icon.png")
-                embed = discord.Embed(
-                    description=f"入札者: **{self.bot.get_user(id=int(tend_data[1][-1])).display_name}**, \n"
-                                f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
-                    color=0x4259fb
-                )
+                try:
+                    embed = discord.Embed(
+                        description=f"入札者: **{self.bot.get_user(id=int(tend_data[1][-1])).display_name}**, \n"
+                                    f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
+                        color=0x4259fb
+                    )
+                except AttributeError:
+                    embed = discord.Embed(
+                        description=f"入札者: **このユーザーはサーバを抜けています！**, \n"
+                                    f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
+                        color=0x4259fb
+                    )
                 embed.set_image(url="attachment://icon.png")
                 embed.set_footer(text=f"入札時刻: {time}")
                 await ctx.channel.send(file=image, embed=embed)
