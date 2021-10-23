@@ -91,14 +91,20 @@ class Loops(commands.Cog):
                 diff_seconds = diff.seconds % 60
 
                 auction_info.append(f"{channel.mention}:")
-                auction_info.append(f"出品者 → {owner.display_name}")
+                try:
+                    auction_info.append(f"出品者 → {owner.display_name}")
+                except AttributeError:
+                    auction_info.append(f"出品者 → サーバを抜けました")
                 auction_info.append(f"商品名 → {auction_item}")
                 # 多分no bidで更新すると死ぬ気がするので分岐
                 if tender_id[-1] == 0:
                     auction_info.append("入札者はまだいません！")
                 else:
                     highest_tender = kgx.get_member(tender_id[-1])
-                    auction_info.append(f"最高額入札者 → {highest_tender.display_name}")
+                    try:
+                        auction_info.append(f"最高額入札者 → {highest_tender.display_name}")
+                    except AttributeError:
+                        auction_info.append(f"最高額入札者 → サーバを抜けました")
                     auction_info.append(f"入札額 → {unit}{self.bot.stack_check_reverse(tend_price[-1])}")
                 if diff.days == 0: # 残り1日を切っていたら太字にする
                     auction_info.append(f"終了まで残り → **{diff_hours}時間{diff_minites}分{diff_seconds}秒**")
@@ -187,7 +193,10 @@ class Loops(commands.Cog):
                 diff_seconds = diff.seconds % 60
 
                 deal_info.append(f"{channel.mention}:")
-                deal_info.append(f"出品者 → {owner.display_name}")
+                try:
+                    deal_info.append(f"出品者 → {owner.display_name}")
+                except AttributeError:
+                    deal_info.append(f"出品者 → サーバを抜けました")
                 deal_info.append(f"商品名 → {deal_item}")
                 deal_info.append(f"希望価格 → {unit}{self.bot.stack_check_reverse(int(hope_price))}")
                 if diff.days == 0: # 残り1日を切っていたら太字にする
