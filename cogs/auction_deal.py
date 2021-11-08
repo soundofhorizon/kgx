@@ -822,8 +822,8 @@ class AuctionDael(commands.Cog):
     async def remand(self, ctx):
         if self.bot.is_auction_category(ctx):
 
-            cur.execute("SELECT * FROM auction where ch_id = %s", (ctx.channel.id,))
-            auction_data = cur.fetchone()
+            cur.execute("SELECT auction_owner_id, unit FROM auction where ch_id = %s", (ctx.channel.id,))
+            auction_owner_id, unit = cur.fetchone()
 
             # オークションが行われていなければ警告して終了
             if "☆" in ctx.channel.name:
@@ -831,36 +831,32 @@ class AuctionDael(commands.Cog):
                 await ctx.send(embed=embed)
                 return
             # オークション主催者じゃなければ警告して終了
-            elif ctx.author.id != auction_data[1]:
+            elif ctx.author.id != auction_owner_id:
                 embed = discord.Embed(description="このコマンドはオークション主催者のみ使用可能です。", color=0x4259fb)
                 await ctx.send(embed=embed)
                 return
             else:
-                cur.execute("select * from tend where ch_id = %s", (ctx.channel.id,))
-                tend_data = cur.fetchone()
-                tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
+                cur.execute("select tender_id, tend_price from tend where ch_id = %s", (ctx.channel.id,))
+                tenders_id, tend_prices = cur.fetchone()
 
-                tend_data[1].pop(-1)
-                tend_data[2].pop(-1)
-
-                # 0の時は最初の入札者になっているのでreturn
-                if tend_data[1][-1] == 0:
-                    embed = discord.Embed(description="最初の入札者です。これ以上の差し戻しは出来ません。", color=0x4259fb)
-                    await ctx.send(embed=embed)
+                if tenders_id[-1] == 0:
+                    await ctx.send("入札がありません")
                     return
 
-                tend_data_str_1 = self.bot.list_to_tuple_string(tend_data[1])
-                tend_data_str_2 = self.bot.list_to_tuple_string(tend_data[2])
+                tenders_id.pop()
+                tend_prices.pop()
 
                 cur.execute(
-                    f"UPDATE tend SET tender_id = '{tend_data_str_1}', tend_price = '{tend_data_str_2}' WHERE ch_id = %s",
-                    (ctx.channel.id,))
+                    "UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s",
+                    (tenders_id, tend_prices, ctx.channel.id))
                 db.commit()
 
+                last_tender_id = tenders_id[-1]
+
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-                cur.execute(f"SELECT * FROM user_data where user_id = {tend_data[1][-1]}")
-                sql_data = cur.fetchone()
-                player_head_avatarurl = f"https://cravatar.eu/helmhead/{sql_data[3][0]}"  # uuidのカラムがなーぜかlistで保管されているため[0]で取り出し
+                cur.execute(f"SELECT uuid FROM user_data where user_id = %s", (last_tender_id,))
+                uuid_list, = cur.fetchone()
+                player_head_avatarurl = f"https://cravatar.eu/helmhead/{uuid_list[0]}"  # uuidのカラムがなーぜかlistで保管されているため[0]で取り出し
                 image = requests.get(player_head_avatarurl)
                 image = io.BytesIO(image.content)
                 image.seek(0)
@@ -868,16 +864,19 @@ class AuctionDael(commands.Cog):
                 image = image.resize((100, 100))
                 image.save("./icon.png")
                 image = discord.File("./icon.png", filename="icon.png")
-                try:
+
+                # 退出したユーザーのときはNoneになり、getattrの第三引数がlast_tender_nameになる
+                last_tender_name = getattr(self.bot.get_user(last_tender_id), "display_name", "退出したユーザー")
+
+                if tend_prices[-1] == 0:
                     embed = discord.Embed(
-                        description=f"入札者: **{self.bot.get_user(id=int(tend_data[1][-1])).display_name}**, \n"
-                                    f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
+                        description="最初の入札が取り消されたため、現在入札はありません。",
                         color=0x4259fb
                     )
-                except AttributeError:
+                else:
                     embed = discord.Embed(
-                        description=f"入札者: **このユーザーはサーバを抜けています！**, \n"
-                                    f"入札額: **{auction_data[7]}{self.bot.stack_check_reverse(self.bot.stack_check(tend_data[2][-1]))}**\n",
+                        description=f"入札者: **{last_tender_name}**, \n"
+                                    f"入札額: **{unit}{self.bot.stack_check_reverse(tend_prices[-1])}**\n",
                         color=0x4259fb
                     )
                 embed.set_image(url="attachment://icon.png")
