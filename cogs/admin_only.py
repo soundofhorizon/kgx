@@ -212,7 +212,7 @@ class AdminOnly(commands.Cog):
             def check(reaction, user):
                 return user == ctx.author and (str(reaction.emoji) == "👍" or str(reaction.emoji) == "👎")
             try:
-                reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=600)
+                reaction, _ = await self.bot.wait_for("reaction_add", check=check, timeout=600)
             except asyncio.TimeoutError:
                 await ctx.send("タイムアウトしました。")
                 return
