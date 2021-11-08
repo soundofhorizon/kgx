@@ -853,35 +853,35 @@ class AuctionDael(commands.Cog):
 
                 last_tender_id = tenders_id[-1]
 
-                time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-                cur.execute(f"SELECT uuid FROM user_data where user_id = %s", (last_tender_id,))
-                uuid_list, = cur.fetchone()
-                player_head_avatarurl = f"https://cravatar.eu/helmhead/{uuid_list[0]}"  # uuidのカラムがなーぜかlistで保管されているため[0]で取り出し
-                image = requests.get(player_head_avatarurl)
-                image = io.BytesIO(image.content)
-                image.seek(0)
-                image = Image.open(image)
-                image = image.resize((100, 100))
-                image.save("./icon.png")
-                image = discord.File("./icon.png", filename="icon.png")
-
-                # 退出したユーザーのときはNoneになり、getattrの第三引数がlast_tender_nameになる
-                last_tender_name = getattr(self.bot.get_user(last_tender_id), "display_name", "退出したユーザー")
-
-                if tend_prices[-1] == 0:
+                if last_tender_id == 0:
                     embed = discord.Embed(
                         description="最初の入札が取り消されたため、現在入札はありません。",
                         color=0x4259fb
                     )
                 else:
+                    # 退出したユーザーのときはNoneになり、getattrの第三引数がlast_tender_nameになる
+                    last_tender_name = getattr(self.bot.get_user(last_tender_id), "display_name", "退出したユーザー")
                     embed = discord.Embed(
                         description=f"入札者: **{last_tender_name}**, \n"
                                     f"入札額: **{unit}{self.bot.stack_check_reverse(tend_prices[-1])}**\n",
                         color=0x4259fb
                     )
-                embed.set_image(url="attachment://icon.png")
+                
+                    cur.execute(f"SELECT uuid FROM user_data where user_id = %s", (last_tender_id,))
+                    uuid_list, = cur.fetchone()
+                    player_head_avatarurl = f"https://cravatar.eu/helmhead/{uuid_list[0]}"  # uuidのカラムがなーぜかlistで保管されているため[0]で取り出し
+                    image = requests.get(player_head_avatarurl)
+                    image = io.BytesIO(image.content)
+                    image.seek(0)
+                    image = Image.open(image)
+                    image = image.resize((100, 100))
+                    image.save("./icon.png")
+                    image = discord.File("./icon.png", filename="icon.png")
+                    embed.set_image(url="attachment://icon.png")
+                
+                time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 embed.set_footer(text=f"入札時刻: {time}")
-                await ctx.channel.send(file=image, embed=embed)
+                await ctx.channel.send(embed=embed)
 
         else:
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
