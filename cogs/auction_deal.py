@@ -858,6 +858,7 @@ class AuctionDael(commands.Cog):
                         description="最初の入札が取り消されたため、現在入札はありません。",
                         color=0x4259fb
                     )
+                    image = None
                 else:
                     # 退出したユーザーのときはNoneになり、getattrの第三引数がlast_tender_nameになる
                     last_tender_name = getattr(self.bot.get_user(last_tender_id), "display_name", "退出したユーザー")
@@ -881,7 +882,7 @@ class AuctionDael(commands.Cog):
                 
                 time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 embed.set_footer(text=f"入札時刻: {time}")
-                await ctx.channel.send(embed=embed)
+                await ctx.channel.send(file=image, embed=embed)
 
         else:
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
