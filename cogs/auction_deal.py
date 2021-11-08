@@ -840,14 +840,14 @@ class AuctionDael(commands.Cog):
                 tend_data = cur.fetchone()
                 tend_data = [tend_data[0], list(tend_data[1]), list(tend_data[2])]
 
-                tend_data[1].pop(-1)
-                tend_data[2].pop(-1)
-
                 # 0の時は最初の入札者になっているのでreturn
                 if tend_data[1][-1] == 0:
                     embed = discord.Embed(description="最初の入札者です。これ以上の差し戻しは出来ません。", color=0x4259fb)
                     await ctx.send(embed=embed)
                     return
+
+                tend_data[1].pop(-1)
+                tend_data[2].pop(-1)
 
                 tend_data_str_1 = self.bot.list_to_tuple_string(tend_data[1])
                 tend_data_str_2 = self.bot.list_to_tuple_string(tend_data[2])
