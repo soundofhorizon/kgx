@@ -903,7 +903,7 @@ class AuctionDael(commands.Cog):
     
     @commands.command(aliases=["ar"])
     async def auction_rollback(self, ctx):
-        cur.execute("SELECT before_auction FROM auction WHERE ch_id = %s", (ctx.channel.id,))
+        cur.execute("SELECT auction_owner_id, before_auction FROM auction WHERE ch_id = %s", (ctx.channel.id,))
         database_data = cur.fetchall()
 
         if not database_data:
@@ -911,7 +911,12 @@ class AuctionDael(commands.Cog):
             await ctx.send(embed=embed)
             return
         
-        (before_auction,), = database_data
+        (now_owner, before_auction,), = database_data
+
+        if now_owner != 0:
+            await ctx.send("既に次のオークションが開始されています")
+            return
+
         if before_auction is None:
             await ctx.send("前回のオークションデータがありません")
             return
