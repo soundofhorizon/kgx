@@ -650,16 +650,17 @@ class AuctionDael(commands.Cog):
                     auction_data = cur.fetchone()
                     tend_price = f"{auction_data[7]}{self.bot.stack_check_reverse(price)}"
 
-                    embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
-                    embed.add_field(name="落札日", value=f'\n\n{datetime.now().strftime("%Y/%m/%d")}', inline=False)
-                    embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=auction_data[1]).display_name}',
-                                    inline=False)
-                    embed.add_field(name="品物", value=f'\n\n{auction_data[3]}', inline=False)
-                    embed.add_field(name="落札者", value=f'\n\n{ctx.author.display_name}', inline=False)
-                    embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
-                    embed.add_field(name="チャンネル名", value=f'\n\n{ctx.channel.name}', inline=False)
-                    await self.bot.get_channel(558132754953273355).send(embed=embed)
-                    # オークションが終わったらその結果を通知
+                    if ctx.channel.id != 747728655735586876: # 椎名debug以外
+                        embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
+                        embed.add_field(name="落札日", value=f'\n\n{datetime.now().strftime("%Y/%m/%d")}', inline=False)
+                        embed.add_field(name="出品者", value=f'\n\n{self.bot.get_user(id=auction_data[1]).display_name}',
+                                        inline=False)
+                        embed.add_field(name="品物", value=f'\n\n{auction_data[3]}', inline=False)
+                        embed.add_field(name="落札者", value=f'\n\n{ctx.author.display_name}', inline=False)
+                        embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
+                        embed.add_field(name="チャンネル名", value=f'\n\n{ctx.channel.name}', inline=False)
+                        await self.bot.get_channel(558132754953273355).send(embed=embed)
+                        # オークションが終わったらその結果を通知
                     description = f"{ctx.channel.name}にて行われていた{self.bot.get_user(id=auction_data[1]).display_name}による 品物名: **{auction_data[3]}** のオークションは\n{ctx.author.display_name}により" \
                                   f"**{tend_price}**にて落札されました"
                     embed = discord.Embed(description=description, color=0xffaf60)
@@ -669,7 +670,7 @@ class AuctionDael(commands.Cog):
                     await self.bot.dm_send(ctx.author.id, embed)
 
                     # ランキング送信
-                    if "椎名" in ctx.channel.name:
+                    if "椎名" in ctx.channel.name and ctx.channel.id != 747728655735586876: # 椎名debug以外
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
                                     (ctx.author.display_name, auction_data[3], price,
