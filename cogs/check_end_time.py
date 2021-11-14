@@ -34,6 +34,8 @@ class CheckEndTime(commands.Cog):
                     ch = self.bot.get_channel(ch_id)
                     owner = kgx.get_member(auction_owner_id)
 
+                    self.bot.insert_auction_info(ch_id)
+
                     cur.execute("SELECT tender_id, tend_price from tend WHERE ch_id=%s;", (ch.id,))
                     tenders_id, tend_prices = cur.fetchone()
                     tender = kgx.get_member(tenders_id[-1])

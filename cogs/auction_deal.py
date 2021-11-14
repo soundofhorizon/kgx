@@ -653,6 +653,9 @@ class AuctionDael(commands.Cog):
                     embed = discord.Embed(description=f"即決価格と同額以上の価格が入札されました。{ctx.author.display_name}さんの落札です。",
                                           color=0x4259fb)
                     await ctx.send(embed=embed)
+
+                    ctx.bot.insert_auction_info(ctx.channel.id)
+
                     # オークション情報を取る
                     cur.execute(f"SELECT * FROM auction where ch_id = {ctx.channel.id}")
                     auction_data = cur.fetchone()
