@@ -903,7 +903,7 @@ class AuctionDael(commands.Cog):
     
     @commands.command(aliases=["ar"])
     async def auction_rollback(self, ctx):
-        cur.execute("SELECT before_auction WHERE ch_id = %s", (ctx.channel.id,))
+        cur.execute("SELECT before_auction FROM auction WHERE ch_id = %s", (ctx.channel.id,))
         database_data = cur.fetchall()
 
         if not database_data:
