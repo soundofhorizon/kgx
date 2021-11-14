@@ -13,6 +13,7 @@
 >> auction_end_time: 終了時刻がdatetime型で入る。 text <br>
 >> unit: 単位. text<br>
 >> notice: 特記事項. text<br>
+>> before_auction: 前回開催されたオークションのid。auction_back用。int<br> 
 >
 > deal
 >
@@ -45,6 +46,20 @@
 >> ch_id: チャンネルID格納. bigint. unique key<br>
 >> tender_id: 入札した人のidを格納。時系列で配列になっている。 bigint[]. <br>
 >> tend_price: 入札額を格納。stack_check関数を通すこと。時系列で配列になっている。 integer[]. <br>
+>
+> auction_info
+>
+>> id: オークション毎に生成される一意のid。serial primary key<br>
+>> ch_id: オークションが開催されたチャンネルのid。bigint<br>
+>> owner_id: オークション開催者のid。bigint<br>
+>> item: 出品物。text<br>
+>> start_price: 開始価格。int<br>
+>> bin_price: 即決価格。なしの場合はnull。int<br>
+>> end_time: 終了時刻。timestamp<br>
+>> unit: オークションの単位。text<br>
+>> notice: 特記事項。text<br>
+>> tend: 入札履歴[入札者, 入札額]の配列。integer[][2]<br>
+>> embed_id: オークション情報が載ってるembedのmessage_id。bigint<br>
 
 # コミットルール
 始めに英単語1字を付与すること。[ADD] [CHANGE] [DELETE] [Refactor] ここら辺をよく使うかな

@@ -276,6 +276,29 @@ class KGX(commands.Bot):
         if mode == "a":
             cur.execute("UPDATE tend SET tender_id = ARRAY[0], tend_price = ARRAY[0] WHERE ch_id = %s", (channel_id,))
             db.commit()
+    
+    @staticmethod
+    def insert_auction_info(ch_id: int) -> None:
+        """
+        ch_idで開催されているオークションをauction_infoに保存し、before_auctionカラムにidを入れる
+        """
+        cur.execute("SELECT auction_owner_id, auction_item, auction_start_price, auction_bin_price, auction_end_time, unit, notice, auction_embed_id FROM auction WHERE ch_id = %s;", (ch_id,))
+        owner_id, item, start_price, bin_price, end_time, unit, notice, embed_id = cur.fetchone()
+        cur.execute("SELECT tender_id, tend_price tend ch_id = %s", (ch_id,))
+        tend = list(zip(*cur.fetchone))[1:]
+
+        start_price = int(start_price)
+        bin_price = int(bin_price) if bin_price != "なし" else None
+        end_time = end_time.strptime("%Y/%m/%d-%H:%M")
+
+        cur.execute("INSERT INTO auction_info (ch_id, owner_id, item, start_price, bin_price, end_time, unit, notice, tend, embed_id) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
+                    (ch_id, owner_id, item, start_price, bin_price, end_time, unit, notice, tend, embed_id))
+        
+        cur.execute("SELECT id FROM auction_info ORDER BY id DESC LIMIT 1;")
+        auction_id, = cur.fetchone()
+        cur.execute("UPDATE auction set before_auction = %s WHERE ch_id = %s;", (auction_id, ch_id))
+        db.commit()
 
     @staticmethod
     def mcid_to_uuid(mcid) -> Union[str, bool]:
