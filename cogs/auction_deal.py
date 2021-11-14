@@ -27,8 +27,8 @@ class AuctionDael(commands.Cog):
 
     @commands.command(aliases=["bs"])
     async def bidscore(self, ctx, pt: int):  # カウントしてその数字に対応する役職を付与する
-        if ctx.channel.id != 558265536430211083:
-            return
+        if ctx.channel.id not in (558265536430211083, 711682097928077322):
+            return # 落札申請所またはbot-commandのみ使用可能
 
         channel = self.bot.get_channel(602197766218973185)
         p = re.compile(r'^[0-9]+$')
@@ -39,10 +39,11 @@ class AuctionDael(commands.Cog):
             cur.execute("UPDATE user_data SET bid_score = %s WHERE user_id = %s", (new_score, ctx.author.id))
             db.commit()
 
-            embed = discord.Embed(description=f'**{ctx.author.display_name}**の現在の落札ポイントは**{new_score}**です。',
-                                  color=0x9d9d9d)
-            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
-            await channel.send(embed=embed)
+            if ctx.channel.id == 558265536430211083:
+                embed = discord.Embed(description=f'**{ctx.author.display_name}**の現在の落札ポイントは**{new_score}**です。',
+                                    color=0x9d9d9d)
+                embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
+                await channel.send(embed=embed)
 
             threshold = [1, 3, 5, 10, 30, 60, 100]
             if bisect(threshold, old_score) != bisect(threshold, new_score):  # beforeとnewで違うランクだったら

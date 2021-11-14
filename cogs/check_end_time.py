@@ -62,14 +62,15 @@ class CheckEndTime(commands.Cog):
 
                     tend_price = f"{unit}{price}"
 
-                    embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
-                    embed.add_field(name="落札日", value=f'\n\n{now.strftime("%Y/%m/%d")}', inline=False)
-                    embed.add_field(name="出品者", value=f'\n\n{owner.display_name}', inline=False)
-                    embed.add_field(name="品物", value=f'\n\n{item}', inline=False)
-                    embed.add_field(name="落札者", value=f'\n\n{tender.display_name}', inline=False)
-                    embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
-                    embed.add_field(name="チャンネル名", value=f'\n\n{ch.name}', inline=False)
-                    await log_ch.send(embed=embed)
+                    if ch.id != 747728655735586876: # 椎名debug以外
+                        embed = discord.Embed(title="オークション取引結果", color=0x36a64f)
+                        embed.add_field(name="落札日", value=f'\n\n{now.strftime("%Y/%m/%d")}', inline=False)
+                        embed.add_field(name="出品者", value=f'\n\n{owner.display_name}', inline=False)
+                        embed.add_field(name="品物", value=f'\n\n{item}', inline=False)
+                        embed.add_field(name="落札者", value=f'\n\n{tender.display_name}', inline=False)
+                        embed.add_field(name="落札価格", value=f'\n\n{tend_price}', inline=False)
+                        embed.add_field(name="チャンネル名", value=f'\n\n{ch.name}', inline=False)
+                        await log_ch.send(embed=embed)
 
                     # オークションが終わったらその結果を主催者と落札者に通知
                     description = f"{ch.name}にて行われていた{owner.display_name}による 品物名: **{item}** のオークションは\n{tender.display_name}により" \
@@ -81,7 +82,7 @@ class CheckEndTime(commands.Cog):
                     await self.bot.dm_send(tenders_id[-1], embed)
 
                     # ランキング送信
-                    if "椎名" in ch.name:
+                    if "椎名" in ch.name and ch.id != 747728655735586876: # 椎名debug以外
                         # INSERTを実行。%sで後ろのタプルがそのまま代入される
                         cur.execute("INSERT INTO bid_ranking VALUES (%s, %s, %s, %s)",
                                     (tender.display_name, item, tend_prices[-1], owner.display_name))
