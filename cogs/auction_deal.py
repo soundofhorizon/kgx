@@ -22,6 +22,14 @@ auction_notice_ch_id = 727333695450775613
 class AuctionDael(commands.Cog):
     """オークション、取引に関するcog"""
 
+    def is_admin(self, user):
+        kgx_guild = self.bot.get_guild(558125111081697300)
+        if user.guild != kgx_guild:
+            return False
+        admin_role = kgx_guild.get_role(558129132161073164)
+        dev_role = kgx_guild.get_role(558138575225356308)
+        return bool(set(user.roles) & {admin_role, dev_role})
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -889,6 +897,96 @@ class AuctionDael(commands.Cog):
         else:
             embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
+    
+    @commands.command(aliases=["ar"])
+    async def auction_rollback(self, ctx):
+        cur.execute("SELECT before_auction WHERE ch_id = %s", (ctx.channel.id,))
+        database_data = cur.fetchall()
+
+        if not database_data:
+            embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
+            await ctx.send(embed=embed)
+            return
+        
+        (before_auction,), = database_data
+        if before_auction is None:
+            await ctx.send("前回のオークションデータがありません")
+            return
+        
+        cur.execute("SELECT owner_id, item, start_price, bin_price, end_time, unit, notice, tend FROM auction_info where id = %s", (before_auction,))
+        owner_id, item, start_price, bin_price, end_time, unit, notice, tend = cur.fetchone()
+        
+        if ctx.bot.cogs["AdminOnly"].cog_check(ctx):
+            pass
+
+        now = datetime.now()
+        if end_time <= now:
+            await ctx.send("オークションの終了時刻を過ぎています")
+            return
+        
+        if ctx.author.id != owner_id and not self.is_admin(ctx):
+            await ctx.send("開催者以外がオークションの復元を行うことはできません")
+            return
+
+        start_price = str(start_price)
+        bin_price = "なし" if bin_price is None else str(bin_price)
+        end_time_text = end_time.strftime("%Y/%m/%d %H:%M:%S")
+
+        display_start_price = f"{unit}{self.bot.stack_check_reverse(start_price)}"
+        # 即決価格なしなら単位は付与しない
+        if bin_price == "なし":
+            display_bin_price = "なし"
+        else:
+            display_bin_price = f"{unit}{self.bot.stack_check_reverse(bin_price)}"
+
+        embed = discord.Embed(title="これで始めます。よろしいですか？YES/NOで答えてください。(小文字でもOK。NOの場合初めからやり直してください。)",
+                                color=0xffaf60)
+        embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
+        embed.add_field(name="出品物", value=f'{item}', inline=True)
+        embed.add_field(name="開始価格", value=f'{display_start_price}', inline=False)
+
+        embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
+        embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
+        embed.add_field(name="特記事項", value=f'{notice}', inline=True)
+        await ctx.channel.send(embed=embed)
+        try:
+            input_confirm = await self.bot.wait_for('message', check=lambda msg: (msg.author, msg.channel)==(ctx.author, ctx.channel), timeout=600.0)
+        except asyncio.TimeoutError:
+            await ctx.send("10分間操作がなかったためキャンセルしました\n--------ｷﾘﾄﾘ線--------")
+            return
+
+        if input_confirm.content.lower() in ("yes", "いぇｓ", "いぇs"):
+            await ctx.channel.purge(limit=3)
+            await asyncio.sleep(0.3)
+            embed = discord.Embed(title="オークション内容", color=0xffaf60)
+            embed.add_field(name="出品者", value=f'{ctx.author.display_name}', inline=True)
+            embed.add_field(name="出品物", value=f'{item}', inline=True)
+            embed.add_field(name="開始価格", value=f'{display_start_price}', inline=False)
+            embed.add_field(name="即決価格", value=f'{display_bin_price}', inline=False)
+            embed.add_field(name="終了日時", value=f'{end_time_text}', inline=True)
+            embed.add_field(name="特記事項", value=f'{notice}', inline=True)
+            await ctx.channel.send("<:siina:558251559394213888>オークションを開始します<:siina:558251559394213888>")
+            auction_embed = await ctx.channel.send(embed=embed)
+            await auction_embed.pin()
+
+            # DBにデータ登録
+            cur.execute("UPDATE auction SET auction_owner_id = %s, embed_message_id = %s, auction_item = %s, "
+                        "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
+                        "unit = %s, notice = %s WHERE ch_id = %s",
+                        (ctx.author.id, auction_embed.id, item, str(start_price),
+                            str(bin_price), end_time_text, unit, notice, ctx.channel.id))
+            tender_id, tend_price = zip(*([[0, 0]]+tend))
+            cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s", (tender_id, tend_price))
+            db.commit()
+
+            if tend:
+                # 入札があったら履歴を表示
+                ctx.invoke(self.bot.get_command("tend_history"))
+
+        else:
+            await ctx.channel.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
+
+
 
     @commands.command()
     @commands.cooldown(1, 1, type=commands.BucketType.channel)
