@@ -919,9 +919,6 @@ class AuctionDael(commands.Cog):
         cur.execute("SELECT owner_id, item, start_price, bin_price, end_time, unit, notice, tend FROM auction_info where id = %s", (before_auction,))
         owner_id, item, start_price, bin_price, end_time, unit, notice, tend = cur.fetchone()
         
-        if ctx.bot.cogs["AdminOnly"].cog_check(ctx):
-            pass
-
         now = datetime.now()
         if end_time <= now:
             await ctx.send("オークションの終了時刻を過ぎています")
