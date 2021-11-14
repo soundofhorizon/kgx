@@ -907,7 +907,7 @@ class AuctionDael(commands.Cog):
         database_data = cur.fetchall()
 
         if not database_data:
-            embed = discord.Embed(description="このコマンドはオークションでのみ使用可能です。", color=0x4259fb)
+            embed = discord.Embed(description="このコマンドはオークションチャンネルでのみ使用可能です。", color=0x4259fb)
             await ctx.send(embed=embed)
             return
         
