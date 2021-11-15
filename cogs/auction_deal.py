@@ -934,7 +934,7 @@ class AuctionDael(commands.Cog):
             return
 
         bin_price = "なし" if bin_price is None else bin_price
-        end_time_text = end_time.strftime("%Y/%m/%d %H:%M:%S")
+        end_time_text = end_time.strftime("%Y/%m/%d-%H:%M:%S")
 
         display_start_price = f"{unit}{self.bot.stack_check_reverse(start_price)}"
         # 即決価格なしなら単位は付与しない
