@@ -289,7 +289,7 @@ class KGX(commands.Bot):
 
         start_price = int(start_price)
         bin_price = int(bin_price) if bin_price != "なし" else None
-        end_time = end_time.strptime("%Y/%m/%d-%H:%M")
+        end_time = datetime.strptime(end_time, "%Y/%m/%d-%H:%M")
 
         cur.execute("INSERT INTO auction_info (ch_id, owner_id, item, start_price, bin_price, end_time, unit, notice, tend, embed_id) "
                     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
