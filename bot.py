@@ -285,7 +285,7 @@ class KGX(commands.Bot):
         cur.execute("SELECT auction_owner_id, auction_item, auction_start_price, auction_bin_price, auction_end_time, unit, notice, embed_message_id FROM auction WHERE ch_id = %s;", (ch_id,))
         owner_id, item, start_price, bin_price, end_time, unit, notice, embed_id = cur.fetchone()
         cur.execute("SELECT tender_id, tend_price FROM tend WHERE ch_id = %s", (ch_id,))
-        tend = list(zip(*cur.fetchone()))[1:]
+        tend = list(map(list, zip(*cur.fetchone())))[1:]
 
         start_price = int(start_price)
         bin_price = int(bin_price) if bin_price != "なし" else None
