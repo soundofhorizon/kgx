@@ -986,7 +986,7 @@ class AuctionDael(commands.Cog):
             cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s", (tender_id, tend_price, ctx.channel.id))
             db.commit()
 
-            await asyncio.wait_for(ctx.channel.edit(name=ctx.channel.name.split('☆')[0]))
+            await ctx.channel.edit(name=ctx.channel.name.split('☆')[0])
 
             if tend:
                 # 入札があったら履歴を表示
