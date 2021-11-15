@@ -935,6 +935,7 @@ class AuctionDael(commands.Cog):
 
         bin_price = "なし" if bin_price is None else bin_price
         end_time_text = end_time.strftime("%Y/%m/%d-%H:%M:%S")
+        end_time_sql = end_time.strftime("%Y/%m/%d-%H:%M")
 
         display_start_price = f"{unit}{self.bot.stack_check_reverse(start_price)}"
         # 即決価格なしなら単位は付与しない
@@ -978,7 +979,7 @@ class AuctionDael(commands.Cog):
                         "auction_start_price = %s, auction_bin_price = %s, auction_end_time = %s, "
                         "unit = %s, notice = %s WHERE ch_id = %s",
                         (ctx.author.id, auction_embed.id, item, str(start_price),
-                            str(bin_price), end_time_text, unit, notice, ctx.channel.id))
+                            str(bin_price), end_time_sql, unit, notice, ctx.channel.id))
             
             while tend and tend[-1][1] >= bin_price:
                 tend.pop() # 即決価格以上の入札を消す
