@@ -933,8 +933,7 @@ class AuctionDael(commands.Cog):
             await ctx.send("開催者以外がオークションの復元を行うことはできません")
             return
 
-        start_price = str(start_price)
-        bin_price = "なし" if bin_price is None else str(bin_price)
+        bin_price = "なし" if bin_price is None else bin_price
         end_time_text = end_time.strftime("%Y/%m/%d %H:%M:%S")
 
         display_start_price = f"{unit}{self.bot.stack_check_reverse(start_price)}"
