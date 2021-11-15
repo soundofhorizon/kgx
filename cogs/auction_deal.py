@@ -991,7 +991,7 @@ class AuctionDael(commands.Cog):
 
             if tend:
                 # 入札があったら履歴を表示
-                ctx.invoke(self.bot.get_command("tend_history"))
+                await ctx.invoke(self.bot.get_command("tend_history"))
 
         else:
             await ctx.channel.send("キャンセルしました\n--------ｷﾘﾄﾘ線--------")
