@@ -75,6 +75,17 @@ class Message(commands.Cog):
 
                         if res["result_count"] >= 1 and res["players"][0]["name"].lower() == mcid.lower():
                             # 存在した場合の処理
+
+                            uuid = res["players"][0]["uuid"].replace("-", "")
+                            cur.execute("SELECT count(*) FROM user_data WHERE %s = ANY(uuid)", (uuid,))
+                            if cur.fetchone()[0] >= 1:
+                                await message.channel.send("そのidは既にいずれかのユーザーに登録されています")
+                                return
+                            
+                            # SQLのuser_dataに新規登録
+                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);", (message.author.id, 0, 0, uuid))
+                            db.commit()
+
                             role1 = discord.utils.get(message.guild.roles, name="新人")
                             role2 = discord.utils.get(message.guild.roles, name="MCID報告済み")
                             await message.author.remove_roles(role1)
@@ -96,11 +107,6 @@ class Message(commands.Cog):
                                                   color=random.choice(color))
                             embed.set_author(name=message.author, icon_url=message.author.avatar_url)
                             await channel.send(embed=embed)
-
-                            # SQLのuser_dataに新規登録
-                            uuid = res["players"][0]["uuid"].replace("-", "")
-                            cur.execute("INSERT INTO user_data values (%s, %s, %s, ARRAY[%s]);", (message.author.id, 0, 0, uuid))
-                            db.commit()
                         else:
                             embed = discord.Embed(
                                 description=f'{message.author} さん。\n入力されたMCIDは実在しないか、又はまだ一度も整地鯖にログインしていません。\n'
