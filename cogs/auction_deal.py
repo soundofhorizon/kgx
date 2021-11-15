@@ -982,7 +982,7 @@ class AuctionDael(commands.Cog):
             
             while tend and tend[-1][1] >= bin_price:
                 tend.pop() # 即決価格以上の入札を消す
-            tender_id, tend_price = zip(*([[0, 0]]+tend))
+            tender_id, tend_price = map(list, zip(*([[0, 0]]+tend)))
             cur.execute("UPDATE tend SET tender_id = %s, tend_price = %s WHERE ch_id = %s", (tender_id, tend_price, ctx.channel.id))
             db.commit()
 
