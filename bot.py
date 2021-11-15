@@ -282,7 +282,6 @@ class KGX(commands.Bot):
         """
         ch_idで開催されているオークションをauction_infoに保存し、before_auctionカラムにidを入れる
         """
-        return # 応急措置
         cur.execute("SELECT auction_owner_id, auction_item, auction_start_price, auction_bin_price, auction_end_time, unit, notice, auction_embed_id FROM auction WHERE ch_id = %s;", (ch_id,))
         owner_id, item, start_price, bin_price, end_time, unit, notice, embed_id = cur.fetchone()
         cur.execute("SELECT tender_id, tend_price tend ch_id = %s", (ch_id,))
