@@ -929,7 +929,7 @@ class AuctionDael(commands.Cog):
             await ctx.send("オークションの終了時刻を過ぎています")
             return
         
-        if ctx.author.id != owner_id and not self.is_admin(ctx):
+        if ctx.author.id != owner_id and not self.is_admin(ctx.author):
             await ctx.send("開催者以外がオークションの復元を行うことはできません")
             return
 
