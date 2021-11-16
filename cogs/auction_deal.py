@@ -930,7 +930,7 @@ class AuctionDael(commands.Cog):
             return
         
         if ctx.author.id != owner_id and not self.is_admin(ctx.author):
-            await ctx.send("開催者以外がオークションの復元を行うことはできません")
+            await ctx.send("オークション開催者、運営、開発者以外がオークションの復元を行うことはできません")
             return
 
         bin_price = "なし" if bin_price is None else bin_price
