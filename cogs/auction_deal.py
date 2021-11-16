@@ -914,7 +914,7 @@ class AuctionDael(commands.Cog):
         (now_owner, before_auction,), = database_data
 
         if now_owner != 0:
-            await ctx.send("既に次のオークションが開始されています")
+            await ctx.send("このチャンネルでは既にオークションが行われています。")
             return
 
         if before_auction is None:
