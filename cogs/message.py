@@ -235,6 +235,22 @@ class Message(commands.Cog):
             await ctx.send("貴方のuuidは認証済みです。1アカウントにつき申請できるmcid/uuidは一つです。")
 
     @commands.command()
+    async def add_account(self, ctx, mcid: str):
+        uuid = self.bot.mcid_to_uuid(mcid)
+        if not uuid:
+            await ctx.send(f"MCID:{mcid}は存在しません。もう一度確認してください。")
+            return
+        
+        cur.execute("SELECT count(*) FROM user_data WHERE %s = ANY(uuid)", (uuid,))
+        if cur.fetchone()[0] >= 1:
+            await ctx.send("そのidは既にいずれかのユーザーに登録されています")
+            return
+
+        cur.execute(f"update user_data set uuid = array_append(uuid, %s) where user_id = %s", (uuid, ctx.author.id))
+        db.commit()
+        await ctx.send(f"{mcid}さんのuuid: {uuid}をシステムに登録しました。")
+        
+    @commands.command()
     async def cs(self, ctx, amount: str):
         # 数値かどうかで渡す関数を変更する
         if amount.isdecimal():
