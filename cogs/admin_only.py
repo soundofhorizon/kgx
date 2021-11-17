@@ -25,11 +25,13 @@ class AdminOnly(commands.Cog):
         return False
 
     @commands.command(name='del')
-    async def _del(self, ctx, n):  # メッセージ削除用
+    async def _del(self, ctx, n, channel: discord.TextChannel=None):  # メッセージ削除用
+        if channel is None:
+            channel = ctx.channel
         p = re.compile(r'^[0-9]+$')
         if p.fullmatch(n):
             count = int(n)
-            await ctx.channel.purge(limit=count + 1)
+            await channel.purge(limit=count + 1)
 
     @commands.command()
     async def check_all_user_ID(self, ctx):
