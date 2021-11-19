@@ -33,28 +33,12 @@ class Message(commands.Cog):
             #乗っ取りアカウントを釣る
             #数行前の記述によりbotが乗っ取られても反応しないが仕様
             if message.channel.id == 896270636656234517: #do not type here
-                cur.execute("SELECT warn_level FROM user_data WHERE user_id = %s", (message.author.id,))
-                warn_level, = cur.fetchone()
-                warn_level += 2
-                cur.execute("UPDATE user_data SET warn_level = %s WHERE user_id = %s", (warn_level, message.author.id))
-                db.commit()
-
-                if warn_level >= 3:
-                    description=f"{message.author.display_name}、id:{message.author.id}を、ハニートラップでbanしました"
-                    try:
-                        await message.guild.ban(message.author, reason="警告Lv3")
-                    except discord.errors.Forbidden:
-                        return #エラーは隠すな無視するなとは言うが管理者が乗っ取られるとかKGxの終わり
-                else:
-                    description=f"{message.author.display_name}、id:{message.author.id}を、ハニートラップでkickしました"
-                    try:
-                        await message.guild.kick(message.author, reason=f"引っかかったな！ハニートラップだ！{datetime.now()}")
-                    except discord.errors.Forbidden:
-                        return #エラーは隠すな無視するなとは言うが管理者が乗っ取られるとかKGxの終わり
+                comment = f"{message.author.display_name}、id:{message.author.id}を、ハニートラップでbanしました"
+                await message.author.ban(reason=comment)
 
                 log_ch = self.bot.get_channel(628807266753183754) #log
                 embed = discord.Embed(
-                    description=description,
+                    description=comment,
                     color=0xff7700
                 )
                 await log_ch.send(embed=embed)
