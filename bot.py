@@ -192,17 +192,17 @@ class KGX(commands.Bot):
         now = bisect.bisect(threshold, score)-1
         
         after = bidscore_roles[now]
+        if after is not None and after not in member.roles:
+            await member.add_roles(after)
+
         before = None
-        for i, role in enumerate(bidscore_roles):
-            if i == now:
-                if role not in member.roles:
-                    # 該当する役職が付いていなければ付ける
-                    await member.add_roles(role)
-            else:
-                if role in member.roles:
+        for role in bidscore_roles[1:]:
+            if role in member.roles:
+                # 付いていた役職を取得
+                before = role
+                if role != after:
                     # 該当しない役職が付いていれば外す
                     await member.remove_roles(role)
-                    before = role
         
         return before, after
 
