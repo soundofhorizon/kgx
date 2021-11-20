@@ -1,5 +1,6 @@
 # coding=utf-8
 import asyncio
+import bisect
 import json
 import os
 import random
@@ -76,42 +77,6 @@ class KGX(commands.Bot):
             await ch.send(embed=embed)
 
     # これより自作メソッド
-    @staticmethod
-    def check_role(score: int, ctx):
-        """ポイントに応じたroleを判定する"""
-        role1 = discord.utils.get(ctx.guild.roles, name="新星")
-        role2 = discord.utils.get(ctx.guild.roles, name="常連")
-        role3 = discord.utils.get(ctx.guild.roles, name="金持ち")
-        role4 = discord.utils.get(ctx.guild.roles, name="覚醒者")
-        role5 = discord.utils.get(ctx.guild.roles, name="登頂者")
-        role6 = discord.utils.get(ctx.guild.roles, name="落札王")
-        role7 = discord.utils.get(ctx.guild.roles, name="落札神")
-        if score >= 100:
-            before = role6
-            after = role7
-        elif score >= 60:
-            before = role5
-            after = role6
-        elif score >= 30:
-            before = role4
-            after = role5
-        elif score >= 10:
-            before = role3
-            after = role4
-        elif score >= 5:
-            before = role2
-            after = role3
-        elif score >= 3:
-            before = role1
-            after = role2
-        elif score >= 1:
-            before = None
-            after = role1
-        else:
-            raise TypeError("wrong value has passed")
-
-        return before, after
-
     @staticmethod
     def join_within_limit(texts: List[str], sep: str = "\n", limit: int = 4096) -> Generator[str, None, None]:
         """
@@ -209,6 +174,37 @@ class KGX(commands.Bot):
         await bid_price_ranking_channel.purge(limit=10)
         for embed in embed_list:
             await bid_price_ranking_channel.send(embed=embed)
+    
+    async def update_bidscore_role(self, member: discord.Member, score: int):
+        guild_roles = member.guild.roles
+        """ポイントに応じてroleを更新する"""
+        bidscore_roles = [
+            discord.utils.get(guild_roles, name="新星"),
+            discord.utils.get(guild_roles, name="常連"),
+            discord.utils.get(guild_roles, name="金持ち"),
+            discord.utils.get(guild_roles, name="覚醒者"),
+            discord.utils.get(guild_roles, name="登頂者"),
+            discord.utils.get(guild_roles, name="落札王"),
+            discord.utils.get(guild_roles, name="落札神")
+        ]
+        threshold = [1, 3, 5, 10, 30, 60, 100]
+
+        now = bisect.bisect(threshold, score)-1
+        
+        after = bidscore_roles[now]
+        before = None
+        for i, role in enumerate(bidscore_roles):
+            if i == now:
+                if role not in member.roles:
+                    # 該当する役職が付いていなければ付ける
+                    await member.add_roles(role)
+            else:
+                if role in member.roles:
+                    # 該当しない役職が付いていれば外す
+                    await member.remove_roles(role)
+                    before = role
+        
+        return before, after
 
     @staticmethod
     def stack_check(value) -> Optional[int]:

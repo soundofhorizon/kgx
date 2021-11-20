@@ -53,17 +53,11 @@ class AuctionDael(commands.Cog):
                 embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)  # ユーザー名+ID,アバターをセット
                 await channel.send(embed=embed)
 
-            threshold = [1, 3, 5, 10, 30, 60, 100]
-            if bisect(threshold, old_score) != bisect(threshold, new_score):  # beforeとnewで違うランクだったら
-                before, after = self.bot.check_role(new_score, ctx)
+            before, after = await ctx.bot.update_bidscore_role(ctx.author, new_score)
+            if before != after:  # beforeとafterで違うランクだったら
                 if before is None:
-                    await ctx.author.add_roles(after)
                     before_name = "落札初心者"
                 else:
-                    await asyncio.gather(
-                        ctx.author.remove_roles(before),
-                        ctx.author.add_roles(after)
-                    )
                     before_name = before.name
 
                 embed = discord.Embed(
