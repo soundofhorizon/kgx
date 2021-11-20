@@ -265,6 +265,10 @@ class Message(commands.Cog):
 
         else:
             await ctx.send("設定の値が違います。以下のように設定してください。 ``!dm_setting True/False``")
+    
+    def cog_check(self, ctx):
+        # 「コマンド」または「bot-command」のみ
+        return ctx.channel.id in (804867438696857650, 711682097928077322)
 
 
 def setup(bot):
