@@ -1054,14 +1054,7 @@ class AuctionDael(commands.Cog):
             for i, (tenders_id, tend_price) in enumerate(zip(tenders_id[1:], tend_prices[1:]), 1):
                 tend_info_list.append(f"{i}: {self.bot.get_guild(558125111081697300).get_member(tenders_id).display_name}, {unit}{self.bot.stack_check_reverse(tend_price)}")
 
-            first = True
-            for description in self.bot.join_within_limit(tend_info_list, sep="\n\n"):
-                if first:
-                    title = "現在の入札状況"
-                    first = False
-                else:
-                    title = None
-                await ctx.channel.send(embed=discord.Embed(title=title, description=description, color=0xffaf60))
+            await ctx.channel.send(embed=discord.Embed(title="現在の入札状況", description="\n\n".join(tend_info_list), color=0xffaf60))
 
 
 def setup(bot):
