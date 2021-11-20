@@ -40,6 +40,15 @@ class KGX(commands.Bot):
             embed=discord.Embed(description="起動しました。", color=random.choice(color)))
         print("ready")
 
+        # コマンドのグローバルチェックを付ける
+        @self.check
+        def check_for_all_command(ctx):
+            if not isinstance(ctx.guild, discord.Guild) or ctx.guild.id != 558125111081697300:
+                return False # KGx以外なら弾く
+            # MCID報告済みかどうか
+            return bool(discord.utils.get(ctx.author.roles, id=558999306204479499))
+    
+
     async def on_guild_channel_create(self, channel):
         """チャンネルが出来た際に自動で星をつける"""
         if ">" not in channel.category.name and "*" not in channel.category.name:
