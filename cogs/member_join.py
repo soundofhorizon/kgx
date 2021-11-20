@@ -19,6 +19,9 @@ class MemberJoin(commands.Cog):
         self.bot.cur.execute("SELECT COUNT(*) FROM user_data WHERE user_id = %s", (member.id,))
         if self.bot.cur.fetchone()[0]:
             await member.add_roles(reported)
+            self.bot.cur.execute("SELECT bid_score FROM user_data WHERE user_id = %s", (member.id))
+            bidscore, = self.bot.cur.fetchone()
+            await self.bot.update_bidscore_role(member, bidscore)
         else:
             await member.add_roles(newcomer)
 
