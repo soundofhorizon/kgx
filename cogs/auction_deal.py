@@ -2,7 +2,6 @@ import asyncio
 import io
 import os
 import re
-from bisect import bisect
 from datetime import datetime, timedelta
 
 import discord
